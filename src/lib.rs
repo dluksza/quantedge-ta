@@ -1,14 +1,9 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Streaming technical analysis indicators for Rust.
+//!
+//! Indicators accept any type implementing [`Ohlcv`] and return
+//! typed results via the `Indicator` trait. Values are `None`
+//! until enough data has been received for convergence.
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod ohlcv;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use crate::ohlcv::{Ohlcv, Price, Timestamp};
