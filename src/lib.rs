@@ -6,11 +6,13 @@
 
 mod indicator;
 mod ohlcv;
+mod price_source;
 mod price_window;
 mod sma;
 
-pub use crate::indicator::{Indicator, IndicatorConfig, IndicatorConfigBuilder, PriceSource};
+pub use crate::indicator::{Indicator, IndicatorConfig, IndicatorConfigBuilder};
 pub use crate::ohlcv::{Ohlcv, Price, Timestamp};
+pub use crate::price_source::PriceSource;
 
 pub use crate::sma::{Sma, SmaConfig, SmaConfigBuilder};
 
