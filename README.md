@@ -1,5 +1,9 @@
 # quantedge-ta
 
+[![CI](https://github.com/dluksza/quantedge-ta/actions/workflows/ci.yml/badge.svg)](https://github.com/dluksza/quantedge-ta/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/dluksza/quantedge-ta/branch/main/graph/badge.svg)](https://codecov.io/gh/dluksza/quantedge-ta)
+[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE-MIT)
+
 A streaming technical analysis library for Rust. Correct, tested, documented.
 
 ## Features
@@ -8,7 +12,7 @@ A streaming technical analysis library for Rust. Correct, tested, documented.
 
 Indicators return `Option<Self::Output>`. No value until there's enough data.
 No silent NaN, no garbage early values. The type system enforces correctness.
-For indicators with infinite memory (EMA, RSI), convergence enforcement is
+For indicators with infinite memory (EMA), convergence enforcement is
 configurable: opt in to suppress values until the seed's influence has decayed
 below 1%.
 
@@ -35,9 +39,8 @@ on forming bars.
 
 Each indicator defines its own output type via an associated type on the
 `Indicator` trait. SMA and EMA return `f64`. Bollinger Bands returns
-`BbValue { upper, middle, lower }`. MACD will return
-`MacdResult { macd, signal, histogram }`. No downcasting, no enums, full
-type safety.
+`BbValue { upper, middle, lower }`. No downcasting, no enums, full type
+safety.
 
 ## Usage
 
@@ -58,7 +61,9 @@ for kline in stream {
 Bollinger Bands returns a struct:
 
 ```rust
-use quantedge_ta::{Bb, BbConfig, Indicator, IndicatorConfig, IndicatorConfigBuilder};
+use quantedge_ta::{
+    Bb, BbConfig, Indicator, IndicatorConfig, IndicatorConfigBuilder,
+};
 use std::num::NonZero;
 
 let config = BbConfig::builder()
@@ -72,6 +77,18 @@ for kline in stream {
             value.upper(), value.middle(), value.lower());
     }
 }
+```
+
+Custom standard deviation multiplier:
+
+```rust
+use quantedge_ta::{BbConfig, StdDev, IndicatorConfig, IndicatorConfigBuilder};
+use std::num::NonZero;
+
+let config = BbConfig::builder()
+    .length(NonZero::new(20).unwrap())
+    .std_dev(StdDev::new(1.5))
+    .build();
 ```
 
 Live data with repainting:
@@ -136,12 +153,12 @@ impl Ohlcv for MyKline {
 ### Convergence
 
 SMA and BB converge as soon as the window fills (`length` bars). EMA has
-infinite memory — the SMA seed influences all subsequent values. `EmaConfig`
-provides inherent methods to control this:
+infinite memory; the SMA seed influences all subsequent values. `EmaConfig`
+provides methods to control this:
 
-- `enforce_convergence(bool)` — when `true`, `compute()` returns `None`
-  until the seed's contribution decays below 1%.
-- `required_bars_to_converge()` — returns the number of bars needed.
+- `enforce_convergence()` -- when `true`, `compute()` returns `None` until
+  the seed's contribution decays below 1%.
+- `required_bars_to_converge()` -- returns the number of bars needed.
 
 ```rust
 use quantedge_ta::{EmaConfig, IndicatorConfig, IndicatorConfigBuilder};
@@ -151,11 +168,11 @@ let config = EmaConfig::builder()
     .length(NonZero::new(20).unwrap())
     .enforce_convergence(true) // None until ~63 bars
     .build();
-config.required_bars_to_converge(); // 63 = 3 × (20 + 1)
+config.required_bars_to_converge(); // 63 = 3 * (20 + 1)
 ```
 
-Use `required_bars_to_converge()` to determine how much history to fetch
-before going live.
+Use `required_bars_to_converge()` to determine how much history to fetch before
+going live.
 
 ### Price Sources
 
@@ -188,16 +205,9 @@ to extract from the Ohlcv input:
 
 RSI, MACD, ATR, CHOP, and more.
 
-## Installation
-
-```toml
-[dependencies]
-quantedge-ta = "0.1"
-```
-
 ## Minimum Supported Rust Version
 
-1.92
+1.93
 
 ## Licence
 
