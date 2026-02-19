@@ -114,6 +114,7 @@ impl BbConfig {
     }
 
     /// BB(20, Close, 2σ) — the standard Bollinger Bands setting.
+    #[allow(clippy::missing_panics_doc)]
     #[must_use]
     pub fn default_20() -> Self {
         Self::builder().length(NonZero::new(20).unwrap()).build()
