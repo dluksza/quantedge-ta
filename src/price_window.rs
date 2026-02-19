@@ -9,6 +9,7 @@ pub(crate) struct PriceWindow {
     /// add/subtract, may accumulate FP rounding drift over very long runs,
     /// but negligible for typical window sizes on financial data.
     sum: Price,
+    sum_of_squares: f64,
     /// Tracks the close of the current bar. On window advance, becomes `prev_close`
     /// for `TrueRange` calculation. Updated unconditionally on every `add()`.
     cur_close: Option<Price>,
@@ -23,6 +24,7 @@ impl PriceWindow {
             size,
             source,
             sum: 0.0,
+            sum_of_squares: 0.0,
             cur_close: None,
             prev_close: None,
             window: VecDeque::with_capacity(size),
@@ -45,11 +47,13 @@ impl PriceWindow {
             let old_price = self.evict_price(is_next_timeframe, ohlcv);
 
             self.sum -= old_price;
+            self.sum_of_squares -= old_price * old_price;
         } else if is_next_timeframe {
             self.prev_close = self.cur_close;
             self.last_open_time = Some(ohlcv.open_time());
         } else if let Some(old_price) = self.window.pop_back() {
             self.sum -= old_price;
+            self.sum_of_squares -= old_price * old_price;
         }
 
         let price = self.source.extract(ohlcv, self.prev_close);
@@ -57,11 +61,17 @@ impl PriceWindow {
         self.cur_close = Some(ohlcv.close());
         self.window.push_back(price);
         self.sum += price;
+        self.sum_of_squares += price * price;
     }
 
     #[inline]
     pub fn sum(&self) -> Option<Price> {
         self.is_ready().then_some(self.sum)
+    }
+
+    #[inline]
+    pub fn sum_of_squares(&self) -> Option<Price> {
+        self.is_ready().then_some(self.sum_of_squares)
     }
 
     #[inline]
