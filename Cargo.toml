@@ -5,12 +5,16 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.93"
 license = "MIT OR Apache-2.0"
-description ="A streaming technical analysis library for Rust"
+description = "A streaming technical analysis library for Rust"
 repository = "https://github.com/dluksza/quantedge-ta"
 keywords = ["technical-analysis", "trading", "indicators", "finance"]
 categories = ["finance", "mathematics", "algorithms"]
 readme = "README.md"
-exclude = [".github/", "tests/fixtures/"]
+exclude = [".github/", "tests/"]
+
+[dev-dependencies]
+csv = "1"
+serde = { version = "1", features = ["derive"] }
 
 [lints.rust]
 unsafe_code = "forbid"
