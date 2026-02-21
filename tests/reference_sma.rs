@@ -1,7 +1,7 @@
 mod fixtures;
 
 use fixtures::{assert_near, load_ref_values};
-use quantedge_ta::{Indicator, Sma, SmaConfig};
+use quantedge_ta::{Sma, SmaConfig};
 use std::num::NonZero;
 
 use crate::fixtures::{assert_values_match, load_reference_ohlcvs, repaint_sequence};

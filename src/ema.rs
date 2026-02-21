@@ -209,7 +209,7 @@ impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{Ema, EmaConfig, Indicator, IndicatorConfig,
+/// use quantedge_ta::{Ema, EmaConfig, IndicatorConfig,
 ///     IndicatorConfigBuilder};
 /// use std::num::NonZero;
 /// # use quantedge_ta::{Ohlcv, Price, Timestamp};

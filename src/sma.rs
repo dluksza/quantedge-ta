@@ -128,7 +128,7 @@ impl IndicatorConfigBuilder<SmaConfig> for SmaConfigBuilder {
 /// # Example
 ///
 /// ```rust
-/// use quantedge_ta::{Sma, SmaConfig, Indicator};
+/// use quantedge_ta::{Sma, SmaConfig};
 /// use std::num::NonZero;
 /// # use quantedge_ta::{Ohlcv, Price, Timestamp};
 /// #

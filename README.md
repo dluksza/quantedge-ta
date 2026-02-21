@@ -45,7 +45,7 @@ safety.
 ## Usage
 
 ```rust
-use quantedge_ta::{Sma, SmaConfig, Indicator};
+use quantedge_ta::{Sma, SmaConfig};
 use std::num::NonZero;
 
 let mut sma = Sma::new(SmaConfig::close(NonZero::new(20).unwrap()));
@@ -62,7 +62,7 @@ Bollinger Bands returns a struct:
 
 ```rust
 use quantedge_ta::{
-    Bb, BbConfig, Indicator, IndicatorConfig, IndicatorConfigBuilder,
+    Bb, BbConfig, IndicatorConfig, IndicatorConfigBuilder,
 };
 use std::num::NonZero;
 

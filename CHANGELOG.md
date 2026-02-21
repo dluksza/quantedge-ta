@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- `Sma`, `Ema`, and `Bb` now expose `new()`, `compute()`, and `value()` as inherent methods — `use quantedge_ta::Indicator` is no longer required for basic usage.
+
 ## [0.1.0] - 2025-02-20
 
 Initial release.

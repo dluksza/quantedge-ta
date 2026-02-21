@@ -52,7 +52,7 @@ where
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{Sma, SmaConfig, Indicator, IndicatorConfig};
+/// use quantedge_ta::{Sma, SmaConfig};
 /// use std::num::NonZero;
 /// # use quantedge_ta::{Ohlcv, Price, Timestamp};
 /// #

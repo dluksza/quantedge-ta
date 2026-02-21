@@ -268,7 +268,7 @@ impl Display for BbValue {
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{Bb, BbConfig, Indicator, IndicatorConfig,
+/// use quantedge_ta::{Bb, BbConfig, IndicatorConfig,
 ///     IndicatorConfigBuilder};
 /// use std::num::NonZero;
 /// # use quantedge_ta::{Ohlcv, Price, Timestamp};

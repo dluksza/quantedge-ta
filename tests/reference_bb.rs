@@ -1,7 +1,7 @@
 mod fixtures;
 
 use fixtures::{assert_near, load_bb_ref};
-use quantedge_ta::{Bb, BbConfig, Indicator};
+use quantedge_ta::{Bb, BbConfig};
 use std::num::NonZero;
 
 use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
