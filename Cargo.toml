@@ -15,6 +15,14 @@ exclude = [".github/", "tests/"]
 [dev-dependencies]
 csv = "1"
 serde = { version = "1", features = ["derive"] }
+criterion = { version = "0.8", features = ["html_reports"] }
+
+[[bench]]
+name = "indicators"
+harness = false
+
+[lib]
+bench = false
 
 [lints.rust]
 unsafe_code = "forbid"

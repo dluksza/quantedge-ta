@@ -205,6 +205,47 @@ to extract from the Ohlcv input:
 
 RSI, MACD, ATR, CHOP, and more.
 
+## Benchmarks
+
+Measured with [Criterion.rs](https://github.com/bheisler/criterion.rs) on 744
+BTC/USDT 1-hour bars from Binance.
+
+**Stream** measures end-to-end throughput including window fill.
+**Tick** isolates steady-state per-bar cost on a fully converged indicator.
+
+**Hardware:** Apple M3 Max (16 cores), 48 GB RAM, macOS 26.3, rustc 1.93.1,
+`--release` profile.
+
+### Stream — process 744 bars from cold start
+
+| Indicator | Period | Time (median) | Throughput     |
+|-----------|--------|---------------|----------------|
+| SMA       | 20     | 3.05 µs       | 243 Melem/s    |
+| SMA       | 200    | 2.89 µs       | 257 Melem/s    |
+| EMA       | 20     | 3.26 µs       | 228 Melem/s    |
+| EMA       | 200    | 3.24 µs       | 229 Melem/s    |
+| BB        | 20     | 5.47 µs       | 136 Melem/s    |
+| BB        | 200    | 4.19 µs       | 177 Melem/s    |
+
+### Tick — single `compute()` on a converged indicator
+
+| Indicator | Period | Time (median) |
+|-----------|--------|---------------|
+| SMA       | 20     | 21.8 ns       |
+| SMA       | 200    | 29.5 ns       |
+| EMA       | 20     | 19.2 ns       |
+| EMA       | 200    | 18.4 ns       |
+| BB        | 20     | 23.7 ns       |
+| BB        | 200    | 32.7 ns       |
+
+Run locally:
+
+```bash
+cargo bench              # all benchmarks
+cargo bench -- stream    # stream only
+cargo bench -- tick      # single-tick only
+```
+
 ## Minimum Supported Rust Version
 
 1.93
