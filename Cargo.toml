@@ -24,6 +24,10 @@ harness = false
 [lib]
 bench = false
 
+[profile.bench]
+codegen-units = 1
+lto = "thin"
+
 [lints.rust]
 unsafe_code = "forbid"
 

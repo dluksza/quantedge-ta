@@ -5,7 +5,7 @@ use crate::fixtures::load_reference_ohlcvs;
 
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use quantedge_ta::{Bb, BbConfig, Ema, EmaConfig, Sma, SmaConfig};
-use std::{hint::black_box, num::NonZero};
+use std::{hint::black_box, num::NonZero, time::Duration};
 
 fn nz(n: usize) -> NonZero<usize> {
     NonZero::new(n).expect("non zero value")
@@ -15,6 +15,8 @@ fn stream_benchmarks(c: &mut Criterion) {
     let bars = load_reference_ohlcvs();
     let mut group = c.benchmark_group("stream");
     group.throughput(Throughput::Elements(bars.len() as u64));
+    group.warm_up_time(Duration::from_secs(5));
+    group.measurement_time(Duration::from_secs(10));
 
     group.bench_function("sma20", |b| {
         b.iter_batched(
@@ -24,7 +26,7 @@ fn stream_benchmarks(c: &mut Criterion) {
                     black_box(ind.compute(bar));
                 }
             },
-            BatchSize::PerIteration,
+            BatchSize::SmallInput,
         );
     });
 
@@ -36,7 +38,7 @@ fn stream_benchmarks(c: &mut Criterion) {
                     black_box(ind.compute(bar));
                 }
             },
-            BatchSize::PerIteration,
+            BatchSize::SmallInput,
         );
     });
 
@@ -48,7 +50,7 @@ fn stream_benchmarks(c: &mut Criterion) {
                     black_box(ind.compute(bar));
                 }
             },
-            BatchSize::PerIteration,
+            BatchSize::SmallInput,
         );
     });
 
@@ -60,7 +62,7 @@ fn stream_benchmarks(c: &mut Criterion) {
                     black_box(ind.compute(bar));
                 }
             },
-            BatchSize::PerIteration,
+            BatchSize::SmallInput,
         );
     });
 
@@ -72,7 +74,7 @@ fn stream_benchmarks(c: &mut Criterion) {
                     black_box(ind.compute(bar));
                 }
             },
-            BatchSize::PerIteration,
+            BatchSize::SmallInput,
         );
     });
 
@@ -84,7 +86,7 @@ fn stream_benchmarks(c: &mut Criterion) {
                     black_box(ind.compute(bar));
                 }
             },
-            BatchSize::PerIteration,
+            BatchSize::SmallInput,
         );
     });
 
@@ -94,6 +96,10 @@ fn stream_benchmarks(c: &mut Criterion) {
 fn tick_benchmarks(c: &mut Criterion) {
     let bars = load_reference_ohlcvs();
     let mut group = c.benchmark_group("tick");
+    group.sample_size(200);
+    group.noise_threshold(0.03);
+    group.warm_up_time(Duration::from_secs(5));
+    group.measurement_time(Duration::from_secs(10));
 
     // Pre-feed all bars except the last, then benchmark a single compute() call.
     let (warmup, last) = bars.split_at(bars.len() - 1);
@@ -112,7 +118,7 @@ fn tick_benchmarks(c: &mut Criterion) {
                     |mut ind| {
                         black_box(ind.compute(&last[0]));
                     },
-                    BatchSize::PerIteration,
+                    BatchSize::SmallInput,
                 );
             });
         };

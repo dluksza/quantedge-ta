@@ -220,23 +220,23 @@ BTC/USDT 1-hour bars from Binance.
 
 | Indicator | Period | Time (median) | Throughput     |
 |-----------|--------|---------------|----------------|
-| SMA       | 20     | 3.05 µs       | 243 Melem/s    |
-| SMA       | 200    | 2.89 µs       | 257 Melem/s    |
-| EMA       | 20     | 3.26 µs       | 228 Melem/s    |
-| EMA       | 200    | 3.24 µs       | 229 Melem/s    |
-| BB        | 20     | 5.47 µs       | 136 Melem/s    |
-| BB        | 200    | 4.19 µs       | 177 Melem/s    |
+| SMA       | 20     | 3.29 µs       | 226 Melem/s    |
+| SMA       | 200    | 2.95 µs       | 252 Melem/s    |
+| EMA       | 20     | 3.29 µs       | 226 Melem/s    |
+| EMA       | 200    | 3.32 µs       | 224 Melem/s    |
+| BB        | 20     | 5.59 µs       | 133 Melem/s    |
+| BB        | 200    | 4.36 µs       | 171 Melem/s    |
 
 ### Tick — single `compute()` on a converged indicator
 
 | Indicator | Period | Time (median) |
 |-----------|--------|---------------|
-| SMA       | 20     | 21.8 ns       |
-| SMA       | 200    | 29.5 ns       |
-| EMA       | 20     | 19.2 ns       |
-| EMA       | 200    | 18.4 ns       |
-| BB        | 20     | 23.7 ns       |
-| BB        | 200    | 32.7 ns       |
+| SMA       | 20     | 12.8 ns       |
+| SMA       | 200    | 17.7 ns       |
+| EMA       | 20     | 9.71 ns       |
+| EMA       | 200    | 8.61 ns       |
+| BB        | 20     | 18.0 ns       |
+| BB        | 200    | 20.6 ns       |
 
 Run locally:
 
