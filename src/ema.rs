@@ -247,6 +247,7 @@ pub struct Ema {
     current: Option<Price>,
     last_open_time: Option<Timestamp>,
     seen_bars: usize,
+    converged: bool,
     cur_close: Option<Price>,
     prev_close: Option<Price>,
 }
@@ -262,6 +263,7 @@ impl Indicator for Ema {
             previous: 0.0,
             last_open_time: None,
             seen_bars: 0,
+            converged: false,
             cur_close: None,
             prev_close: None,
             #[allow(clippy::cast_precision_loss)]
@@ -275,6 +277,7 @@ impl Indicator for Ema {
         }
     }
 
+    #[inline]
     fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Price> {
         debug_assert!(
             self.last_open_time.is_none_or(|t| t <= ohlcv.open_time()),
@@ -306,8 +309,11 @@ impl Indicator for Ema {
         if is_next_timeframe {
             self.last_open_time = Some(ohlcv.open_time());
 
-            if self.seen_bars < self.config.required_bars_to_converge() {
+            if !self.converged {
                 self.seen_bars += 1;
+                if self.seen_bars >= self.config.required_bars_to_converge() {
+                    self.converged = true;
+                }
             }
         }
         self.cur_close = Some(ohlcv.close());
@@ -317,11 +323,7 @@ impl Indicator for Ema {
 
     #[inline]
     fn value(&self) -> Option<Price> {
-        if self.seen_bars >= self.config.required_bars_to_converge() {
-            self.current
-        } else {
-            None
-        }
+        if self.converged { self.current } else { None }
     }
 }
 
