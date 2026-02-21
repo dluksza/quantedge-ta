@@ -6,7 +6,7 @@ use std::{
 
 use crate::{
     Indicator, IndicatorConfig, IndicatorConfigBuilder, Ohlcv, Price, PriceSource,
-    price_window::PriceWindow,
+    price_window::{PriceWindow, PriceWindowWithSumOfSquares},
 };
 
 /// Standard deviation multiplier for Bollinger Bands.
@@ -300,7 +300,7 @@ pub struct Bb {
     config: BbConfig,
     length_reciprocal: f64,
     std_dev_multiplier: f64,
-    window: PriceWindow,
+    window: PriceWindowWithSumOfSquares,
     current: Option<BbValue>,
 }
 
@@ -309,7 +309,7 @@ impl Indicator for Bb {
     type Output = BbValue;
 
     fn new(config: Self::Config) -> Self {
-        let window = PriceWindow::new(config.length, config.source);
+        let window = PriceWindow::with_sum_of_squares(config.length, config.source);
 
         Self {
             config,

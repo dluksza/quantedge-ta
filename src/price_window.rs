@@ -2,7 +2,7 @@ use crate::{Ohlcv, Price, PriceSource, Timestamp};
 use std::collections::VecDeque;
 
 #[derive(Clone, Debug)]
-pub(crate) struct PriceWindow {
+pub(crate) struct PriceWindow<const SUM_OF_SQUARES: bool = false> {
     size: usize,
     window: VecDeque<Price>,
     /// Running sum of values in the window. Maintained incrementally via
@@ -18,6 +18,8 @@ pub(crate) struct PriceWindow {
     last_open_time: Option<Timestamp>,
 }
 
+pub(crate) type PriceWindowWithSumOfSquares = PriceWindow<true>;
+
 impl PriceWindow {
     pub fn new(size: usize, source: PriceSource) -> Self {
         Self {
@@ -31,7 +33,24 @@ impl PriceWindow {
             last_open_time: None,
         }
     }
+}
 
+impl PriceWindow<true> {
+    pub fn with_sum_of_squares(size: usize, source: PriceSource) -> Self {
+        Self {
+            size,
+            source,
+            sum: 0.0,
+            sum_of_squares: 0.0,
+            cur_close: None,
+            prev_close: None,
+            window: VecDeque::with_capacity(size),
+            last_open_time: None,
+        }
+    }
+}
+
+impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
     #[inline]
     pub fn add(&mut self, ohlcv: &impl Ohlcv) {
         debug_assert!(
@@ -47,13 +66,17 @@ impl PriceWindow {
             let old_price = self.evict_price(is_next_timeframe, ohlcv);
 
             self.sum -= old_price;
-            self.sum_of_squares -= old_price * old_price;
+            if SUM_OF_SQUARES {
+                self.sum_of_squares -= old_price * old_price;
+            }
         } else if is_next_timeframe {
             self.prev_close = self.cur_close;
             self.last_open_time = Some(ohlcv.open_time());
         } else if let Some(old_price) = self.window.pop_back() {
             self.sum -= old_price;
-            self.sum_of_squares -= old_price * old_price;
+            if SUM_OF_SQUARES {
+                self.sum_of_squares -= old_price * old_price;
+            }
         }
 
         let price = self.source.extract(ohlcv, self.prev_close);
@@ -61,7 +84,9 @@ impl PriceWindow {
         self.cur_close = Some(ohlcv.close());
         self.window.push_back(price);
         self.sum += price;
-        self.sum_of_squares += price * price;
+        if SUM_OF_SQUARES {
+            self.sum_of_squares += price * price;
+        }
     }
 
     #[inline]
@@ -71,6 +96,7 @@ impl PriceWindow {
 
     #[inline]
     pub fn sum_of_squares(&self) -> Option<Price> {
+        assert!(SUM_OF_SQUARES, "sum_of_squares requires PriceWindow<true>");
         self.is_ready().then_some(self.sum_of_squares)
     }
 
