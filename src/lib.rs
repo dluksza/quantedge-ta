@@ -59,18 +59,26 @@ mod test_util;
 
 #[cfg(test)]
 mod inherent_methods {
-    use super::{
-        Bb, BbConfig, BbValue, Ema, EmaConfig, Ohlcv, Price, Sma, SmaConfig, Timestamp,
-    };
+    use super::{Bb, BbConfig, BbValue, Ema, EmaConfig, Ohlcv, Price, Sma, SmaConfig, Timestamp};
     use std::num::NonZero;
 
     struct Bar(f64, u64);
     impl Ohlcv for Bar {
-        fn open(&self) -> Price { self.0 }
-        fn high(&self) -> Price { self.0 }
-        fn low(&self) -> Price { self.0 }
-        fn close(&self) -> Price { self.0 }
-        fn open_time(&self) -> Timestamp { self.1 }
+        fn open(&self) -> Price {
+            self.0
+        }
+        fn high(&self) -> Price {
+            self.0
+        }
+        fn low(&self) -> Price {
+            self.0
+        }
+        fn close(&self) -> Price {
+            self.0
+        }
+        fn open_time(&self) -> Timestamp {
+            self.1
+        }
     }
 
     #[test]
