@@ -25,7 +25,7 @@ use crate::{
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{EmaConfig, IndicatorConfig, IndicatorConfigBuilder};
+/// use quantedge_ta::EmaConfig;
 /// use std::num::NonZero;
 ///
 /// let config = EmaConfig::builder()
@@ -209,8 +209,7 @@ impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{Ema, EmaConfig, IndicatorConfig,
-///     IndicatorConfigBuilder};
+/// use quantedge_ta::{Ema, EmaConfig};
 /// use std::num::NonZero;
 /// # use quantedge_ta::{Ohlcv, Price, Timestamp};
 /// #

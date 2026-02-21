@@ -13,7 +13,7 @@ use crate::{
 /// # Example
 ///
 /// ```rust
-/// use quantedge_ta::{SmaConfig, IndicatorConfig};
+/// use quantedge_ta::SmaConfig;
 /// use std::num::NonZero;
 ///
 /// let config = SmaConfig::close(NonZero::new(20).unwrap());

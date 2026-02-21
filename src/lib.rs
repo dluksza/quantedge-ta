@@ -4,10 +4,10 @@
 //! typed results. Values are `None` until enough data has been
 //! received for convergence.
 //!
-//! Each indicator type ([`Sma`], [`Ema`], [`Bb`]) exposes
-//! [`new`](Sma::new), [`compute`](Sma::compute), and
-//! [`value`](Sma::value) as inherent methods — no trait import
-//! needed. Import [`Indicator`] only for generic code.
+//! Each indicator type ([`Sma`], [`Ema`], [`Bb`]), its config, and
+//! its builder expose trait methods as inherent methods — no trait
+//! import needed. Import [`Indicator`], [`IndicatorConfig`], or
+//! [`IndicatorConfigBuilder`] only for generic code.
 
 mod bb;
 mod ema;
@@ -26,34 +26,85 @@ pub use crate::bb::{Bb, BbConfig, BbConfigBuilder, BbValue, StdDev};
 pub use crate::ema::{Ema, EmaConfig, EmaConfigBuilder};
 pub use crate::sma::{Sma, SmaConfig, SmaConfigBuilder};
 
-macro_rules! impl_indicator_methods {
-    ($type:ty, $config:ty, $output:ty) => {
-        impl $type {
+macro_rules! impl_inherent_methods {
+    ($indicator:ty, $config:ty, $builder:ty) => {
+        // --- Indicator ---
+        impl $indicator {
             /// See [`Indicator::new`].
             #[must_use]
-            pub fn new(config: $config) -> Self {
+            pub fn new(config: <Self as Indicator>::Config) -> Self {
                 <Self as Indicator>::new(config)
             }
 
             /// See [`Indicator::compute`].
             #[inline]
-            pub fn compute(&mut self, kline: &impl Ohlcv) -> Option<$output> {
+            pub fn compute(
+                &mut self,
+                kline: &impl Ohlcv,
+            ) -> Option<<Self as Indicator>::Output> {
                 <Self as Indicator>::compute(self, kline)
             }
 
             /// See [`Indicator::value`].
             #[must_use]
             #[inline]
-            pub fn value(&self) -> Option<$output> {
+            pub fn value(&self) -> Option<<Self as Indicator>::Output> {
                 <Self as Indicator>::value(self)
+            }
+        }
+
+        // --- IndicatorConfig ---
+        impl $config {
+            /// See [`IndicatorConfig::builder`].
+            #[must_use]
+            pub fn builder() -> <Self as IndicatorConfig>::Builder {
+                <Self as IndicatorConfig>::builder()
+            }
+
+            /// See [`IndicatorConfig::length`].
+            #[must_use]
+            #[inline]
+            pub fn length(&self) -> usize {
+                <Self as IndicatorConfig>::length(self)
+            }
+
+            /// See [`IndicatorConfig::source`].
+            #[must_use]
+            #[inline]
+            pub fn source(&self) -> &PriceSource {
+                <Self as IndicatorConfig>::source(self)
+            }
+        }
+
+        // --- IndicatorConfigBuilder ---
+        impl $builder {
+            /// See [`IndicatorConfigBuilder::length`].
+            #[must_use]
+            #[inline]
+            pub fn length(self, length: std::num::NonZero<usize>) -> Self {
+                <Self as IndicatorConfigBuilder<$config>>::length(self, length)
+            }
+
+            /// See [`IndicatorConfigBuilder::source`].
+            #[must_use]
+            #[inline]
+            pub fn source(self, source: PriceSource) -> Self {
+                <Self as IndicatorConfigBuilder<$config>>::source(self, source)
+            }
+
+            /// See [`IndicatorConfigBuilder::build`].
+            #[must_use]
+            #[inline]
+            pub fn build(self) -> $config {
+                <Self as IndicatorConfigBuilder<$config>>::build(self)
             }
         }
     };
 }
 
-impl_indicator_methods!(Sma, SmaConfig, Price);
-impl_indicator_methods!(Ema, EmaConfig, Price);
-impl_indicator_methods!(Bb, BbConfig, BbValue);
+impl_inherent_methods!(Sma, SmaConfig, SmaConfigBuilder);
+impl_inherent_methods!(Ema, EmaConfig, EmaConfigBuilder);
+impl_inherent_methods!(Bb, BbConfig, BbConfigBuilder);
 
 #[cfg(test)]
 mod test_util;
@@ -105,5 +156,38 @@ mod inherent_methods {
         let v: Option<BbValue> = bb.compute(&Bar(20.0, 2));
         assert!(v.is_some());
         assert!(bb.value().is_some());
+    }
+
+    #[test]
+    fn config_methods_without_trait_import() {
+        let config = SmaConfig::close(NonZero::new(20).unwrap());
+        assert_eq!(config.length(), 20);
+        assert_eq!(*config.source(), super::PriceSource::Close);
+
+        let config = EmaConfig::close(NonZero::new(10).unwrap());
+        assert_eq!(config.length(), 10);
+
+        let config = BbConfig::close(NonZero::new(5).unwrap());
+        assert_eq!(config.length(), 5);
+    }
+
+    #[test]
+    fn builder_methods_without_trait_import() {
+        let config = SmaConfig::builder()
+            .length(NonZero::new(14).unwrap())
+            .source(super::PriceSource::HL2)
+            .build();
+        assert_eq!(config.length(), 14);
+        assert_eq!(*config.source(), super::PriceSource::HL2);
+
+        let config = EmaConfig::builder()
+            .length(NonZero::new(20).unwrap())
+            .build();
+        assert_eq!(config.length(), 20);
+
+        let config = BbConfig::builder()
+            .length(NonZero::new(20).unwrap())
+            .build();
+        assert_eq!(config.length(), 20);
     }
 }

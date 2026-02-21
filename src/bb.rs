@@ -70,7 +70,7 @@ impl Default for StdDev {
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{BbConfig, IndicatorConfig, IndicatorConfigBuilder};
+/// use quantedge_ta::BbConfig;
 /// use std::num::NonZero;
 ///
 /// // Default: length 20, close, 2.0 std devs
@@ -268,8 +268,7 @@ impl Display for BbValue {
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{Bb, BbConfig, IndicatorConfig,
-///     IndicatorConfigBuilder};
+/// use quantedge_ta::{Bb, BbConfig};
 /// use std::num::NonZero;
 /// # use quantedge_ta::{Ohlcv, Price, Timestamp};
 /// #

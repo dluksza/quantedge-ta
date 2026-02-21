@@ -61,9 +61,7 @@ for kline in stream {
 Bollinger Bands returns a struct:
 
 ```rust
-use quantedge_ta::{
-    Bb, BbConfig, IndicatorConfig, IndicatorConfigBuilder,
-};
+use quantedge_ta::{Bb, BbConfig};
 use std::num::NonZero;
 
 let config = BbConfig::builder()
@@ -82,7 +80,7 @@ for kline in stream {
 Custom standard deviation multiplier:
 
 ```rust
-use quantedge_ta::{BbConfig, StdDev, IndicatorConfig, IndicatorConfigBuilder};
+use quantedge_ta::{BbConfig, StdDev};
 use std::num::NonZero;
 
 let config = BbConfig::builder()
@@ -161,7 +159,7 @@ provides methods to control this:
 - `required_bars_to_converge()` -- returns the number of bars needed.
 
 ```rust
-use quantedge_ta::{EmaConfig, IndicatorConfig, IndicatorConfigBuilder};
+use quantedge_ta::EmaConfig;
 use std::num::NonZero;
 
 let config = EmaConfig::builder()
