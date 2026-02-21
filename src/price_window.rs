@@ -1,10 +1,8 @@
-use crate::{Ohlcv, Price, PriceSource, Timestamp};
-use std::collections::VecDeque;
+use crate::{Ohlcv, Price, PriceSource, Timestamp, ring_buffer::RingBuffer};
 
 #[derive(Clone, Debug)]
 pub(crate) struct PriceWindow<const SUM_OF_SQUARES: bool = false> {
-    size: usize,
-    window: VecDeque<Price>,
+    window: RingBuffer,
     /// Running sum of values in the window. Maintained incrementally via
     /// add/subtract, may accumulate FP rounding drift over very long runs,
     /// but negligible for typical window sizes on financial data.
@@ -23,13 +21,12 @@ pub(crate) type PriceWindowWithSumOfSquares = PriceWindow<true>;
 impl PriceWindow {
     pub fn new(size: usize, source: PriceSource) -> Self {
         Self {
-            size,
             source,
             sum: 0.0,
             sum_of_squares: 0.0,
             cur_close: None,
             prev_close: None,
-            window: VecDeque::with_capacity(size),
+            window: RingBuffer::new(size),
             last_open_time: None,
         }
     }
@@ -38,13 +35,12 @@ impl PriceWindow {
 impl PriceWindow<true> {
     pub fn with_sum_of_squares(size: usize, source: PriceSource) -> Self {
         Self {
-            size,
             source,
             sum: 0.0,
             sum_of_squares: 0.0,
             cur_close: None,
             prev_close: None,
-            window: VecDeque::with_capacity(size),
+            window: RingBuffer::new(size),
             last_open_time: None,
         }
     }
@@ -62,27 +58,29 @@ impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
 
         let is_next_timeframe = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
 
-        if self.is_ready() {
-            let old_price = self.evict_price(is_next_timeframe, ohlcv);
-
-            self.sum -= old_price;
-            if SUM_OF_SQUARES {
-                self.sum_of_squares -= old_price * old_price;
-            }
-        } else if is_next_timeframe {
+        if is_next_timeframe {
             self.prev_close = self.cur_close;
             self.last_open_time = Some(ohlcv.open_time());
-        } else if let Some(old_price) = self.window.pop_back() {
+        }
+
+        let price = self.source.extract(ohlcv, self.prev_close);
+
+        if is_next_timeframe {
+            if let Some(old_price) = self.window.push(price) {
+                self.sum -= old_price;
+                if SUM_OF_SQUARES {
+                    self.sum_of_squares -= old_price * old_price;
+                }
+            }
+        } else {
+            let old_price = self.window.replace(price);
             self.sum -= old_price;
             if SUM_OF_SQUARES {
                 self.sum_of_squares -= old_price * old_price;
             }
         }
 
-        let price = self.source.extract(ohlcv, self.prev_close);
-
         self.cur_close = Some(ohlcv.close());
-        self.window.push_back(price);
         self.sum += price;
         if SUM_OF_SQUARES {
             self.sum_of_squares += price * price;
@@ -102,22 +100,7 @@ impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
 
     #[inline]
     fn is_ready(&self) -> bool {
-        self.window.len() == self.size
-    }
-
-    #[inline]
-    fn evict_price(&mut self, is_next_timeframe: bool, ohlcv: &impl Ohlcv) -> Price {
-        if is_next_timeframe {
-            self.prev_close = self.cur_close;
-            self.last_open_time = Some(ohlcv.open_time());
-            self.window.pop_front().expect(
-                "PriceWindow invariant violation: window should be full when is_ready() is true",
-            )
-        } else {
-            self.window.pop_back().expect(
-                "PriceWindow invariant violation: attempted to pop from empty window during update",
-            )
-        }
+        self.window.is_ready()
     }
 }
 

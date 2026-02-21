@@ -15,6 +15,7 @@ mod indicator;
 mod ohlcv;
 mod price_source;
 mod price_window;
+mod ring_buffer;
 mod sma;
 
 pub use crate::indicator::{Indicator, IndicatorConfig, IndicatorConfigBuilder};
