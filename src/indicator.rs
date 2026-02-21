@@ -84,6 +84,9 @@ pub trait Indicator: Sized + Clone + Display + Debug {
 
     /// Feeds a bar and returns the updated indicator value,
     /// or `None` if not yet converged.
+    ///
+    /// Prefer using the return value directly over calling
+    /// [`value()`](Self::value) separately.
     fn compute(&mut self, kline: &impl Ohlcv) -> Option<Self::Output>;
 
     /// Returns the last computed indicator value without advancing state,
