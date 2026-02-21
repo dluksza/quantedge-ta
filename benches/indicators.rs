@@ -1,7 +1,7 @@
 #[path = "../tests/fixtures/mod.rs"]
 mod fixtures;
 
-use crate::fixtures::load_reference_ohlcvs;
+use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
 
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use quantedge_ta::{Bb, BbConfig, Ema, EmaConfig, Sma, SmaConfig};
@@ -134,5 +134,93 @@ fn tick_benchmarks(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, stream_benchmarks, tick_benchmarks);
+fn repaint_benchmarks(c: &mut Criterion) {
+    let bars = load_reference_ohlcvs();
+    let mut group = c.benchmark_group("repaint");
+    group.sample_size(200);
+    group.noise_threshold(0.03);
+    group.warm_up_time(Duration::from_secs(5));
+    group.measurement_time(Duration::from_secs(10));
+
+    // Pre-feed all bars, then benchmark a single repaint tick (same open_time, perturbed close).
+    let last = bars.last().unwrap();
+    let repaint_bar = {
+        let mut b = last.clone();
+        b.close *= 1.001;
+        b
+    };
+
+    macro_rules! repaint_bench {
+        ($name:expr, $ind_type:ty, $config:expr) => {
+            group.bench_function($name, |b| {
+                b.iter_batched(
+                    || {
+                        let mut ind = <$ind_type>::new($config);
+                        for bar in &bars {
+                            ind.compute(bar);
+                        }
+                        ind
+                    },
+                    |mut ind| {
+                        black_box(ind.compute(&repaint_bar));
+                    },
+                    BatchSize::SmallInput,
+                );
+            });
+        };
+    }
+
+    repaint_bench!("sma20", Sma, SmaConfig::close(nz(20)));
+    repaint_bench!("sma200", Sma, SmaConfig::close(nz(200)));
+    repaint_bench!("ema20", Ema, EmaConfig::close(nz(20)));
+    repaint_bench!("ema200", Ema, EmaConfig::close(nz(200)));
+    repaint_bench!("bb20", Bb, BbConfig::close(nz(20)));
+    repaint_bench!("bb200", Bb, BbConfig::close(nz(200)));
+
+    group.finish();
+}
+
+fn repaint_stream_benchmarks(c: &mut Criterion) {
+    let bars = load_reference_ohlcvs();
+    let mut group = c.benchmark_group("repaint_stream");
+    group.throughput(Throughput::Elements(bars.len() as u64 * 3));
+    group.warm_up_time(Duration::from_secs(5));
+    group.measurement_time(Duration::from_secs(10));
+
+    // Pre-build repaint sequences: 3 ticks per bar (2 repaints + final).
+    let sequences: Vec<_> = bars.iter().flat_map(repaint_sequence).collect();
+
+    macro_rules! repaint_stream_bench {
+        ($name:expr, $ind_type:ty, $config:expr) => {
+            group.bench_function($name, |b| {
+                b.iter_batched(
+                    || <$ind_type>::new($config),
+                    |mut ind| {
+                        for bar in &sequences {
+                            black_box(ind.compute(bar));
+                        }
+                    },
+                    BatchSize::SmallInput,
+                );
+            });
+        };
+    }
+
+    repaint_stream_bench!("sma20", Sma, SmaConfig::close(nz(20)));
+    repaint_stream_bench!("sma200", Sma, SmaConfig::close(nz(200)));
+    repaint_stream_bench!("ema20", Ema, EmaConfig::close(nz(20)));
+    repaint_stream_bench!("ema200", Ema, EmaConfig::close(nz(200)));
+    repaint_stream_bench!("bb20", Bb, BbConfig::close(nz(20)));
+    repaint_stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
+
+    group.finish();
+}
+
+criterion_group!(
+    benches,
+    stream_benchmarks,
+    tick_benchmarks,
+    repaint_benchmarks,
+    repaint_stream_benchmarks
+);
 criterion_main!(benches);
