@@ -321,6 +321,7 @@ impl Indicator for Bb {
         }
     }
 
+    #[inline]
     fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Self::Output> {
         self.window.add(ohlcv);
 
@@ -344,6 +345,7 @@ impl Indicator for Bb {
         self.current
     }
 
+    #[inline]
     fn value(&self) -> Option<Self::Output> {
         self.current
     }

@@ -171,6 +171,7 @@ impl Indicator for Sma {
         }
     }
 
+    #[inline]
     fn compute(&mut self, kline: &impl Ohlcv) -> Option<Price> {
         self.window.add(kline);
 
