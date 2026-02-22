@@ -18,77 +18,28 @@ fn stream_benchmarks(c: &mut Criterion) {
     group.warm_up_time(Duration::from_secs(5));
     group.measurement_time(Duration::from_secs(10));
 
-    group.bench_function("sma20", |b| {
-        b.iter_batched(
-            || Sma::new(SmaConfig::close(nz(20))),
-            |mut ind| {
-                for bar in &bars {
-                    black_box(ind.compute(bar));
-                }
-            },
-            BatchSize::SmallInput,
-        );
-    });
+    macro_rules! stream_bench {
+        ($name:expr, $ind_type:ty, $config:expr) => {
+            group.bench_function($name, |b| {
+                b.iter_batched(
+                    || <$ind_type>::new($config),
+                    |mut ind| {
+                        for bar in &bars {
+                            black_box(ind.compute(bar));
+                        }
+                    },
+                    BatchSize::SmallInput,
+                );
+            });
+        };
+    }
 
-    group.bench_function("sma200", |b| {
-        b.iter_batched(
-            || Sma::new(SmaConfig::close(nz(200))),
-            |mut ind| {
-                for bar in &bars {
-                    black_box(ind.compute(bar));
-                }
-            },
-            BatchSize::SmallInput,
-        );
-    });
-
-    group.bench_function("ema20", |b| {
-        b.iter_batched(
-            || Ema::new(EmaConfig::close(nz(20))),
-            |mut ind| {
-                for bar in &bars {
-                    black_box(ind.compute(bar));
-                }
-            },
-            BatchSize::SmallInput,
-        );
-    });
-
-    group.bench_function("ema200", |b| {
-        b.iter_batched(
-            || Ema::new(EmaConfig::close(nz(200))),
-            |mut ind| {
-                for bar in &bars {
-                    black_box(ind.compute(bar));
-                }
-            },
-            BatchSize::SmallInput,
-        );
-    });
-
-    group.bench_function("bb20", |b| {
-        b.iter_batched(
-            || Bb::new(BbConfig::close(nz(20))),
-            |mut ind| {
-                for bar in &bars {
-                    black_box(ind.compute(bar));
-                }
-            },
-            BatchSize::SmallInput,
-        );
-    });
-
-    group.bench_function("bb200", |b| {
-        b.iter_batched(
-            || Bb::new(BbConfig::close(nz(200))),
-            |mut ind| {
-                for bar in &bars {
-                    black_box(ind.compute(bar));
-                }
-            },
-            BatchSize::SmallInput,
-        );
-    });
+    stream_bench!("sma20", Sma, SmaConfig::close(nz(20)));
+    stream_bench!("sma200", Sma, SmaConfig::close(nz(200)));
+    stream_bench!("ema20", Ema, EmaConfig::close(nz(20)));
+    stream_bench!("ema200", Ema, EmaConfig::close(nz(200)));
+    stream_bench!("bb20", Bb, BbConfig::close(nz(20)));
+    stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
 
     group.finish();
 }
