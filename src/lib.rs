@@ -38,10 +38,7 @@ macro_rules! impl_inherent_methods {
 
             /// See [`Indicator::compute`].
             #[inline]
-            pub fn compute(
-                &mut self,
-                kline: &impl Ohlcv,
-            ) -> Option<<Self as Indicator>::Output> {
+            pub fn compute(&mut self, kline: &impl Ohlcv) -> Option<<Self as Indicator>::Output> {
                 <Self as Indicator>::compute(self, kline)
             }
 
