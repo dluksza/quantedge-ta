@@ -210,6 +210,10 @@ BTC/USDT 1-hour bars from Binance.
 
 **Stream** measures end-to-end throughput including window fill.
 **Tick** isolates steady-state per-bar cost on a fully converged indicator.
+**Repaint** measures single-tick repaint cost (same `open_time`, perturbed close)
+on a converged indicator.
+**Repaint Stream** measures end-to-end throughput with 3 ticks per bar
+(open → mid → final), 2232 total observations.
 
 **Hardware:** Apple M3 Max (16 cores), 48 GB RAM, macOS 26.3, rustc 1.93.1,
 `--release` profile.
@@ -236,12 +240,36 @@ BTC/USDT 1-hour bars from Binance.
 | BB        | 20     | 18.0 ns       |
 | BB        | 200    | 20.6 ns       |
 
+### Repaint — single `compute()` repaint on a converged indicator
+
+| Indicator | Period | Time (median) |
+|-----------|--------|---------------|
+| SMA       | 20     | 11.4 ns       |
+| SMA       | 200    | 15.9 ns       |
+| EMA       | 20     | 8.18 ns       |
+| EMA       | 200    | 7.72 ns       |
+| BB        | 20     | 16.7 ns       |
+| BB        | 200    | 19.5 ns       |
+
+### Repaint Stream — process 744 bars × 3 ticks from cold start
+
+| Indicator | Period | Time (median) | Throughput     |
+|-----------|--------|---------------|----------------|
+| SMA       | 20     | 8.38 µs       | 266 Melem/s    |
+| SMA       | 200    | 8.52 µs       | 262 Melem/s    |
+| EMA       | 20     | 7.81 µs       | 286 Melem/s    |
+| EMA       | 200    | 8.36 µs       | 267 Melem/s    |
+| BB        | 20     | 10.8 µs       | 206 Melem/s    |
+| BB        | 200    | 10.7 µs       | 209 Melem/s    |
+
 Run locally:
 
 ```bash
-cargo bench              # all benchmarks
-cargo bench -- stream    # stream only
-cargo bench -- tick      # single-tick only
+cargo bench                    # all benchmarks
+cargo bench -- stream          # stream only
+cargo bench -- tick            # single-tick only
+cargo bench -- repaint$        # single-repaint only
+cargo bench -- repaint_stream  # repaint stream only
 ```
 
 ## Minimum Supported Rust Version
