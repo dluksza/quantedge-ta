@@ -172,8 +172,8 @@ impl Indicator for Sma {
     }
 
     #[inline]
-    fn compute(&mut self, kline: &impl Ohlcv) -> Option<Price> {
-        self.window.add(kline);
+    fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Self::Output> {
+        self.window.add(ohlcv);
 
         self.current = self.window.sum().map(|sum| sum * self.length_reciprocal);
 
@@ -181,7 +181,7 @@ impl Indicator for Sma {
     }
 
     #[inline]
-    fn value(&self) -> Option<Price> {
+    fn value(&self) -> Option<Self::Output> {
         self.current
     }
 }
