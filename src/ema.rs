@@ -285,16 +285,16 @@ impl Indicator for Ema {
             ohlcv.open_time(),
         );
 
-        let is_next_timeframe = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
+        let is_next_bar = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
 
-        if self.sma.is_some() && is_next_timeframe && self.seen_bars >= self.config.length {
+        if self.sma.is_some() && is_next_bar && self.seen_bars >= self.config.length {
             self.sma = None;
         }
 
         if let Some(sma) = &mut self.sma {
             self.current = sma.compute(ohlcv);
         } else {
-            if is_next_timeframe {
+            if is_next_bar {
                 self.prev_close = self.cur_close;
                 self.previous = self
                     .current
@@ -305,7 +305,7 @@ impl Indicator for Ema {
             self.current = Some(self.alpha.mul_add(price - self.previous, self.previous));
         }
 
-        if is_next_timeframe {
+        if is_next_bar {
             self.last_open_time = Some(ohlcv.open_time());
 
             if !self.converged {

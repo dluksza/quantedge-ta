@@ -56,16 +56,16 @@ impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
             ohlcv.open_time(),
         );
 
-        let is_next_timeframe = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
+        let is_next_bar = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
 
-        if is_next_timeframe {
+        if is_next_bar {
             self.prev_close = self.cur_close;
             self.last_open_time = Some(ohlcv.open_time());
         }
 
         let price = self.source.extract(ohlcv, self.prev_close);
 
-        if is_next_timeframe {
+        if is_next_bar {
             if let Some(old_price) = self.window.push(price) {
                 self.sum -= old_price;
                 if SUM_OF_SQUARES {
