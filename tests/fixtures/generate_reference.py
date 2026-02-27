@@ -5,6 +5,7 @@ Uses talipp for indicator computation. Algorithms match TradingView / TA-Lib:
 - SMA: arithmetic mean of last N closes
 - EMA: SMA seed, then alpha = 2/(N+1)
 - BB: SMA middle, population std dev (÷N), 2 sigma bands
+- RSI: Wilder's smoothing (period changes / period seed)
 
 Usage:
     1. pip install talipp
@@ -19,9 +20,10 @@ import csv
 import os
 import sys
 
-from talipp.indicators import BB, EMA, SMA
+from talipp.indicators import BB, EMA, RSI, SMA
 
 PERIOD = 20
+RSI_PERIOD = 14
 OUTPUT_DIR = "tests/fixtures/data"
 
 
@@ -101,13 +103,24 @@ def main():
                     ]
                 )
 
+    # RSI
+    rsi = RSI(period=RSI_PERIOD, input_values=closes)
+    with open(f"{OUTPUT_DIR}/rsi-14-close.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["open_time", "expected"])
+        for i, val in enumerate(rsi):
+            if val is not None:
+                w.writerow([times[i], f"{val:.10f}"])
+
     sma_count = sum(1 for v in sma if v is not None)
     ema_count = sum(1 for v in ema if v is not None)
     bb_count = sum(1 for v in bb if v is not None)
+    rsi_count = sum(1 for v in rsi if v is not None)
     print(
         f"Generated {sma_count} SMA, "
         f"{ema_count} EMA, "
-        f"{bb_count} BB reference values "
+        f"{bb_count} BB, "
+        f"{rsi_count} RSI reference values "
         f"from {len(rows)} OHLCV bars."
     )
 
