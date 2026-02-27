@@ -60,7 +60,7 @@ impl Default for StdDev {
     }
 }
 
-/// Configuration for Bollinger Bands ([`Bb`]).
+/// Configuration for the Bollinger Bands ([`Bb`]) indicator.
 ///
 /// # Convergence
 ///
@@ -107,6 +107,7 @@ impl IndicatorConfig for BbConfig {
 }
 
 impl BbConfig {
+    /// Standard deviation multiplier for the upper and lower bands.
     #[inline]
     #[must_use]
     pub fn std_dev(&self) -> StdDev {
