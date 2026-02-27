@@ -22,8 +22,9 @@ trimmed version with headers: `open_time,open,high,low,close,volume`.
 
 ## Reference Values
 
-Generated with the Python script below using **stdlib only** (no TA-Lib,
-no pandas). The algorithms match TradingView and TA-Lib:
+Generated with the Python script below using
+[talipp](https://github.com/nardew/talipp) (`pip install talipp`).
+The algorithms match TradingView and TA-Lib:
 
 - **SMA:** Arithmetic mean of the last N closing prices
 - **EMA:** SMA seed for the first N bars, then `alpha * price + (1 - alpha) * prev`
@@ -39,6 +40,7 @@ See [generate_reference.py](./generate_reference.py)
 
 ### Regenerating
 
-1. Download the raw Binance CSV (see curl command above)
-2. Run the script: `python3 tests/fixtures/generate_reference.py /tmp/BTCUSDT-1h-2025-01.csv`
-3. Verify: `cargo test`
+1. Install dependencies: `pip install -r tests/fixtures/requirements.txt`
+2. Download the raw Binance CSV (see curl command above)
+3. Run the script: `python3 tests/fixtures/generate_reference.py /tmp/BTCUSDT-1h-2025-01.csv`
+4. Verify: `cargo test`

@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
 """Generate reference indicator values from Binance OHLCV CSV.
 
-Uses pure Python (no dependencies). Computes SMA, EMA, and BB
-using the same algorithms as TradingView / TA-Lib:
+Uses talipp for indicator computation. Algorithms match TradingView / TA-Lib:
 - SMA: arithmetic mean of last N closes
 - EMA: SMA seed, then alpha = 2/(N+1)
 - BB: SMA middle, population std dev (÷N), 2 sigma bands
 
 Usage:
-    1. Download raw data:
+    1. pip install talipp
+    2. Download raw data:
        curl -sL "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-01.zip" -o /tmp/btcusdt.zip
        unzip /tmp/btcusdt.zip -d /tmp
-    2. Run: python3 tests/fixtures/generate_reference.py
-    3. Verify: cargo test
+    3. Run: python3 tests/fixtures/generate_reference.py /tmp/BTCUSDT-1h-2025-01.csv
+    4. Verify: cargo test
 """
 
 import csv
-import math
 import os
 import sys
+
+from talipp.indicators import BB, EMA, SMA
 
 PERIOD = 20
 OUTPUT_DIR = "tests/fixtures/data"
@@ -40,50 +41,6 @@ def read_binance_csv(path):
                 }
             )
     return rows
-
-
-def compute_sma(closes, period):
-    results = []
-    for i in range(len(closes)):
-        if i < period - 1:
-            results.append(None)
-        else:
-            window = closes[i - period + 1 : i + 1]
-            results.append(sum(window) / period)
-    return results
-
-
-def compute_ema(closes, period):
-    results = [None] * (period - 1)
-    alpha = 2.0 / (period + 1)
-    seed = sum(closes[:period]) / period
-    results.append(seed)
-    prev = seed
-    for i in range(period, len(closes)):
-        val = alpha * closes[i] + (1 - alpha) * prev
-        results.append(val)
-        prev = val
-    return results
-
-
-def compute_bb(closes, period, mult=2.0):
-    results = []
-    for i in range(len(closes)):
-        if i < period - 1:
-            results.append(None)
-        else:
-            window = closes[i - period + 1 : i + 1]
-            mean = sum(window) / period
-            variance = sum((x - mean) ** 2 for x in window) / period
-            std = math.sqrt(variance)
-            results.append(
-                {
-                    "upper": mean + mult * std,
-                    "middle": mean,
-                    "lower": mean - mult * std,
-                }
-            )
-    return results
 
 
 def main():
@@ -108,44 +65,49 @@ def main():
                 ]
             )
 
+    # Compute indicators via talipp
+    sma = SMA(period=PERIOD, input_values=closes)
+    ema = EMA(period=PERIOD, input_values=closes)
+    bb = BB(period=PERIOD, std_dev_mult=2.0, input_values=closes)
+
     # SMA
-    sma_vals = compute_sma(closes, PERIOD)
     with open(f"{OUTPUT_DIR}/sma-20-close.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["open_time", "expected"])
-        for i, val in enumerate(sma_vals):
+        for i, val in enumerate(sma):
             if val is not None:
                 w.writerow([times[i], f"{val:.10f}"])
 
     # EMA
-    ema_vals = compute_ema(closes, PERIOD)
     with open(f"{OUTPUT_DIR}/ema-20-close.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["open_time", "expected"])
-        for i, val in enumerate(ema_vals):
+        for i, val in enumerate(ema):
             if val is not None:
                 w.writerow([times[i], f"{val:.10f}"])
 
     # BB
-    bb_vals = compute_bb(closes, PERIOD)
     with open(f"{OUTPUT_DIR}/bb-20-2-close.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["open_time", "upper", "middle", "lower"])
-        for i, val in enumerate(bb_vals):
+        for i, val in enumerate(bb):
             if val is not None:
                 w.writerow(
                     [
                         times[i],
-                        f"{val['upper']:.10f}",
-                        f"{val['middle']:.10f}",
-                        f"{val['lower']:.10f}",
+                        f"{val.ub:.10f}",
+                        f"{val.cb:.10f}",
+                        f"{val.lb:.10f}",
                     ]
                 )
 
+    sma_count = sum(1 for v in sma if v is not None)
+    ema_count = sum(1 for v in ema if v is not None)
+    bb_count = sum(1 for v in bb if v is not None)
     print(
-        f"Generated {sum(1 for v in sma_vals if v is not None)} SMA, "
-        f"{sum(1 for v in ema_vals if v is not None)} EMA, "
-        f"{sum(1 for v in bb_vals if v is not None)} BB reference values "
+        f"Generated {sma_count} SMA, "
+        f"{ema_count} EMA, "
+        f"{bb_count} BB reference values "
         f"from {len(rows)} OHLCV bars."
     )
 
