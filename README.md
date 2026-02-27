@@ -194,8 +194,6 @@ to extract from the Ohlcv input:
 
 ## Indicators
 
-### v0.1
-
 | Indicator | Output     | Description                                  |
 |-----------|------------|----------------------------------------------|
 | SMA       | `f64`      | Simple Moving Average                        |
