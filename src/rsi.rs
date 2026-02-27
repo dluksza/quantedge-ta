@@ -281,10 +281,10 @@ impl Indicator for Rsi {
 
                     let (gain, loss) = Self::gain_and_loss(self.prev_price, price);
 
-                    let avg_gain = prev_avg_gain.mul_add(self.length_minus_one, gain)
-                        * self.length_reciprocal;
-                    let avg_loss = prev_avg_loss.mul_add(self.length_minus_one, loss)
-                        * self.length_reciprocal;
+                    let avg_gain =
+                        prev_avg_gain.mul_add(self.length_minus_one, gain) * self.length_reciprocal;
+                    let avg_loss =
+                        prev_avg_loss.mul_add(self.length_minus_one, loss) * self.length_reciprocal;
 
                     self.phase = RsiPhase::Active {
                         prev_avg_gain,

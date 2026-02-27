@@ -194,9 +194,7 @@ macro_rules! reference_test {
                 for bar in &bars {
                     ind.compute(bar);
 
-                    if ref_idx < reference.len()
-                        && bar.open_time == reference[ref_idx].open_time
-                    {
+                    if ref_idx < reference.len() && bar.open_time == reference[ref_idx].open_time {
                         let value = ind.value().unwrap_or_else(|| {
                             panic!("{} returned None at t={}", stringify!($name), bar.open_time)
                         });
