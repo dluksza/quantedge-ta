@@ -275,19 +275,25 @@ impl Indicator for Rsi {
                 ..
             } => {
                 if is_next_bar {
-                    // Advance to Active phase
-                    let avg = *sum_gain * self.length_reciprocal;
-                    let avl = *sum_loss * self.length_reciprocal;
+                    // Advance to Active phase: compute first Wilder-smoothed value
+                    let prev_avg_gain = *sum_gain * self.length_reciprocal;
+                    let prev_avg_loss = *sum_loss * self.length_reciprocal;
+
+                    let (gain, loss) = Self::gain_and_loss(self.prev_price, price);
+
+                    let avg_gain = prev_avg_gain.mul_add(self.length_minus_one, gain)
+                        * self.length_reciprocal;
+                    let avg_loss = prev_avg_loss.mul_add(self.length_minus_one, loss)
+                        * self.length_reciprocal;
 
                     self.phase = RsiPhase::Active {
-                        prev_avg_gain: avg,
-                        prev_avg_loss: avl,
-                        avg_gain: avg,
-                        avg_loss: avl,
+                        prev_avg_gain,
+                        prev_avg_loss,
+                        avg_gain,
+                        avg_loss,
                     };
 
-                    // Recurse to process this bar in Active
-                    self.compute(ohlcv)
+                    Some(Rsi::rsi_from_averages(avg_gain, avg_loss))
                 } else {
                     let (gain, loss) = Self::gain_and_loss(self.prev_price, price);
 
