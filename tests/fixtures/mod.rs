@@ -140,6 +140,110 @@ pub fn assert_values_match(
     }
 }
 
+/// Assert BB values match between closed and repainted indicators.
+pub fn assert_bb_values_match(
+    bar_idx: usize,
+    closed: Option<quantedge_ta::BbValue>,
+    repainted: Option<quantedge_ta::BbValue>,
+    tolerance: f64,
+) {
+    match (closed, repainted) {
+        (None, None) => {}
+        (Some(c), Some(r)) => {
+            for (band, cv, rv) in [
+                ("upper", c.upper(), r.upper()),
+                ("middle", c.middle(), r.middle()),
+                ("lower", c.lower(), r.lower()),
+            ] {
+                let diff = (cv - rv).abs();
+                assert!(
+                    diff <= tolerance,
+                    "BB {band} diverged at bar {bar_idx}: closed={cv:.10}, repainted={rv:.10}, diff={diff:.2e}"
+                );
+            }
+        }
+        (c, r) => {
+            panic!("BB convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
+        }
+    }
+}
+
+/// Generate reference match + repaint tests for a single-value indicator.
+///
+/// Usage: `reference_test!(sma_20, Sma, SmaConfig::close(nz(20)), "tests/fixtures/data/sma-20-close.csv", 1e-6);`
+#[allow(unused_macros)]
+macro_rules! reference_test {
+    ($name:ident, $ind:ty, $config:expr, $ref_path:expr, $tolerance:expr) => {
+        mod $name {
+            use super::fixtures::*;
+            use quantedge_ta::*;
+            use std::num::NonZero;
+
+            fn nz(n: usize) -> NonZero<usize> {
+                NonZero::new(n).unwrap()
+            }
+
+            #[test]
+            fn matches_reference() {
+                let bars = load_reference_ohlcvs();
+                let reference = load_ref_values($ref_path);
+                let config = $config;
+                let mut ind = <$ind>::new(config);
+
+                let mut ref_idx = 0;
+                for bar in &bars {
+                    ind.compute(bar);
+
+                    if ref_idx < reference.len()
+                        && bar.open_time == reference[ref_idx].open_time
+                    {
+                        let value = ind.value().unwrap_or_else(|| {
+                            panic!("{} returned None at t={}", stringify!($name), bar.open_time)
+                        });
+                        assert_near(
+                            value,
+                            reference[ref_idx].expected,
+                            $tolerance,
+                            &format!(
+                                "{} at bar {ref_idx} (t={})",
+                                stringify!($name),
+                                bar.open_time
+                            ),
+                        );
+                        ref_idx += 1;
+                    }
+                }
+
+                assert_eq!(
+                    ref_idx,
+                    reference.len(),
+                    "not all reference values checked: {ref_idx}/{}",
+                    reference.len()
+                );
+            }
+
+            #[test]
+            fn repaint_matches_closed() {
+                let bars = load_reference_ohlcvs();
+                let config = $config;
+                let mut closed = <$ind>::new(config);
+                let mut repainted = <$ind>::new(config);
+
+                for (i, bar) in bars.iter().enumerate() {
+                    closed.compute(bar);
+                    for tick in repaint_sequence(bar) {
+                        repainted.compute(&tick);
+                    }
+                    assert_values_match(i, closed.value(), repainted.value(), $tolerance);
+                }
+            }
+        }
+    };
+}
+
+#[allow(unused_imports)]
+pub(crate) use reference_test;
+
 fn load_records<D>(path: &str, expect_msg: &str) -> Vec<D>
 where
     D: DeserializeOwned,

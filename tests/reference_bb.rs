@@ -4,7 +4,7 @@ use fixtures::{assert_near, load_bb_ref};
 use quantedge_ta::{Bb, BbConfig};
 use std::num::NonZero;
 
-use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
+use crate::fixtures::{assert_bb_values_match, load_reference_ohlcvs, repaint_sequence};
 
 const REF_PATH: &str = "tests/fixtures/data/bb-20-2-close.csv";
 
@@ -77,26 +77,6 @@ fn bb_20_repaint_matches_closed() {
             repainted.compute(&tick);
         }
 
-        match (closed.value(), repainted.value()) {
-            (None, None) => {}
-            (Some(c), Some(r)) => {
-                let ctx = format!("BB(20,2) at bar {i}");
-                let pairs = [
-                    ("upper", c.upper(), r.upper()),
-                    ("middle", c.middle(), r.middle()),
-                    ("lower", c.lower(), r.lower()),
-                ];
-                for (band, cv, rv) in pairs {
-                    let diff = (cv - rv).abs();
-                    assert!(
-                        diff <= TOLERANCE,
-                        "{ctx} {band}: closed={cv:.10}, repainted={rv:.10}, diff={diff:.2e}"
-                    );
-                }
-            }
-            (c, r) => {
-                panic!("BB(20,2) convergence mismatch at bar {i}: closed={c:?}, repainted={r:?}");
-            }
-        }
+        assert_bb_values_match(i, closed.value(), repainted.value(), TOLERANCE);
     }
 }
