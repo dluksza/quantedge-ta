@@ -370,12 +370,7 @@ impl Display for Rsi {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_util::Bar;
-    use std::num::NonZero;
-
-    fn nz(n: usize) -> NonZero<usize> {
-        NonZero::new(n).unwrap()
-    }
+    use crate::test_util::{Bar, nz};
 
     fn bar(price: f64, time: u64) -> Bar {
         Bar::new_with_open_time(price, price, price, price, time)

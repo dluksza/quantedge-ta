@@ -1,7 +1,13 @@
 #![allow(dead_code)]
 
+use std::num::NonZero;
+
 use quantedge_ta::{Ohlcv, Price, Timestamp};
 use serde::{Deserialize, de::DeserializeOwned};
+
+pub fn nz(n: usize) -> NonZero<usize> {
+    NonZero::new(n).unwrap()
+}
 
 /// OHLCV bar parsed from Binance CSV.
 #[derive(Debug, Clone, Deserialize)]
@@ -177,11 +183,6 @@ macro_rules! reference_test {
         mod $name {
             use super::fixtures::*;
             use quantedge_ta::*;
-            use std::num::NonZero;
-
-            fn nz(n: usize) -> NonZero<usize> {
-                NonZero::new(n).unwrap()
-            }
 
             #[test]
             fn matches_reference() {

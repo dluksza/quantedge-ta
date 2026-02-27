@@ -1,6 +1,12 @@
 // src/test_util.rs
 
+use std::num::NonZero;
+
 use crate::{Ohlcv, Price, Timestamp};
+
+pub fn nz(n: usize) -> NonZero<usize> {
+    NonZero::new(n).unwrap()
+}
 
 /// Asserts that two `f64` values are approximately equal using a
 /// relative epsilon of `4 * f64::EPSILON`.

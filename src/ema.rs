@@ -335,15 +335,10 @@ impl Display for Ema {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_util::{Bar, assert_approx, bar};
-    use std::num::NonZero;
+    use crate::test_util::{Bar, assert_approx, bar, nz};
 
     fn ema(length: usize) -> Ema {
-        Ema::new(
-            EmaConfig::builder()
-                .length(NonZero::new(length).unwrap())
-                .build(),
-        )
+        Ema::new(EmaConfig::builder().length(nz(length)).build())
     }
 
     mod seeding {
@@ -540,7 +535,7 @@ mod tests {
             // EMA(2) HL2: α = 2/3
             let mut ema = Ema::new(
                 EmaConfig::builder()
-                    .length(NonZero::new(2).unwrap())
+                    .length(nz(2))
                     .source(PriceSource::HL2)
                     .build(),
             );
@@ -574,7 +569,7 @@ mod tests {
         fn none_until_converged_when_enforced() {
             let mut ema = Ema::new(
                 EmaConfig::builder()
-                    .length(NonZero::new(3).unwrap())
+                    .length(nz(3))
                     .enforce_convergence(true)
                     .build(),
             );
@@ -588,13 +583,13 @@ mod tests {
         #[test]
         fn required_bars_scales_with_length() {
             let c10 = EmaConfig::builder()
-                .length(NonZero::new(10).unwrap())
+                .length(nz(10))
                 .enforce_convergence(true)
                 .build();
             assert_eq!(c10.required_bars_to_converge(), 33);
 
             let c50 = EmaConfig::builder()
-                .length(NonZero::new(50).unwrap())
+                .length(nz(50))
                 .enforce_convergence(true)
                 .build();
             assert_eq!(c50.required_bars_to_converge(), 153);
@@ -603,14 +598,10 @@ mod tests {
         #[test]
         #[allow(clippy::cast_precision_loss)]
         fn values_match_with_and_without_enforcement() {
-            let mut free = Ema::new(
-                EmaConfig::builder()
-                    .length(NonZero::new(3).unwrap())
-                    .build(),
-            );
+            let mut free = Ema::new(EmaConfig::builder().length(nz(3)).build());
             let mut enforced = Ema::new(
                 EmaConfig::builder()
-                    .length(NonZero::new(3).unwrap())
+                    .length(nz(3))
                     .enforce_convergence(true)
                     .build(),
             );
@@ -655,24 +646,20 @@ mod tests {
 
         #[test]
         fn default_source_is_close() {
-            let config = EmaConfig::builder()
-                .length(NonZero::new(10).unwrap())
-                .build();
+            let config = EmaConfig::builder().length(nz(10)).build();
             assert_eq!(*config.source(), PriceSource::Close);
         }
 
         #[test]
         fn convergence_disabled_by_default() {
-            let config = EmaConfig::builder()
-                .length(NonZero::new(10).unwrap())
-                .build();
+            let config = EmaConfig::builder().length(nz(10)).build();
             assert!(!config.enforce_convergence());
         }
 
         #[test]
         fn custom_source() {
             let config = EmaConfig::builder()
-                .length(NonZero::new(10).unwrap())
+                .length(nz(10))
                 .source(PriceSource::HL2)
                 .build();
             assert_eq!(*config.source(), PriceSource::HL2);
@@ -686,30 +673,30 @@ mod tests {
 
         #[test]
         fn close_helper() {
-            let config = EmaConfig::close(NonZero::new(20).unwrap());
+            let config = EmaConfig::close(nz(20));
             assert_eq!(config.length(), 20);
             assert_eq!(*config.source(), PriceSource::Close);
         }
 
         #[test]
         fn hl2_helper() {
-            let config = EmaConfig::hl2(NonZero::new(10).unwrap());
+            let config = EmaConfig::hl2(nz(10));
             assert_eq!(config.length(), 10);
             assert_eq!(*config.source(), PriceSource::HL2);
         }
 
         #[test]
         fn ohlc4_helper() {
-            let config = EmaConfig::ohlc4(NonZero::new(10).unwrap());
+            let config = EmaConfig::ohlc4(nz(10));
             assert_eq!(config.length(), 10);
             assert_eq!(*config.source(), PriceSource::OHLC4);
         }
 
         #[test]
         fn eq_and_hash() {
-            let a = EmaConfig::close(NonZero::new(20).unwrap());
-            let b = EmaConfig::close(NonZero::new(20).unwrap());
-            let c = EmaConfig::close(NonZero::new(10).unwrap());
+            let a = EmaConfig::close(nz(20));
+            let b = EmaConfig::close(nz(20));
+            let c = EmaConfig::close(nz(10));
 
             let mut set = HashSet::new();
             set.insert(a);
@@ -730,7 +717,7 @@ mod tests {
 
         #[test]
         fn config_formats_correctly() {
-            let config = EmaConfig::close(NonZero::new(20).unwrap());
+            let config = EmaConfig::close(nz(20));
             assert_eq!(config.to_string(), "EmaConfig(20, Close)");
         }
     }
@@ -741,7 +728,7 @@ mod tests {
         fn tr_ema(length: usize) -> Ema {
             Ema::new(
                 EmaConfig::builder()
-                    .length(NonZero::new(length).unwrap())
+                    .length(nz(length))
                     .source(PriceSource::TrueRange)
                     .build(),
             )
@@ -807,7 +794,7 @@ mod tests {
         fn none_during_convergence_enforcement() {
             let mut ema = Ema::new(
                 EmaConfig::builder()
-                    .length(NonZero::new(3).unwrap())
+                    .length(nz(3))
                     .enforce_convergence(true)
                     .build(),
             );

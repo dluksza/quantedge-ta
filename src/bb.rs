@@ -364,21 +364,16 @@ impl Display for Bb {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_util::Bar;
-    use std::num::NonZero;
+    use crate::test_util::{Bar, nz};
 
     fn bb(length: usize) -> Bb {
-        Bb::new(
-            BbConfig::builder()
-                .length(NonZero::new(length).unwrap())
-                .build(),
-        )
+        Bb::new(BbConfig::builder().length(nz(length)).build())
     }
 
     fn bb_with_std_dev(length: usize, std_dev: f64) -> Bb {
         Bb::new(
             BbConfig::builder()
-                .length(NonZero::new(length).unwrap())
+                .length(nz(length))
                 .std_dev(StdDev::new(std_dev))
                 .build(),
         )
@@ -578,17 +573,13 @@ mod tests {
 
         #[test]
         fn default_std_dev_is_two() {
-            let config = BbConfig::builder()
-                .length(NonZero::new(20).unwrap())
-                .build();
+            let config = BbConfig::builder().length(nz(20)).build();
             assert!((config.std_dev().value() - 2.0).abs() < f64::EPSILON);
         }
 
         #[test]
         fn default_source_is_close() {
-            let config = BbConfig::builder()
-                .length(NonZero::new(20).unwrap())
-                .build();
+            let config = BbConfig::builder().length(nz(20)).build();
             assert_eq!(*config.source(), PriceSource::Close);
         }
 
@@ -650,7 +641,7 @@ mod tests {
         fn hl2_source() {
             let mut bb = Bb::new(
                 BbConfig::builder()
-                    .length(NonZero::new(2).unwrap())
+                    .length(nz(2))
                     .source(PriceSource::HL2)
                     .build(),
             );
@@ -683,9 +674,7 @@ mod tests {
 
         #[test]
         fn config_formats_correctly() {
-            let config = BbConfig::builder()
-                .length(NonZero::new(20).unwrap())
-                .build();
+            let config = BbConfig::builder().length(nz(20)).build();
             assert_eq!(config.to_string(), "BbConfig(20, Close, 2)");
         }
     }
@@ -696,15 +685,9 @@ mod tests {
 
         #[test]
         fn identical_configs_match() {
-            let a = BbConfig::builder()
-                .length(NonZero::new(20).unwrap())
-                .build();
-            let b = BbConfig::builder()
-                .length(NonZero::new(20).unwrap())
-                .build();
-            let c = BbConfig::builder()
-                .length(NonZero::new(10).unwrap())
-                .build();
+            let a = BbConfig::builder().length(nz(20)).build();
+            let b = BbConfig::builder().length(nz(20)).build();
+            let c = BbConfig::builder().length(nz(10)).build();
 
             let mut set = HashSet::new();
             set.insert(a);

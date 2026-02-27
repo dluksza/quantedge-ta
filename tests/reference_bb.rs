@@ -1,8 +1,7 @@
 mod fixtures;
 
-use fixtures::{assert_near, load_bb_ref};
+use fixtures::{assert_near, load_bb_ref, nz};
 use quantedge_ta::{Bb, BbConfig};
-use std::num::NonZero;
 
 use crate::fixtures::{assert_bb_values_match, load_reference_ohlcvs, repaint_sequence};
 
@@ -19,7 +18,7 @@ fn bb_20_2_close_matches_reference() {
     let bars = load_reference_ohlcvs();
     let reference = load_bb_ref(REF_PATH);
 
-    let config = BbConfig::close(NonZero::new(20).unwrap());
+    let config = BbConfig::close(nz(20));
     let mut bb = Bb::new(config);
 
     let mut ref_idx = 0;
@@ -66,7 +65,7 @@ fn bb_20_2_close_matches_reference() {
 fn bb_20_repaint_matches_closed() {
     let bars = load_reference_ohlcvs();
 
-    let config = BbConfig::close(NonZero::new(20).unwrap());
+    let config = BbConfig::close(nz(20));
     let mut closed = Bb::new(config);
     let mut repainted = Bb::new(config);
 

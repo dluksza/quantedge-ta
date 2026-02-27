@@ -195,11 +195,10 @@ impl Display for Sma {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_util::{assert_approx, bar};
-    use std::num::NonZero;
+    use crate::test_util::{assert_approx, bar, nz};
 
     fn sma(length: usize) -> Sma {
-        Sma::new(SmaConfig::close(NonZero::new(length).unwrap()))
+        Sma::new(SmaConfig::close(nz(length)))
     }
 
     mod filling {
@@ -318,7 +317,7 @@ mod tests {
 
         #[test]
         fn hl2_source() {
-            let mut sma = Sma::new(SmaConfig::hl2(NonZero::new(2).unwrap()));
+            let mut sma = Sma::new(SmaConfig::hl2(nz(2)));
             // HL2 = (high + low) / 2
             sma.compute(&Bar::new(0.0, 20.0, 10.0, 0.0).at(1)); // HL2 = 15
             let result = sma.compute(&Bar::new(0.0, 30.0, 20.0, 0.0).at(2)); // HL2 = 25
@@ -365,19 +364,19 @@ mod tests {
 
         #[test]
         fn close_helper_uses_close_source() {
-            let config = SmaConfig::close(NonZero::new(10).unwrap());
+            let config = SmaConfig::close(nz(10));
             assert_eq!(*config.source(), PriceSource::Close);
         }
 
         #[test]
         fn hl2_helper_uses_hl2_source() {
-            let config = SmaConfig::hl2(NonZero::new(10).unwrap());
+            let config = SmaConfig::hl2(nz(10));
             assert_eq!(*config.source(), PriceSource::HL2);
         }
 
         #[test]
         fn ohlc4_helper_uses_ohlc4_source() {
-            let config = SmaConfig::ohlc4(NonZero::new(10).unwrap());
+            let config = SmaConfig::ohlc4(nz(10));
             assert_eq!(*config.source(), PriceSource::OHLC4);
         }
 
@@ -389,15 +388,15 @@ mod tests {
 
         #[test]
         fn display_config() {
-            let config = SmaConfig::close(NonZero::new(20).unwrap());
+            let config = SmaConfig::close(nz(20));
             assert_eq!(config.to_string(), "SmaConfig(20, Close)");
         }
 
         #[test]
         fn eq_and_hash() {
-            let a = SmaConfig::close(NonZero::new(20).unwrap());
-            let b = SmaConfig::close(NonZero::new(20).unwrap());
-            let c = SmaConfig::close(NonZero::new(10).unwrap());
+            let a = SmaConfig::close(nz(20));
+            let b = SmaConfig::close(nz(20));
+            let c = SmaConfig::close(nz(10));
 
             let mut set = HashSet::new();
             set.insert(a);
@@ -414,7 +413,7 @@ mod tests {
         fn tr_sma(length: usize) -> Sma {
             Sma::new(
                 SmaConfig::builder()
-                    .length(NonZero::new(length).unwrap())
+                    .length(nz(length))
                     .source(PriceSource::TrueRange)
                     .build(),
             )
