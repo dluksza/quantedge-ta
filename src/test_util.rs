@@ -36,6 +36,22 @@ impl Bar {
         }
     }
 
+    pub fn new_with_open_time(
+        open: f64,
+        high: f64,
+        low: f64,
+        close: f64,
+        open_time: Timestamp,
+    ) -> Self {
+        Self {
+            open,
+            high,
+            low,
+            close,
+            open_time,
+        }
+    }
+
     pub fn at(mut self, open_time: u64) -> Self {
         self.open_time = open_time;
         self

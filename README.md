@@ -39,7 +39,7 @@ on forming bars.
 ### Typed outputs
 
 Each indicator defines its own output type via an associated type on the
-`Indicator` trait. SMA and EMA return `f64`. Bollinger Bands returns
+`Indicator` trait. SMA, EMA, and RSI return `f64`. Bollinger Bands returns
 `BbValue { upper, middle, lower }`. No downcasting, no enums, full type
 safety.
 
@@ -121,6 +121,7 @@ trait Indicator: Sized + Clone + Display + Debug {
 
 // Sma: Output = f64
 // Ema: Output = f64
+// Rsi: Output = f64
 // Bb:  Output = BbValue { upper: f64, middle: f64, lower: f64 }
 ```
 
@@ -151,9 +152,10 @@ impl Ohlcv for MyKline {
 
 ### Convergence
 
-SMA and BB converge as soon as the window fills (`length` bars). EMA has
-infinite memory; the SMA seed influences all subsequent values. `EmaConfig`
-provides methods to control this:
+SMA and BB converge as soon as the window fills (`length` bars). EMA and RSI
+use exponential smoothing with infinite memory; the SMA seed influences all
+subsequent values. RSI output begins at bar `length + 1`. For EMA, `EmaConfig`
+provides methods to control convergence:
 
 - `enforce_convergence()` -- when `true`, `compute()` returns `None` until
   the seed's contribution decays below 1%.
@@ -194,15 +196,16 @@ to extract from the Ohlcv input:
 
 ### v0.1
 
-| Indicator | Output     | Description                         |
-|-----------|------------|-------------------------------------|
-| SMA       | `f64`      | Simple Moving Average               |
-| EMA       | `f64`      | Exponential Moving Average          |
-| BB        | `BbValue`  | Bollinger Bands (upper, mid, lower) |
+| Indicator | Output     | Description                                  |
+|-----------|------------|----------------------------------------------|
+| SMA       | `f64`      | Simple Moving Average                        |
+| EMA       | `f64`      | Exponential Moving Average                   |
+| RSI       | `f64`      | Relative Strength Index (Wilder's smoothing) |
+| BB        | `BbValue`  | Bollinger Bands (upper, mid, lower)          |
 
 ### Planned
 
-RSI, MACD, ATR, CHOP, and more.
+MACD, ATR, CHOP, and more.
 
 ## Benchmarks
 

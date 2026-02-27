@@ -16,6 +16,7 @@ mod ohlcv;
 mod price_source;
 mod price_window;
 mod ring_buffer;
+mod rsi;
 mod sma;
 
 pub use crate::indicator::{Indicator, IndicatorConfig, IndicatorConfigBuilder};
@@ -24,6 +25,7 @@ pub use crate::price_source::PriceSource;
 
 pub use crate::bb::{Bb, BbConfig, BbConfigBuilder, BbValue, StdDev};
 pub use crate::ema::{Ema, EmaConfig, EmaConfigBuilder};
+pub use crate::rsi::{Rsi, RsiConfig, RsiConfigBuilder};
 pub use crate::sma::{Sma, SmaConfig, SmaConfigBuilder};
 
 macro_rules! impl_inherent_methods {
@@ -100,6 +102,7 @@ macro_rules! impl_inherent_methods {
 }
 
 impl_inherent_methods!(Sma, SmaConfig, SmaConfigBuilder);
+impl_inherent_methods!(Rsi, RsiConfig, RsiConfigBuilder);
 impl_inherent_methods!(Ema, EmaConfig, EmaConfigBuilder);
 impl_inherent_methods!(Bb, BbConfig, BbConfigBuilder);
 
