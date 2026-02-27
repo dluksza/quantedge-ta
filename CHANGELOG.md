@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- RSI (Relative Strength Index) with Wilder's smoothing, unit tests, Criterion benchmarks, and reference tests against talipp (730 BTC/USDT bars, 1e-6 tolerance).
+
 ### Changed
 
 - `Sma`, `Ema`, and `Bb` now expose `new()`, `compute()`, and `value()` as inherent methods, `use quantedge_ta::Indicator` is no longer required for basic usage.

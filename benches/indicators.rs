@@ -4,7 +4,7 @@ mod fixtures;
 use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
 
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
-use quantedge_ta::{Bb, BbConfig, Ema, EmaConfig, Sma, SmaConfig};
+use quantedge_ta::{Bb, BbConfig, Ema, EmaConfig, Rsi, RsiConfig, Sma, SmaConfig};
 use std::{hint::black_box, num::NonZero, time::Duration};
 
 fn nz(n: usize) -> NonZero<usize> {
@@ -40,6 +40,8 @@ fn stream_benchmarks(c: &mut Criterion) {
     stream_bench!("ema200", Ema, EmaConfig::close(nz(200)));
     stream_bench!("bb20", Bb, BbConfig::close(nz(20)));
     stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
+    stream_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
+    stream_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
 
     group.finish();
 }
@@ -81,6 +83,8 @@ fn tick_benchmarks(c: &mut Criterion) {
     tick_bench!("ema200", Ema, EmaConfig::close(nz(200)));
     tick_bench!("bb20", Bb, BbConfig::close(nz(20)));
     tick_bench!("bb200", Bb, BbConfig::close(nz(200)));
+    tick_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
+    tick_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
 
     group.finish();
 }
@@ -127,6 +131,8 @@ fn repaint_benchmarks(c: &mut Criterion) {
     repaint_bench!("ema200", Ema, EmaConfig::close(nz(200)));
     repaint_bench!("bb20", Bb, BbConfig::close(nz(20)));
     repaint_bench!("bb200", Bb, BbConfig::close(nz(200)));
+    repaint_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
+    repaint_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
 
     group.finish();
 }
@@ -163,6 +169,8 @@ fn repaint_stream_benchmarks(c: &mut Criterion) {
     repaint_stream_bench!("ema200", Ema, EmaConfig::close(nz(200)));
     repaint_stream_bench!("bb20", Bb, BbConfig::close(nz(20)));
     repaint_stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
+    repaint_stream_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
+    repaint_stream_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
 
     group.finish();
 }

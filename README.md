@@ -232,6 +232,8 @@ on a converged indicator.
 | EMA       | 200    | 3.27 µs       | 228 Melem/s    |
 | BB        | 20     | 3.63 µs       | 205 Melem/s    |
 | BB        | 200    | 3.50 µs       | 212 Melem/s    |
+| RSI       | 14     | 4.09 µs       | 182 Melem/s    |
+| RSI       | 140    | 3.90 µs       | 191 Melem/s    |
 
 ### Tick — single `compute()` on a converged indicator
 
@@ -243,6 +245,8 @@ on a converged indicator.
 | EMA       | 200    | 7.85 ns       |
 | BB        | 20     | 16.9 ns       |
 | BB        | 200    | 20.5 ns       |
+| RSI       | 14     | 6.56 ns       |
+| RSI       | 140    | 6.58 ns       |
 
 ### Repaint — single `compute()` repaint on a converged indicator
 
@@ -254,6 +258,8 @@ on a converged indicator.
 | EMA       | 200    | 7.41 ns       |
 | BB        | 20     | 16.8 ns       |
 | BB        | 200    | 19.8 ns       |
+| RSI       | 14     | 7.46 ns       |
+| RSI       | 140    | 7.49 ns       |
 
 ### Repaint Stream — process 744 bars × 3 ticks from cold start
 
@@ -265,6 +271,8 @@ on a converged indicator.
 | EMA       | 200    | 8.36 µs       | 267 Melem/s    |
 | BB        | 20     | 10.8 µs       | 206 Melem/s    |
 | BB        | 200    | 10.7 µs       | 209 Melem/s    |
+| RSI       | 14     | 6.76 µs       | 330 Melem/s    |
+| RSI       | 140    | 6.93 µs       | 322 Melem/s    |
 
 Run locally:
 
