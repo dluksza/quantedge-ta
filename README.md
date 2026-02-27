@@ -224,53 +224,53 @@ on a converged indicator.
 
 | Indicator | Period | Time (median) | Throughput     |
 |-----------|--------|---------------|----------------|
-| SMA       | 20     | 2.93 µs       | 254 Melem/s    |
-| SMA       | 200    | 2.76 µs       | 270 Melem/s    |
-| EMA       | 20     | 3.20 µs       | 232 Melem/s    |
-| EMA       | 200    | 3.27 µs       | 228 Melem/s    |
-| BB        | 20     | 3.63 µs       | 205 Melem/s    |
-| BB        | 200    | 3.50 µs       | 212 Melem/s    |
-| RSI       | 14     | 4.09 µs       | 182 Melem/s    |
-| RSI       | 140    | 3.90 µs       | 191 Melem/s    |
+| SMA       | 20     | 2.95 µs       | 252 Melem/s    |
+| SMA       | 200    | 2.82 µs       | 264 Melem/s    |
+| EMA       | 20     | 3.27 µs       | 228 Melem/s    |
+| EMA       | 200    | 3.33 µs       | 224 Melem/s    |
+| BB        | 20     | 3.70 µs       | 201 Melem/s    |
+| BB        | 200    | 3.57 µs       | 208 Melem/s    |
+| RSI       | 14     | 4.08 µs       | 182 Melem/s    |
+| RSI       | 140    | 4.01 µs       | 186 Melem/s    |
 
 ### Tick — single `compute()` on a converged indicator
 
 | Indicator | Period | Time (median) |
 |-----------|--------|---------------|
 | SMA       | 20     | 12.0 ns       |
-| SMA       | 200    | 16.9 ns       |
-| EMA       | 20     | 9.01 ns       |
-| EMA       | 200    | 7.85 ns       |
-| BB        | 20     | 16.9 ns       |
-| BB        | 200    | 20.5 ns       |
-| RSI       | 14     | 6.56 ns       |
-| RSI       | 140    | 6.58 ns       |
+| SMA       | 200    | 16.2 ns       |
+| EMA       | 20     | 7.97 ns       |
+| EMA       | 200    | 8.30 ns       |
+| BB        | 20     | 17.0 ns       |
+| BB        | 200    | 20.4 ns       |
+| RSI       | 14     | 6.98 ns       |
+| RSI       | 140    | 6.61 ns       |
 
 ### Repaint — single `compute()` repaint on a converged indicator
 
 | Indicator | Period | Time (median) |
 |-----------|--------|---------------|
-| SMA       | 20     | 11.7 ns       |
-| SMA       | 200    | 15.7 ns       |
-| EMA       | 20     | 8.20 ns       |
-| EMA       | 200    | 7.41 ns       |
-| BB        | 20     | 16.8 ns       |
-| BB        | 200    | 19.8 ns       |
-| RSI       | 14     | 7.46 ns       |
-| RSI       | 140    | 7.49 ns       |
+| SMA       | 20     | 11.3 ns       |
+| SMA       | 200    | 15.9 ns       |
+| EMA       | 20     | 7.71 ns       |
+| EMA       | 200    | 8.36 ns       |
+| BB        | 20     | 16.7 ns       |
+| BB        | 200    | 19.5 ns       |
+| RSI       | 14     | 7.58 ns       |
+| RSI       | 140    | 7.71 ns       |
 
 ### Repaint Stream — process 744 bars × 3 ticks from cold start
 
 | Indicator | Period | Time (median) | Throughput     |
 |-----------|--------|---------------|----------------|
-| SMA       | 20     | 8.74 µs       | 256 Melem/s    |
-| SMA       | 200    | 8.00 µs       | 279 Melem/s    |
-| EMA       | 20     | 7.79 µs       | 286 Melem/s    |
-| EMA       | 200    | 8.36 µs       | 267 Melem/s    |
-| BB        | 20     | 10.8 µs       | 206 Melem/s    |
-| BB        | 200    | 10.7 µs       | 209 Melem/s    |
-| RSI       | 14     | 6.76 µs       | 330 Melem/s    |
-| RSI       | 140    | 6.93 µs       | 322 Melem/s    |
+| SMA       | 20     | 8.35 µs       | 267 Melem/s    |
+| SMA       | 200    | 8.29 µs       | 269 Melem/s    |
+| EMA       | 20     | 8.06 µs       | 277 Melem/s    |
+| EMA       | 200    | 8.38 µs       | 266 Melem/s    |
+| BB        | 20     | 10.8 µs       | 207 Melem/s    |
+| BB        | 200    | 10.6 µs       | 210 Melem/s    |
+| RSI       | 14     | 6.73 µs       | 332 Melem/s    |
+| RSI       | 140    | 6.95 µs       | 321 Melem/s    |
 
 Run locally:
 

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-27
+
 ### Added
 
 - RSI (Relative Strength Index) with Wilder's smoothing, unit tests, Criterion benchmarks, and reference tests against talipp (730 BTC/USDT bars, 1e-6 tolerance).
@@ -29,4 +31,5 @@ Initial release.
 - Reference tests against 744 BTC/USDT bars
 - Criterion benchmarks (stream + tick)
 
+[0.2.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.2.0
 [0.1.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.1.0
