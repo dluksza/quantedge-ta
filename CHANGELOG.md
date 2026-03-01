@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- WASM support: library compiles for `wasm32-unknown-unknown` and full test suite runs on `wasm32-wasip1` via wasmtime.
+- CI job verifying WASM compatibility on every push and PR.
+
 ## [0.2.0] - 2026-02-27
 
 ### Added

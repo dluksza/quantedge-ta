@@ -42,6 +42,19 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - run: cargo nextest run --all-features
 
+  wasm:
+    name: WASM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown,wasm32-wasip1
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@wasmtime
+      - run: cargo build --lib --target wasm32-unknown-unknown
+      - run: cargo test --target wasm32-wasip1
+
   coverage:
     name: Coverage
     runs-on: ubuntu-latest

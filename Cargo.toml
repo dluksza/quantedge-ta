@@ -15,7 +15,9 @@ exclude = [".github/", "tests/"]
 [dev-dependencies]
 csv = "1"
 serde = { version = "1", features = ["derive"] }
-criterion = { version = "0.8", features = ["html_reports"] }
+criterion = { version = "0.8", default-features = false, features = [
+  "html_reports",
+] }
 
 [[bench]]
 name = "indicators"

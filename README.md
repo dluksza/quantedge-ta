@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/dluksza/quantedge-ta/branch/main/graph/badge.svg)](https://codecov.io/gh/dluksza/quantedge-ta)
 [![crates.io](https://img.shields.io/crates/v/quantedge-ta.svg)](https://crates.io/crates/quantedge-ta)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE-MIT)
+[![wasm](https://img.shields.io/badge/wasm-compatible-green.svg)](https://github.com/dluksza/quantedge-ta/actions/workflows/ci.yml)
 
 A streaming technical analysis library for Rust. Correct, tested, documented.
 
@@ -28,6 +29,13 @@ don't provide it.
 
 Indicators maintain running state and update in constant time per tick. No
 re-scanning the window.
+
+### WASM compatible
+
+Works in WebAssembly environments. The library compiles for
+`wasm32-unknown-unknown` (browser) and `wasm32-wasip1` (WASI runtimes). Zero
+dependencies, no filesystem or OS calls in the library itself. CI verifies
+WASM compatibility on every commit.
 
 ### Live repainting
 
