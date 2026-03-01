@@ -97,8 +97,8 @@ impl IndicatorConfig for BbConfig {
     }
 
     #[inline]
-    fn source(&self) -> &PriceSource {
-        &self.source
+    fn source(&self) -> PriceSource {
+        self.source
     }
 }
 
@@ -586,7 +586,7 @@ mod tests {
         #[test]
         fn default_source_is_close() {
             let config = BbConfig::builder().length(nz(20)).build();
-            assert_eq!(*config.source(), PriceSource::Close);
+            assert_eq!(config.source(), PriceSource::Close);
         }
 
         #[test]

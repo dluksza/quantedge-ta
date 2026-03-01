@@ -63,7 +63,7 @@ macro_rules! impl_inherent_methods {
             /// See [`IndicatorConfig::source`].
             #[must_use]
             #[inline]
-            pub fn source(&self) -> &PriceSource {
+            pub fn source(&self) -> PriceSource {
                 <Self as IndicatorConfig>::source(self)
             }
         }
@@ -148,7 +148,7 @@ mod inherent_methods {
     fn config_methods_without_trait_import() {
         let config = SmaConfig::close(nz(20));
         assert_eq!(config.length(), 20);
-        assert_eq!(*config.source(), super::PriceSource::Close);
+        assert_eq!(config.source(), super::PriceSource::Close);
 
         let config = EmaConfig::close(nz(10));
         assert_eq!(config.length(), 10);
@@ -164,7 +164,7 @@ mod inherent_methods {
             .source(super::PriceSource::HL2)
             .build();
         assert_eq!(config.length(), 14);
-        assert_eq!(*config.source(), super::PriceSource::HL2);
+        assert_eq!(config.source(), super::PriceSource::HL2);
 
         let config = EmaConfig::builder().length(nz(20)).build();
         assert_eq!(config.length(), 20);

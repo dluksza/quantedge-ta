@@ -35,8 +35,8 @@ impl IndicatorConfig for RsiConfig {
     }
 
     #[inline]
-    fn source(&self) -> &PriceSource {
-        &self.source
+    fn source(&self) -> PriceSource {
+        self.source
     }
 }
 
@@ -699,7 +699,7 @@ mod tests {
         #[test]
         fn default_source_is_close() {
             let config = RsiConfig::builder().length(nz(14)).build();
-            assert_eq!(*config.source(), PriceSource::Close);
+            assert_eq!(config.source(), PriceSource::Close);
         }
 
         #[test]

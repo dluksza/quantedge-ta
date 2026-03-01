@@ -53,8 +53,8 @@ impl IndicatorConfig for EmaConfig {
     }
 
     #[inline]
-    fn source(&self) -> &PriceSource {
-        &self.source
+    fn source(&self) -> PriceSource {
+        self.source
     }
 }
 
@@ -649,7 +649,7 @@ mod tests {
         #[test]
         fn default_source_is_close() {
             let config = EmaConfig::builder().length(nz(10)).build();
-            assert_eq!(*config.source(), PriceSource::Close);
+            assert_eq!(config.source(), PriceSource::Close);
         }
 
         #[test]
@@ -664,7 +664,7 @@ mod tests {
                 .length(nz(10))
                 .source(PriceSource::HL2)
                 .build();
-            assert_eq!(*config.source(), PriceSource::HL2);
+            assert_eq!(config.source(), PriceSource::HL2);
         }
 
         #[test]
@@ -677,21 +677,21 @@ mod tests {
         fn close_helper() {
             let config = EmaConfig::close(nz(20));
             assert_eq!(config.length(), 20);
-            assert_eq!(*config.source(), PriceSource::Close);
+            assert_eq!(config.source(), PriceSource::Close);
         }
 
         #[test]
         fn hl2_helper() {
             let config = EmaConfig::hl2(nz(10));
             assert_eq!(config.length(), 10);
-            assert_eq!(*config.source(), PriceSource::HL2);
+            assert_eq!(config.source(), PriceSource::HL2);
         }
 
         #[test]
         fn ohlc4_helper() {
             let config = EmaConfig::ohlc4(nz(10));
             assert_eq!(config.length(), 10);
-            assert_eq!(*config.source(), PriceSource::OHLC4);
+            assert_eq!(config.source(), PriceSource::OHLC4);
         }
 
         #[test]

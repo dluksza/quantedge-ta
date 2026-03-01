@@ -18,7 +18,7 @@ pub trait IndicatorConfig: Sized + PartialEq + Eq + Hash + Display + Debug {
     fn builder() -> Self::Builder;
 
     /// Price source to extract from each bar.
-    fn source(&self) -> &PriceSource;
+    fn source(&self) -> PriceSource;
 }
 
 /// Builder for an [`IndicatorConfig`].

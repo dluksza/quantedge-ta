@@ -34,8 +34,8 @@ impl IndicatorConfig for SmaConfig {
     }
 
     #[inline]
-    fn source(&self) -> &PriceSource {
-        &self.source
+    fn source(&self) -> PriceSource {
+        self.source
     }
 }
 
@@ -369,19 +369,19 @@ mod tests {
         #[test]
         fn close_helper_uses_close_source() {
             let config = SmaConfig::close(nz(10));
-            assert_eq!(*config.source(), PriceSource::Close);
+            assert_eq!(config.source(), PriceSource::Close);
         }
 
         #[test]
         fn hl2_helper_uses_hl2_source() {
             let config = SmaConfig::hl2(nz(10));
-            assert_eq!(*config.source(), PriceSource::HL2);
+            assert_eq!(config.source(), PriceSource::HL2);
         }
 
         #[test]
         fn ohlc4_helper_uses_ohlc4_source() {
             let config = SmaConfig::ohlc4(nz(10));
-            assert_eq!(*config.source(), PriceSource::OHLC4);
+            assert_eq!(config.source(), PriceSource::OHLC4);
         }
 
         #[test]
