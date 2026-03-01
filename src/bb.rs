@@ -34,6 +34,7 @@ impl StdDev {
         Self(value)
     }
 
+    /// Returns the standard deviation multiplier value.
     #[must_use]
     pub fn value(self) -> f64 {
         self.0
@@ -171,6 +172,7 @@ impl BbConfigBuilder {
         self
     }
 
+    /// Sets the standard deviation multiplier for the upper and lower bands.
     #[inline]
     #[must_use]
     pub fn std_dev(mut self, std_dev: StdDev) -> Self {
