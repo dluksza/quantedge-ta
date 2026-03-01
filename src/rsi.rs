@@ -35,17 +35,19 @@ impl IndicatorConfig for RsiConfig {
     }
 
     #[inline]
-    fn length(&self) -> usize {
-        self.length
-    }
-
-    #[inline]
     fn source(&self) -> &PriceSource {
         &self.source
     }
 }
 
 impl RsiConfig {
+    /// Window length (number of bars).
+    #[inline]
+    #[must_use]
+    pub fn length(&self) -> usize {
+        self.length
+    }
+
     /// RSI on closing price.
     #[must_use]
     pub fn close(length: NonZero<usize>) -> Self {
@@ -77,15 +79,17 @@ impl RsiConfigBuilder {
             source: PriceSource::Close,
         }
     }
-}
 
-impl IndicatorConfigBuilder<RsiConfig> for RsiConfigBuilder {
+    /// Sets the indicator window length.
     #[inline]
-    fn length(mut self, length: std::num::NonZero<usize>) -> Self {
+    #[must_use]
+    pub fn length(mut self, length: std::num::NonZero<usize>) -> Self {
         self.length = Some(length.get());
         self
     }
+}
 
+impl IndicatorConfigBuilder<RsiConfig> for RsiConfigBuilder {
     #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;

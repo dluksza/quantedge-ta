@@ -34,17 +34,19 @@ impl IndicatorConfig for SmaConfig {
     }
 
     #[inline]
-    fn length(&self) -> usize {
-        self.length
-    }
-
-    #[inline]
     fn source(&self) -> &PriceSource {
         &self.source
     }
 }
 
 impl SmaConfig {
+    /// Window length (number of bars).
+    #[inline]
+    #[must_use]
+    pub fn length(&self) -> usize {
+        self.length
+    }
+
     /// SMA on closing price.
     #[must_use]
     pub fn close(length: NonZero<usize>) -> Self {
@@ -92,15 +94,17 @@ impl SmaConfigBuilder {
             source: PriceSource::Close,
         }
     }
-}
 
-impl IndicatorConfigBuilder<SmaConfig> for SmaConfigBuilder {
+    /// Sets the indicator window length.
     #[inline]
-    fn length(mut self, length: NonZero<usize>) -> Self {
+    #[must_use]
+    pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
         self
     }
+}
 
+impl IndicatorConfigBuilder<SmaConfig> for SmaConfigBuilder {
     #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;

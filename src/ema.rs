@@ -53,17 +53,19 @@ impl IndicatorConfig for EmaConfig {
     }
 
     #[inline]
-    fn length(&self) -> usize {
-        self.length
-    }
-
-    #[inline]
     fn source(&self) -> &PriceSource {
         &self.source
     }
 }
 
 impl EmaConfig {
+    /// Window length (number of bars).
+    #[inline]
+    #[must_use]
+    pub fn length(&self) -> usize {
+        self.length
+    }
+
     /// When `true`, [`Ema::compute`] returns `None` until
     /// [`required_bars_to_converge`](Self::required_bars_to_converge) bars have
     /// been processed. Default: `false`.
@@ -134,9 +136,15 @@ impl EmaConfigBuilder {
             convergence: false,
         }
     }
-}
 
-impl EmaConfigBuilder {
+    /// Sets the indicator window length.
+    #[inline]
+    #[must_use]
+    pub fn length(mut self, length: NonZero<usize>) -> Self {
+        self.length.replace(length.get());
+        self
+    }
+
     /// Enables or disables convergence enforcement.
     #[inline]
     #[must_use]
@@ -147,12 +155,6 @@ impl EmaConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
-    #[inline]
-    fn length(mut self, length: NonZero<usize>) -> Self {
-        self.length.replace(length.get());
-        self
-    }
-
     #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;

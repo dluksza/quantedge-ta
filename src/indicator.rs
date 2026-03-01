@@ -3,7 +3,6 @@ use crate::{Ohlcv, PriceSource};
 use std::{
     fmt::{Debug, Display},
     hash::Hash,
-    num::NonZero,
 };
 
 /// Configuration for a technical [`Indicator`].
@@ -18,9 +17,6 @@ pub trait IndicatorConfig: Sized + PartialEq + Eq + Hash + Display + Debug {
     /// Returns a new builder with default values.
     fn builder() -> Self::Builder;
 
-    /// Window length (number of bars).
-    fn length(&self) -> usize;
-
     /// Price source to extract from each bar.
     fn source(&self) -> &PriceSource;
 }
@@ -30,10 +26,6 @@ pub trait IndicatorConfigBuilder<Config>
 where
     Config: IndicatorConfig,
 {
-    /// Sets the indicator window length.
-    #[must_use]
-    fn length(self, length: NonZero<usize>) -> Self;
-
     /// Sets the price source.
     #[must_use]
     fn source(self, source: PriceSource) -> Self;

@@ -96,17 +96,19 @@ impl IndicatorConfig for BbConfig {
     }
 
     #[inline]
-    fn length(&self) -> usize {
-        self.length
-    }
-
-    #[inline]
     fn source(&self) -> &PriceSource {
         &self.source
     }
 }
 
 impl BbConfig {
+    /// Window length (number of bars).
+    #[inline]
+    #[must_use]
+    pub fn length(&self) -> usize {
+        self.length
+    }
+
     /// Standard deviation multiplier for the upper and lower bands.
     #[inline]
     #[must_use]
@@ -161,6 +163,14 @@ impl BbConfigBuilder {
         }
     }
 
+    /// Sets the indicator window length.
+    #[inline]
+    #[must_use]
+    pub fn length(mut self, length: NonZero<usize>) -> Self {
+        self.length.replace(length.get());
+        self
+    }
+
     #[inline]
     #[must_use]
     pub fn std_dev(mut self, std_dev: StdDev) -> Self {
@@ -170,12 +180,6 @@ impl BbConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<BbConfig> for BbConfigBuilder {
-    #[inline]
-    fn length(mut self, length: NonZero<usize>) -> Self {
-        self.length.replace(length.get());
-        self
-    }
-
     #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;

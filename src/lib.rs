@@ -60,13 +60,6 @@ macro_rules! impl_inherent_methods {
                 <Self as IndicatorConfig>::builder()
             }
 
-            /// See [`IndicatorConfig::length`].
-            #[must_use]
-            #[inline]
-            pub fn length(&self) -> usize {
-                <Self as IndicatorConfig>::length(self)
-            }
-
             /// See [`IndicatorConfig::source`].
             #[must_use]
             #[inline]
@@ -77,13 +70,6 @@ macro_rules! impl_inherent_methods {
 
         // --- IndicatorConfigBuilder ---
         impl $builder {
-            /// See [`IndicatorConfigBuilder::length`].
-            #[must_use]
-            #[inline]
-            pub fn length(self, length: std::num::NonZero<usize>) -> Self {
-                <Self as IndicatorConfigBuilder<$config>>::length(self, length)
-            }
-
             /// See [`IndicatorConfigBuilder::source`].
             #[must_use]
             #[inline]
