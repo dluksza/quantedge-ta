@@ -13,6 +13,22 @@ fn nz(n: usize) -> NonZero<usize> {
     NonZero::new(n).expect("non zero value")
 }
 
+/// Calls `$m!(name, Type, config)` for every indicator configuration.
+macro_rules! all_indicators {
+    ($m:ident) => {
+        $m!("sma20", Sma, SmaConfig::close(nz(20)));
+        $m!("sma200", Sma, SmaConfig::close(nz(200)));
+        $m!("ema20", Ema, EmaConfig::close(nz(20)));
+        $m!("ema200", Ema, EmaConfig::close(nz(200)));
+        $m!("bb20", Bb, BbConfig::close(nz(20)));
+        $m!("bb200", Bb, BbConfig::close(nz(200)));
+        $m!("rsi14", Rsi, RsiConfig::close(nz(14)));
+        $m!("rsi140", Rsi, RsiConfig::close(nz(140)));
+        $m!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
+        $m!("macd12026090", Macd, MacdConfig::close(nz(120), nz(260), nz(90)));
+    };
+}
+
 fn stream_benchmarks(c: &mut Criterion) {
     let bars = load_reference_ohlcvs();
     let mut group = c.benchmark_group("stream");
@@ -36,20 +52,7 @@ fn stream_benchmarks(c: &mut Criterion) {
         };
     }
 
-    stream_bench!("sma20", Sma, SmaConfig::close(nz(20)));
-    stream_bench!("sma200", Sma, SmaConfig::close(nz(200)));
-    stream_bench!("ema20", Ema, EmaConfig::close(nz(20)));
-    stream_bench!("ema200", Ema, EmaConfig::close(nz(200)));
-    stream_bench!("bb20", Bb, BbConfig::close(nz(20)));
-    stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
-    stream_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
-    stream_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
-    stream_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
-    stream_bench!(
-        "macd12026090",
-        Macd,
-        MacdConfig::close(nz(120), nz(260), nz(90))
-    );
+    all_indicators!(stream_bench);
 
     group.finish();
 }
@@ -85,20 +88,7 @@ fn tick_benchmarks(c: &mut Criterion) {
         };
     }
 
-    tick_bench!("sma20", Sma, SmaConfig::close(nz(20)));
-    tick_bench!("sma200", Sma, SmaConfig::close(nz(200)));
-    tick_bench!("ema20", Ema, EmaConfig::close(nz(20)));
-    tick_bench!("ema200", Ema, EmaConfig::close(nz(200)));
-    tick_bench!("bb20", Bb, BbConfig::close(nz(20)));
-    tick_bench!("bb200", Bb, BbConfig::close(nz(200)));
-    tick_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
-    tick_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
-    tick_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
-    tick_bench!(
-        "macd12026090",
-        Macd,
-        MacdConfig::close(nz(120), nz(260), nz(90))
-    );
+    all_indicators!(tick_bench);
 
     group.finish();
 }
@@ -139,20 +129,7 @@ fn repaint_benchmarks(c: &mut Criterion) {
         };
     }
 
-    repaint_bench!("sma20", Sma, SmaConfig::close(nz(20)));
-    repaint_bench!("sma200", Sma, SmaConfig::close(nz(200)));
-    repaint_bench!("ema20", Ema, EmaConfig::close(nz(20)));
-    repaint_bench!("ema200", Ema, EmaConfig::close(nz(200)));
-    repaint_bench!("bb20", Bb, BbConfig::close(nz(20)));
-    repaint_bench!("bb200", Bb, BbConfig::close(nz(200)));
-    repaint_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
-    repaint_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
-    repaint_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
-    repaint_bench!(
-        "macd12026090",
-        Macd,
-        MacdConfig::close(nz(120), nz(260), nz(90))
-    );
+    all_indicators!(repaint_bench);
 
     group.finish();
 }
@@ -183,20 +160,7 @@ fn repaint_stream_benchmarks(c: &mut Criterion) {
         };
     }
 
-    repaint_stream_bench!("sma20", Sma, SmaConfig::close(nz(20)));
-    repaint_stream_bench!("sma200", Sma, SmaConfig::close(nz(200)));
-    repaint_stream_bench!("ema20", Ema, EmaConfig::close(nz(20)));
-    repaint_stream_bench!("ema200", Ema, EmaConfig::close(nz(200)));
-    repaint_stream_bench!("bb20", Bb, BbConfig::close(nz(20)));
-    repaint_stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
-    repaint_stream_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
-    repaint_stream_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
-    repaint_stream_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
-    repaint_stream_bench!(
-        "macd12026090",
-        Macd,
-        MacdConfig::close(nz(120), nz(260), nz(90))
-    );
+    all_indicators!(repaint_stream_bench);
 
     group.finish();
 }
