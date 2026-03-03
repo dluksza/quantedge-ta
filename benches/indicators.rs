@@ -4,7 +4,9 @@ mod fixtures;
 use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
 
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
-use quantedge_ta::{Bb, BbConfig, Ema, EmaConfig, Rsi, RsiConfig, Sma, SmaConfig};
+use quantedge_ta::{
+    Bb, BbConfig, Ema, EmaConfig, Macd, MacdConfig, Rsi, RsiConfig, Sma, SmaConfig,
+};
 use std::{hint::black_box, num::NonZero, time::Duration};
 
 fn nz(n: usize) -> NonZero<usize> {
@@ -42,6 +44,12 @@ fn stream_benchmarks(c: &mut Criterion) {
     stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
     stream_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
     stream_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
+    stream_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
+    stream_bench!(
+        "macd12026090",
+        Macd,
+        MacdConfig::close(nz(120), nz(260), nz(90))
+    );
 
     group.finish();
 }
@@ -85,6 +93,12 @@ fn tick_benchmarks(c: &mut Criterion) {
     tick_bench!("bb200", Bb, BbConfig::close(nz(200)));
     tick_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
     tick_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
+    tick_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
+    tick_bench!(
+        "macd12026090",
+        Macd,
+        MacdConfig::close(nz(120), nz(260), nz(90))
+    );
 
     group.finish();
 }
@@ -133,6 +147,12 @@ fn repaint_benchmarks(c: &mut Criterion) {
     repaint_bench!("bb200", Bb, BbConfig::close(nz(200)));
     repaint_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
     repaint_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
+    repaint_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
+    repaint_bench!(
+        "macd12026090",
+        Macd,
+        MacdConfig::close(nz(120), nz(260), nz(90))
+    );
 
     group.finish();
 }
@@ -171,6 +191,12 @@ fn repaint_stream_benchmarks(c: &mut Criterion) {
     repaint_stream_bench!("bb200", Bb, BbConfig::close(nz(200)));
     repaint_stream_bench!("rsi14", Rsi, RsiConfig::close(nz(14)));
     repaint_stream_bench!("rsi140", Rsi, RsiConfig::close(nz(140)));
+    repaint_stream_bench!("macd12269", Macd, MacdConfig::close(nz(12), nz(26), nz(9)));
+    repaint_stream_bench!(
+        "macd12026090",
+        Macd,
+        MacdConfig::close(nz(120), nz(260), nz(90))
+    );
 
     group.finish();
 }

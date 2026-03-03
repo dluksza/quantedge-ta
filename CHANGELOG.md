@@ -6,6 +6,7 @@
 
 - WASM support: library compiles for `wasm32-unknown-unknown` and full test suite runs on `wasm32-wasip1` via wasmtime.
 - CI job verifying WASM compatibility on every push and PR.
+- MACD (Moving Average Convergence Divergence) with reference tests against talipp (711 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks.
 
 ## [0.2.0] - 2026-02-27
 

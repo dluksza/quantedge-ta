@@ -62,6 +62,15 @@ pub struct RefBbValue {
     pub lower: f64,
 }
 
+/// Reference MACD value with timestamp (fully converged: all 3 fields present).
+#[derive(Debug, Deserialize)]
+pub struct RefMacdValue {
+    pub open_time: u64,
+    pub macd: f64,
+    pub signal: f64,
+    pub histogram: f64,
+}
+
 const OHLCV_PATH: &str = "tests/fixtures/data/btcusdt-1h.csv";
 
 /// Load reference OHLCV bars from Binance.
@@ -77,6 +86,11 @@ pub fn load_ref_values(path: &str) -> Vec<RefValue> {
 /// Load BB reference data (upper, middle, lower).
 pub fn load_bb_ref(path: &str) -> Vec<RefBbValue> {
     load_records(path, "invalid BB reference record")
+}
+
+/// Load MACD reference data (macd, signal, histogram).
+pub fn load_macd_ref(path: &str) -> Vec<RefMacdValue> {
+    load_records(path, "invalid MACD reference record")
 }
 
 /// Assert two f64 values are within tolerance.
@@ -170,6 +184,60 @@ pub fn assert_bb_values_match(
         }
         (c, r) => {
             panic!("BB convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
+        }
+    }
+}
+
+/// Assert MACD values match between closed and repainted indicators.
+pub fn assert_macd_values_match(
+    bar_idx: usize,
+    closed: Option<quantedge_ta::MacdValue>,
+    repainted: Option<quantedge_ta::MacdValue>,
+    tolerance: f64,
+) {
+    match (closed, repainted) {
+        (None, None) => {}
+        (Some(c), Some(r)) => {
+            let diff = (c.macd() - r.macd()).abs();
+            assert!(
+                diff <= tolerance,
+                "MACD line diverged at bar {bar_idx}: closed={:.10}, repainted={:.10}, diff={diff:.2e}",
+                c.macd(),
+                r.macd()
+            );
+            match (c.signal(), r.signal()) {
+                (Some(cs), Some(rs)) => {
+                    let diff = (cs - rs).abs();
+                    assert!(
+                        diff <= tolerance,
+                        "MACD signal diverged at bar {bar_idx}: closed={cs:.10}, repainted={rs:.10}, diff={diff:.2e}"
+                    );
+                }
+                (None, None) => {}
+                (cs, rs) => {
+                    panic!(
+                        "MACD signal convergence mismatch at bar {bar_idx}: closed={cs:?}, repainted={rs:?}"
+                    );
+                }
+            }
+            match (c.histogram(), r.histogram()) {
+                (Some(ch), Some(rh)) => {
+                    let diff = (ch - rh).abs();
+                    assert!(
+                        diff <= tolerance,
+                        "MACD histogram diverged at bar {bar_idx}: closed={ch:.10}, repainted={rh:.10}, diff={diff:.2e}"
+                    );
+                }
+                (None, None) => {}
+                (ch, rh) => {
+                    panic!(
+                        "MACD histogram convergence mismatch at bar {bar_idx}: closed={ch:?}, repainted={rh:?}"
+                    );
+                }
+            }
+        }
+        (c, r) => {
+            panic!("MACD convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
         }
     }
 }

@@ -20,7 +20,7 @@ import csv
 import os
 import sys
 
-from talipp.indicators import BB, EMA, RSI, SMA
+from talipp.indicators import BB, EMA, MACD, RSI, SMA
 
 PERIOD = 20
 RSI_PERIOD = 14
@@ -112,15 +112,38 @@ def main():
             if val is not None:
                 w.writerow([times[i], f"{val:.10f}"])
 
+    # MACD
+    macd = MACD(
+        fast_period=12,
+        slow_period=26,
+        signal_period=9,
+        input_values=closes,
+    )
+    with open(f"{OUTPUT_DIR}/macd-12-26-9-close.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["open_time", "macd", "signal", "histogram"])
+        for i, val in enumerate(macd):
+            if val is not None and val.signal is not None:
+                w.writerow(
+                    [
+                        times[i],
+                        f"{val.macd:.10f}",
+                        f"{val.signal:.10f}",
+                        f"{val.histogram:.10f}",
+                    ]
+                )
+
     sma_count = sum(1 for v in sma if v is not None)
     ema_count = sum(1 for v in ema if v is not None)
     bb_count = sum(1 for v in bb if v is not None)
     rsi_count = sum(1 for v in rsi if v is not None)
+    macd_count = sum(1 for v in macd if v is not None and v.signal is not None)
     print(
         f"Generated {sma_count} SMA, "
         f"{ema_count} EMA, "
         f"{bb_count} BB, "
-        f"{rsi_count} RSI reference values "
+        f"{rsi_count} RSI, "
+        f"{macd_count} MACD reference values "
         f"from {len(rows)} OHLCV bars."
     )
 
