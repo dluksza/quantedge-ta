@@ -8,6 +8,10 @@
 - CI job verifying WASM compatibility on every push and PR.
 - MACD (Moving Average Convergence Divergence) with reference tests against talipp (711 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks.
 
+### Changed
+
+- Removed `length()` from `IndicatorConfig` and `IndicatorConfigBuilder` traits — not all indicators have a single length (e.g. MACD). Each config type still exposes its own length accessor(s) as inherent methods.
+
 ## [0.2.0] - 2026-02-27
 
 ### Added
