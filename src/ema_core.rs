@@ -45,13 +45,14 @@ impl EmaCore {
     #[inline]
     pub(crate) fn push(&mut self, price: Price) -> Option<Price> {
         if self.converged {
+            if self.seen_bars == self.length {
+                self.seen_bars = self.length + 1;
+            }
+
             self.previous_value = self.value;
             self.value = self
                 .alpha
                 .mul_add(price - self.previous_value, self.previous_value);
-
-            // Park past seed so replace() takes the steady-state path
-            self.seen_bars = self.length + 1;
             return Some(self.value);
         }
 
@@ -75,11 +76,8 @@ impl EmaCore {
         }
 
         self.converged = self.seen_bars >= self.bars_to_converge;
-        if self.converged {
-            Some(self.value)
-        } else {
-            None
-        }
+
+        self.value()
     }
 
     #[inline]
@@ -99,6 +97,11 @@ impl EmaCore {
                 .mul_add(price - self.previous_value, self.previous_value);
         }
 
+        self.value()
+    }
+
+    #[inline]
+    pub(crate) fn value(&self) -> Option<Price> {
         if self.converged {
             Some(self.value)
         } else {

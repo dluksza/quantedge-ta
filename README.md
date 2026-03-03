@@ -237,8 +237,8 @@ on a converged indicator.
 |-----------|--------|---------------|----------------|
 | SMA       | 20     | 2.95 µs       | 252 Melem/s    |
 | SMA       | 200    | 2.82 µs       | 264 Melem/s    |
-| EMA       | 20     | 3.27 µs       | 228 Melem/s    |
-| EMA       | 200    | 3.33 µs       | 224 Melem/s    |
+| EMA       | 20     | 2.39 µs       | 311 Melem/s    |
+| EMA       | 200    | 2.50 µs       | 297 Melem/s    |
 | BB        | 20     | 3.70 µs       | 201 Melem/s    |
 | BB        | 200    | 3.57 µs       | 208 Melem/s    |
 | RSI       | 14     | 4.08 µs       | 182 Melem/s    |
@@ -252,8 +252,8 @@ on a converged indicator.
 |-----------|--------|---------------|
 | SMA       | 20     | 12.0 ns       |
 | SMA       | 200    | 16.2 ns       |
-| EMA       | 20     | 7.97 ns       |
-| EMA       | 200    | 8.30 ns       |
+| EMA       | 20     | 5.37 ns       |
+| EMA       | 200    | 5.36 ns       |
 | BB        | 20     | 17.0 ns       |
 | BB        | 200    | 20.4 ns       |
 | RSI       | 14     | 6.98 ns       |
@@ -267,8 +267,8 @@ on a converged indicator.
 |-----------|--------|---------------|
 | SMA       | 20     | 11.3 ns       |
 | SMA       | 200    | 15.9 ns       |
-| EMA       | 20     | 7.71 ns       |
-| EMA       | 200    | 8.36 ns       |
+| EMA       | 20     | 4.77 ns       |
+| EMA       | 200    | 4.86 ns       |
 | BB        | 20     | 16.7 ns       |
 | BB        | 200    | 19.5 ns       |
 | RSI       | 14     | 7.58 ns       |
@@ -282,8 +282,8 @@ on a converged indicator.
 |-----------|--------|---------------|----------------|
 | SMA       | 20     | 8.35 µs       | 267 Melem/s    |
 | SMA       | 200    | 8.29 µs       | 269 Melem/s    |
-| EMA       | 20     | 8.06 µs       | 277 Melem/s    |
-| EMA       | 200    | 8.38 µs       | 266 Melem/s    |
+| EMA       | 20     | 5.35 µs       | 417 Melem/s    |
+| EMA       | 200    | 6.60 µs       | 338 Melem/s    |
 | BB        | 20     | 10.8 µs       | 207 Melem/s    |
 | BB        | 200    | 10.6 µs       | 210 Melem/s    |
 | RSI       | 14     | 6.73 µs       | 332 Melem/s    |

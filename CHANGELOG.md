@@ -11,6 +11,7 @@
 ### Changed
 
 - Removed `length()` from `IndicatorConfig` and `IndicatorConfigBuilder` traits — not all indicators have a single length (e.g. MACD). Each config type still exposes its own length accessor(s) as inherent methods.
+- EMA performance improved 26-34% (stream), 43-49% (tick/repaint), 24-34% (repaint stream) vs v0.2.0 by eliminating redundant state in `EmaCore` hot path.
 
 ## [0.2.0] - 2026-02-27
 

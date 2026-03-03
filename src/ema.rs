@@ -242,7 +242,6 @@ impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
 #[derive(Clone, Debug)]
 pub struct Ema {
     config: EmaConfig,
-    current: Option<Price>,
     last_open_time: Option<Timestamp>,
     cur_close: Option<Price>,
     prev_close: Option<Price>,
@@ -256,7 +255,6 @@ impl Indicator for Ema {
     fn new(config: Self::Config) -> Self {
         Self {
             config,
-            current: None,
             last_open_time: None,
             cur_close: None,
             prev_close: None,
@@ -280,20 +278,20 @@ impl Indicator for Ema {
             self.prev_close = self.cur_close;
 
             let price = self.config.source.extract(ohlcv, self.prev_close);
-            self.current = self.core.push(price);
+            self.core.push(price);
         } else {
             let price = self.config.source.extract(ohlcv, self.prev_close);
-            self.current = self.core.replace(price);
+            self.core.replace(price);
         }
 
         self.cur_close = Some(ohlcv.close());
 
-        self.current
+        self.core.value()
     }
 
     #[inline]
     fn value(&self) -> Option<Price> {
-        self.current
+        self.core.value()
     }
 }
 
