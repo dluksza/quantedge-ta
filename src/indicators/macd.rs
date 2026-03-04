@@ -1,8 +1,8 @@
 use std::{fmt::Display, num::NonZero};
 
 use crate::{
-    Indicator, IndicatorConfig, IndicatorConfigBuilder, Price, PriceSource, Timestamp,
-    internals::EmaCore,
+    Indicator, IndicatorConfig, IndicatorConfigBuilder, PriceSource,
+    internals::{BarAction, BarState, EmaCore},
 };
 
 /// Configuration for the Moving Average Convergence Divergence ([`Macd`])
@@ -293,9 +293,7 @@ pub struct Macd {
     signal: EmaCore,
     config: MacdConfig,
     current: Option<MacdValue>,
-    last_open_time: Option<Timestamp>,
-    curr_close: Option<Price>,
-    prev_close: Option<Price>,
+    bar_state: BarState,
 }
 
 impl Indicator for Macd {
@@ -309,55 +307,39 @@ impl Indicator for Macd {
             slow: EmaCore::new(config.slow_period(), false),
             signal: EmaCore::new(config.signal_period(), false),
             current: None,
-            last_open_time: None,
-            curr_close: None,
-            prev_close: None,
+            bar_state: BarState::new(config.source()),
         }
     }
 
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
-        debug_assert!(
-            self.last_open_time.is_none_or(|t| t <= ohlcv.open_time()),
-            "open_time must be non-decreasing: last={}, got={}",
-            self.last_open_time.unwrap_or(0),
-            ohlcv.open_time(),
-        );
+        let signal_value = match self.bar_state.handle(ohlcv) {
+            BarAction::Advance(price) => {
+                let fast_value = self.fast.push(price);
+                let slow_value = self.slow.push(price);
 
-        let is_next_bar = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
+                match (fast_value, slow_value) {
+                    (Some(fast), Some(slow)) => {
+                        let macd = fast - slow;
+                        let signal = self.signal.push(macd);
 
-        if is_next_bar {
-            self.prev_close = self.curr_close;
-            self.last_open_time = Some(ohlcv.open_time());
-        }
-
-        let price = self.config.source().extract(ohlcv, self.prev_close);
-        self.curr_close = Some(ohlcv.close());
-
-        let signal_value = if is_next_bar {
-            let fast_value = self.fast.push(price);
-            let slow_value = self.slow.push(price);
-
-            match (fast_value, slow_value) {
-                (Some(fast), Some(slow)) => {
-                    let macd = fast - slow;
-                    let signal = self.signal.push(macd);
-
-                    Some((macd, signal))
+                        Some((macd, signal))
+                    }
+                    _ => None,
                 }
-                _ => None,
             }
-        } else {
-            let fast_value = self.fast.replace(price);
-            let slow_value = self.slow.replace(price);
+            BarAction::Repaint(price) => {
+                let fast_value = self.fast.replace(price);
+                let slow_value = self.slow.replace(price);
 
-            match (fast_value, slow_value) {
-                (Some(fast), Some(slow)) => {
-                    let macd = fast - slow;
-                    let signal = self.signal.replace(macd);
+                match (fast_value, slow_value) {
+                    (Some(fast), Some(slow)) => {
+                        let macd = fast - slow;
+                        let signal = self.signal.replace(macd);
 
-                    Some((macd, signal))
+                        Some((macd, signal))
+                    }
+                    _ => None,
                 }
-                _ => None,
             }
         };
 

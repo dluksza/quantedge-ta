@@ -4,8 +4,8 @@ use std::{
 };
 
 use crate::{
-    Indicator, IndicatorConfig, IndicatorConfigBuilder, Ohlcv, Price, PriceSource, Timestamp,
-    internals::EmaCore,
+    Indicator, IndicatorConfig, IndicatorConfigBuilder, Ohlcv, Price, PriceSource,
+    internals::{BarAction, BarState, EmaCore},
 };
 
 /// Configuration for the Exponential Moving Average ([`Ema`])
@@ -242,9 +242,7 @@ impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
 #[derive(Clone, Debug)]
 pub struct Ema {
     config: EmaConfig,
-    last_open_time: Option<Timestamp>,
-    cur_close: Option<Price>,
-    prev_close: Option<Price>,
+    bar_state: BarState,
     core: EmaCore,
 }
 
@@ -255,36 +253,21 @@ impl Indicator for Ema {
     fn new(config: Self::Config) -> Self {
         Self {
             config,
-            last_open_time: None,
-            cur_close: None,
-            prev_close: None,
+            bar_state: BarState::new(config.source()),
             core: EmaCore::new(config.length(), config.convergence),
         }
     }
 
     #[inline]
     fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Price> {
-        debug_assert!(
-            self.last_open_time.is_none_or(|t| t <= ohlcv.open_time()),
-            "open_time must be non-decreasing: last={}, got={}",
-            self.last_open_time.unwrap_or(0),
-            ohlcv.open_time(),
-        );
-
-        let is_next_bar = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
-
-        if is_next_bar {
-            self.last_open_time = Some(ohlcv.open_time());
-            self.prev_close = self.cur_close;
-
-            let price = self.config.source.extract(ohlcv, self.prev_close);
-            self.core.push(price);
-        } else {
-            let price = self.config.source.extract(ohlcv, self.prev_close);
-            self.core.replace(price);
+        match self.bar_state.handle(ohlcv) {
+            BarAction::Advance(price) => {
+                self.core.push(price);
+            }
+            BarAction::Repaint(price) => {
+                self.core.replace(price);
+            }
         }
-
-        self.cur_close = Some(ohlcv.close());
 
         self.core.value()
     }

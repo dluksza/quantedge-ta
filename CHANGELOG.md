@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Extracted `BarState` from duplicated bar-boundary detection logic in `PriceWindow`, `Ema`, and `Macd`. Centralizes `open_time` tracking, `prev_close` management, and the non-decreasing timestamp assertion into a single reusable internal type.
+- EMA performance improved ~50% across all benchmarks (stream, tick, repaint, repaint stream) vs v0.3.0 due to `BarState` extraction enabling better code generation.
+
 ## [0.3.0] - 2026-03-03
 
 ### Added

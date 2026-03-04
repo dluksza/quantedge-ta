@@ -235,61 +235,61 @@ on a converged indicator.
 
 | Indicator | Period | Time (median) | Throughput     |
 |-----------|--------|---------------|----------------|
-| SMA       | 20     | 3.01 µs       | 247 Melem/s    |
-| SMA       | 200    | 2.92 µs       | 255 Melem/s    |
-| EMA       | 20     | 2.46 µs       | 302 Melem/s    |
-| EMA       | 200    | 2.74 µs       | 271 Melem/s    |
-| BB        | 20     | 3.74 µs       | 199 Melem/s    |
-| BB        | 200    | 3.67 µs       | 203 Melem/s    |
-| RSI       | 14     | 4.14 µs       | 180 Melem/s    |
-| RSI       | 140    | 3.88 µs       | 192 Melem/s    |
-| MACD      | 12/26/9 | 3.85 µs      | 193 Melem/s    |
-| MACD      | 120/260/90 | 3.80 µs   | 196 Melem/s    |
+| SMA       | 20     | 2.93 µs       | 254 Melem/s    |
+| SMA       | 200    | 2.82 µs       | 264 Melem/s    |
+| EMA       | 20     | 1.38 µs       | 540 Melem/s    |
+| EMA       | 200    | 1.33 µs       | 560 Melem/s    |
+| BB        | 20     | 3.62 µs       | 206 Melem/s    |
+| BB        | 200    | 3.54 µs       | 210 Melem/s    |
+| RSI       | 14     | 4.02 µs       | 185 Melem/s    |
+| RSI       | 140    | 3.83 µs       | 194 Melem/s    |
+| MACD      | 12/26/9 | 3.78 µs      | 197 Melem/s    |
+| MACD      | 120/260/90 | 3.68 µs   | 202 Melem/s    |
 
 ### Tick — single `compute()` on a converged indicator
 
 | Indicator | Period | Time (median) |
 |-----------|--------|---------------|
-| SMA       | 20     | 18.9 ns       |
-| SMA       | 200    | 87.2 ns       |
-| EMA       | 20     | 6.07 ns       |
-| EMA       | 200    | 5.98 ns       |
-| BB        | 20     | 23.5 ns       |
-| BB        | 200    | 81.1 ns       |
-| RSI       | 14     | 7.73 ns       |
-| RSI       | 140    | 7.63 ns       |
-| MACD      | 12/26/9 | 13.4 ns      |
-| MACD      | 120/260/90 | 12.6 ns   |
+| SMA       | 20     | 18.1 ns       |
+| SMA       | 200    | 70.7 ns       |
+| EMA       | 20     | 2.55 ns       |
+| EMA       | 200    | 2.58 ns       |
+| BB        | 20     | 24.3 ns       |
+| BB        | 200    | 77.5 ns       |
+| RSI       | 14     | 7.62 ns       |
+| RSI       | 140    | 7.53 ns       |
+| MACD      | 12/26/9 | 12.1 ns      |
+| MACD      | 120/260/90 | 11.9 ns   |
 
 ### Repaint — single `compute()` repaint on a converged indicator
 
 | Indicator | Period | Time (median) |
 |-----------|--------|---------------|
-| SMA       | 20     | 18.5 ns       |
-| SMA       | 200    | 78.4 ns       |
-| EMA       | 20     | 4.93 ns       |
-| EMA       | 200    | 4.90 ns       |
-| BB        | 20     | 23.3 ns       |
-| BB        | 200    | 79.3 ns       |
-| RSI       | 14     | 8.63 ns       |
-| RSI       | 140    | 8.50 ns       |
-| MACD      | 12/26/9 | 11.6 ns      |
-| MACD      | 120/260/90 | 11.5 ns   |
+| SMA       | 20     | 18.3 ns       |
+| SMA       | 200    | 69.6 ns       |
+| EMA       | 20     | 2.60 ns       |
+| EMA       | 200    | 2.51 ns       |
+| BB        | 20     | 21.6 ns       |
+| BB        | 200    | 74.8 ns       |
+| RSI       | 14     | 8.52 ns       |
+| RSI       | 140    | 8.30 ns       |
+| MACD      | 12/26/9 | 12.1 ns      |
+| MACD      | 120/260/90 | 11.9 ns   |
 
 ### Repaint Stream — process 744 bars × 3 ticks from cold start
 
 | Indicator | Period | Time (median) | Throughput     |
 |-----------|--------|---------------|----------------|
-| SMA       | 20     | 8.56 µs       | 261 Melem/s    |
+| SMA       | 20     | 8.67 µs       | 257 Melem/s    |
 | SMA       | 200    | 8.89 µs       | 251 Melem/s    |
-| EMA       | 20     | 5.43 µs       | 411 Melem/s    |
-| EMA       | 200    | 6.71 µs       | 333 Melem/s    |
-| BB        | 20     | 11.0 µs       | 202 Melem/s    |
-| BB        | 200    | 10.9 µs       | 204 Melem/s    |
-| RSI       | 14     | 6.73 µs       | 332 Melem/s    |
-| RSI       | 140    | 6.93 µs       | 322 Melem/s    |
-| MACD      | 12/26/9 | 7.78 µs      | 287 Melem/s    |
-| MACD      | 120/260/90 | 9.02 µs   | 247 Melem/s    |
+| EMA       | 20     | 3.40 µs       | 656 Melem/s    |
+| EMA       | 200    | 3.31 µs       | 673 Melem/s    |
+| BB        | 20     | 10.9 µs       | 204 Melem/s    |
+| BB        | 200    | 10.9 µs       | 206 Melem/s    |
+| RSI       | 14     | 6.62 µs       | 337 Melem/s    |
+| RSI       | 140    | 6.82 µs       | 327 Melem/s    |
+| MACD      | 12/26/9 | 8.45 µs      | 264 Melem/s    |
+| MACD      | 120/260/90 | 9.35 µs   | 239 Melem/s    |
 
 Run locally:
 

@@ -1,19 +1,14 @@
-use crate::{Ohlcv, Price, PriceSource, Timestamp, internals::RingBuffer};
+use crate::{
+    Ohlcv, Price, PriceSource,
+    internals::{BarAction, BarState, RingBuffer},
+};
 
 #[derive(Clone, Debug)]
 pub(crate) struct PriceWindow<const SUM_OF_SQUARES: bool = false> {
+    bar_state: BarState,
     window: RingBuffer,
-    /// Running sum of values in the window. Maintained incrementally via
-    /// add/subtract, may accumulate FP rounding drift over very long runs,
-    /// but negligible for typical window sizes on financial data.
     sum: Price,
     sum_of_squares: f64,
-    /// Tracks the close of the current bar. On window advance, becomes `prev_close`
-    /// for `TrueRange` calculation. Updated unconditionally on every `add()`.
-    cur_close: Option<Price>,
-    prev_close: Option<Price>,
-    source: PriceSource,
-    last_open_time: Option<Timestamp>,
 }
 
 pub(crate) type PriceWindowWithSumOfSquares = PriceWindow<true>;
@@ -21,13 +16,10 @@ pub(crate) type PriceWindowWithSumOfSquares = PriceWindow<true>;
 impl PriceWindow {
     pub fn new(size: usize, source: PriceSource) -> Self {
         Self {
-            source,
             sum: 0.0,
             sum_of_squares: 0.0,
-            cur_close: None,
-            prev_close: None,
+            bar_state: BarState::new(source),
             window: RingBuffer::new(size),
-            last_open_time: None,
         }
     }
 }
@@ -35,13 +27,10 @@ impl PriceWindow {
 impl PriceWindow<true> {
     pub fn with_sum_of_squares(size: usize, source: PriceSource) -> Self {
         Self {
-            source,
             sum: 0.0,
             sum_of_squares: 0.0,
-            cur_close: None,
-            prev_close: None,
+            bar_state: BarState::new(source),
             window: RingBuffer::new(size),
-            last_open_time: None,
         }
     }
 }
@@ -49,38 +38,22 @@ impl PriceWindow<true> {
 impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
     #[inline]
     pub fn add(&mut self, ohlcv: &impl Ohlcv) {
-        debug_assert!(
-            self.last_open_time.is_none_or(|t| t <= ohlcv.open_time()),
-            "open_time must be non-decreasing: last={}, got={}",
-            self.last_open_time.unwrap_or(0),
-            ohlcv.open_time(),
-        );
-
-        let is_next_bar = self.last_open_time.is_none_or(|t| t < ohlcv.open_time());
-
-        if is_next_bar {
-            self.prev_close = self.cur_close;
-            self.last_open_time = Some(ohlcv.open_time());
-        }
-
-        let price = self.source.extract(ohlcv, self.prev_close);
-
-        if is_next_bar {
-            if let Some(old_price) = self.window.push(price) {
-                self.sum -= old_price;
-                if SUM_OF_SQUARES {
-                    self.sum_of_squares -= old_price * old_price;
+        let price = match self.bar_state.handle(ohlcv) {
+            BarAction::Advance(price) => {
+                if let Some(old_price) = self.window.push(price) {
+                    self.maintain_sums(old_price);
                 }
-            }
-        } else {
-            let old_price = self.window.replace(price);
-            self.sum -= old_price;
-            if SUM_OF_SQUARES {
-                self.sum_of_squares -= old_price * old_price;
-            }
-        }
 
-        self.cur_close = Some(ohlcv.close());
+                price
+            }
+            BarAction::Repaint(price) => {
+                let old_price = self.window.replace(price);
+                self.maintain_sums(old_price);
+
+                price
+            }
+        };
+
         self.sum += price;
         if SUM_OF_SQUARES {
             self.sum_of_squares += price * price;
@@ -96,6 +69,14 @@ impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
     pub fn sum_of_squares(&self) -> Option<Price> {
         assert!(SUM_OF_SQUARES, "sum_of_squares requires PriceWindow<true>");
         self.is_ready().then_some(self.sum_of_squares)
+    }
+
+    #[inline]
+    fn maintain_sums(&mut self, old_price: Price) {
+        self.sum -= old_price;
+        if SUM_OF_SQUARES {
+            self.sum_of_squares -= old_price * old_price;
+        }
     }
 
     #[inline]
