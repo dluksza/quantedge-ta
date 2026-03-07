@@ -81,6 +81,7 @@ macro_rules! impl_inherent_methods {
     };
 }
 
+impl_inherent_methods!(Atr, AtrConfig, AtrConfigBuilder);
 impl_inherent_methods!(Sma, SmaConfig, SmaConfigBuilder);
 impl_inherent_methods!(Rsi, RsiConfig, RsiConfigBuilder);
 impl_inherent_methods!(Ema, EmaConfig, EmaConfigBuilder);

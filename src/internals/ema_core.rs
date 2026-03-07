@@ -20,6 +20,13 @@ impl EmaCore {
     }
 
     pub(crate) fn new(length: usize, force_convergence: bool) -> Self {
+        #[allow(clippy::cast_precision_loss)]
+        let alpha = 2.0 / (length + 1) as f64;
+
+        Self::with_alpha(length, alpha, force_convergence)
+    }
+
+    pub(crate) fn with_alpha(length: usize, alpha: f64, force_convergence: bool) -> Self {
         let bars_to_converge = if force_convergence {
             Self::bars_to_converge(length)
         } else {
@@ -35,8 +42,7 @@ impl EmaCore {
             sma_sum: 0.0,
             bars_to_converge,
             converged: false,
-            #[allow(clippy::cast_precision_loss)]
-            alpha: 2.0 / (length + 1) as f64,
+            alpha,
             #[allow(clippy::cast_precision_loss)]
             length_reciprocal: 1.0 / length as f64,
         }

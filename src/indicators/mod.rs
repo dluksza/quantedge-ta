@@ -1,9 +1,11 @@
+mod atr;
 mod bb;
 mod ema;
 mod macd;
 mod rsi;
 mod sma;
 
+pub use atr::*;
 pub use bb::*;
 pub use ema::*;
 pub use macd::*;

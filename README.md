@@ -211,10 +211,11 @@ to extract from the Ohlcv input:
 | RSI       | `f64`      | Relative Strength Index (Wilder's smoothing) |
 | BB        | `BbValue`  | Bollinger Bands (upper, mid, lower)          |
 | MACD      | `MacdValue`| Moving Average Convergence Divergence        |
+| ATR       | `f64`      | Average True Range                           |
 
 ### Planned
 
-ATR, CHOP, and more.
+CHOP and more.
 
 ## Benchmarks
 
