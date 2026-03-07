@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.4.0] - 2026-03-07
 
 ### Added
 
@@ -9,7 +9,7 @@
 ### Changed
 
 - Extracted `BarState` from duplicated bar-boundary detection logic in `PriceWindow`, `Ema`, and `Macd`. Centralizes `open_time` tracking, `prev_close` management, and the non-decreasing timestamp assertion into a single reusable internal type.
-- EMA performance improved ~50% across all benchmarks (stream, tick, repaint, repaint stream) vs v0.3.0 due to `BarState` extraction enabling better code generation.
+- SMA, EMA, and BB performance improved 46–65% (stream), 44–79% (tick), 46–79% (repaint), 42–60% (repaint stream) vs v0.3.0 due to `BarState` extraction enabling better code generation.
 
 ## [0.3.0] - 2026-03-03
 
@@ -53,6 +53,7 @@ Initial release.
 - Reference tests against 744 BTC/USDT bars
 - Criterion benchmarks (stream + tick)
 
+[0.4.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.4.0
 [0.3.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.3.0
 [0.2.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.2.0
 [0.1.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.1.0

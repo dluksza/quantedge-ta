@@ -236,16 +236,16 @@ on a converged indicator.
 
 | Indicator | Period | Time (median) | Throughput     |
 |-----------|--------|---------------|----------------|
-| SMA       | 20     | 2.93 µs       | 254 Melem/s    |
-| SMA       | 200    | 2.82 µs       | 264 Melem/s    |
-| EMA       | 20     | 1.38 µs       | 540 Melem/s    |
-| EMA       | 200    | 1.33 µs       | 560 Melem/s    |
-| BB        | 20     | 3.62 µs       | 206 Melem/s    |
-| BB        | 200    | 3.54 µs       | 210 Melem/s    |
-| RSI       | 14     | 4.02 µs       | 185 Melem/s    |
+| SMA       | 20     | 1.07 µs       | 696 Melem/s    |
+| SMA       | 200    | 1.11 µs       | 669 Melem/s    |
+| EMA       | 20     | 1.37 µs       | 542 Melem/s    |
+| EMA       | 200    | 1.33 µs       | 561 Melem/s    |
+| BB        | 20     | 1.26 µs       | 590 Melem/s    |
+| BB        | 200    | 1.26 µs       | 590 Melem/s    |
+| RSI       | 14     | 4.01 µs       | 185 Melem/s    |
 | RSI       | 140    | 3.83 µs       | 194 Melem/s    |
-| MACD      | 12/26/9 | 3.78 µs      | 197 Melem/s    |
-| MACD      | 120/260/90 | 3.68 µs   | 202 Melem/s    |
+| MACD      | 12/26/9 | 3.80 µs      | 196 Melem/s    |
+| MACD      | 120/260/90 | 3.69 µs   | 202 Melem/s    |
 | ATR       | 14     | 1.76 µs       | 422 Melem/s    |
 | ATR       | 140    | 1.70 µs       | 438 Melem/s    |
 
@@ -253,16 +253,16 @@ on a converged indicator.
 
 | Indicator | Period | Time (median) |
 |-----------|--------|---------------|
-| SMA       | 20     | 18.1 ns       |
-| SMA       | 200    | 70.7 ns       |
-| EMA       | 20     | 2.55 ns       |
-| EMA       | 200    | 2.58 ns       |
-| BB        | 20     | 24.3 ns       |
-| BB        | 200    | 77.5 ns       |
-| RSI       | 14     | 7.62 ns       |
-| RSI       | 140    | 7.53 ns       |
-| MACD      | 12/26/9 | 12.1 ns      |
-| MACD      | 120/260/90 | 11.9 ns   |
+| SMA       | 20     | 10.5 ns       |
+| SMA       | 200    | 18.5 ns       |
+| EMA       | 20     | 2.05 ns       |
+| EMA       | 200    | 1.84 ns       |
+| BB        | 20     | 11.1 ns       |
+| BB        | 200    | 19.3 ns       |
+| RSI       | 14     | 7.73 ns       |
+| RSI       | 140    | 7.05 ns       |
+| MACD      | 12/26/9 | 10.5 ns      |
+| MACD      | 120/260/90 | 10.5 ns   |
 | ATR       | 14     | 1.86 ns       |
 | ATR       | 140    | 1.82 ns       |
 
@@ -270,16 +270,16 @@ on a converged indicator.
 
 | Indicator | Period | Time (median) |
 |-----------|--------|---------------|
-| SMA       | 20     | 18.3 ns       |
-| SMA       | 200    | 69.6 ns       |
-| EMA       | 20     | 2.60 ns       |
-| EMA       | 200    | 2.51 ns       |
-| BB        | 20     | 21.6 ns       |
-| BB        | 200    | 74.8 ns       |
-| RSI       | 14     | 8.52 ns       |
-| RSI       | 140    | 8.30 ns       |
-| MACD      | 12/26/9 | 12.1 ns      |
-| MACD      | 120/260/90 | 11.9 ns   |
+| SMA       | 20     | 10.4 ns       |
+| SMA       | 200    | 17.9 ns       |
+| EMA       | 20     | 2.03 ns       |
+| EMA       | 200    | 1.79 ns       |
+| BB        | 20     | 11.0 ns       |
+| BB        | 200    | 19.7 ns       |
+| RSI       | 14     | 8.35 ns       |
+| RSI       | 140    | 7.92 ns       |
+| MACD      | 12/26/9 | 10.6 ns      |
+| MACD      | 120/260/90 | 10.7 ns   |
 | ATR       | 14     | 2.00 ns       |
 | ATR       | 140    | 1.96 ns       |
 
@@ -287,16 +287,16 @@ on a converged indicator.
 
 | Indicator | Period | Time (median) | Throughput     |
 |-----------|--------|---------------|----------------|
-| SMA       | 20     | 8.67 µs       | 257 Melem/s    |
-| SMA       | 200    | 8.89 µs       | 251 Melem/s    |
-| EMA       | 20     | 3.40 µs       | 656 Melem/s    |
-| EMA       | 200    | 3.31 µs       | 673 Melem/s    |
-| BB        | 20     | 10.9 µs       | 204 Melem/s    |
-| BB        | 200    | 10.9 µs       | 206 Melem/s    |
-| RSI       | 14     | 6.62 µs       | 337 Melem/s    |
+| SMA       | 20     | 3.40 µs       | 656 Melem/s    |
+| SMA       | 200    | 3.57 µs       | 624 Melem/s    |
+| EMA       | 20     | 3.16 µs       | 706 Melem/s    |
+| EMA       | 200    | 3.21 µs       | 696 Melem/s    |
+| BB        | 20     | 4.09 µs       | 546 Melem/s    |
+| BB        | 200    | 4.17 µs       | 536 Melem/s    |
+| RSI       | 14     | 6.63 µs       | 337 Melem/s    |
 | RSI       | 140    | 6.82 µs       | 327 Melem/s    |
-| MACD      | 12/26/9 | 8.45 µs      | 264 Melem/s    |
-| MACD      | 120/260/90 | 9.35 µs   | 239 Melem/s    |
+| MACD      | 12/26/9 | 9.30 µs      | 240 Melem/s    |
+| MACD      | 120/260/90 | 9.75 µs   | 229 Melem/s    |
 | ATR       | 14     | 5.16 µs       | 433 Melem/s    |
 | ATR       | 140    | 5.03 µs       | 443 Melem/s    |
 
