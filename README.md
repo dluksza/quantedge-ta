@@ -215,7 +215,7 @@ to extract from the Ohlcv input:
 
 ### Planned
 
-CHOP and more.
+CHOP, CCI, Stochastic, ADX, VWAP, OBV and more.
 
 ## Benchmarks
 
