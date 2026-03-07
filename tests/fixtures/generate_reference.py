@@ -68,11 +68,8 @@ def main():
             )
 
     # Compute indicators via talipp
-    sma = SMA(period=PERIOD, input_values=closes)
-    ema = EMA(period=PERIOD, input_values=closes)
-    bb = BB(period=PERIOD, std_dev_mult=2.0, input_values=closes)
-
     # SMA
+    sma = SMA(period=PERIOD, input_values=closes)
     with open(f"{OUTPUT_DIR}/sma-20-close.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["open_time", "expected"])
@@ -81,6 +78,7 @@ def main():
                 w.writerow([times[i], f"{val:.10f}"])
 
     # EMA
+    ema = EMA(period=PERIOD, input_values=closes)
     with open(f"{OUTPUT_DIR}/ema-20-close.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["open_time", "expected"])
@@ -89,6 +87,7 @@ def main():
                 w.writerow([times[i], f"{val:.10f}"])
 
     # BB
+    bb = BB(period=PERIOD, std_dev_mult=2.0, input_values=closes)
     with open(f"{OUTPUT_DIR}/bb-20-2-close.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["open_time", "upper", "middle", "lower"])
