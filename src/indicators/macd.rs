@@ -222,16 +222,16 @@ impl MacdValue {
 
 impl Display for MacdValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let signal = self.signal.map_or("-".to_string(), |v| format!("{v:.4}"));
-        let histogram = self
-            .histogram
-            .map_or("-".to_string(), |v| format!("{v:.4}"));
-
-        write!(
-            f,
-            "MacdValue(m: {}, s: {}, h: {})",
-            self.macd, signal, histogram
-        )
+        write!(f, "MacdValue(m: {}", self.macd)?;
+        match self.signal {
+            Some(v) => write!(f, ", s: {v:.4}")?,
+            None => write!(f, ", s: -")?,
+        }
+        match self.histogram {
+            Some(v) => write!(f, ", h: {v:.4}")?,
+            None => write!(f, ", h: -")?,
+        }
+        write!(f, ")")
     }
 }
 
