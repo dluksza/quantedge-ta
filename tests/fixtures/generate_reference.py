@@ -20,12 +20,14 @@ import csv
 import os
 import sys
 
-from talipp.indicators import ATR, BB, EMA, MACD, RSI, SMA
+from talipp.indicators import ATR, BB, EMA, MACD, RSI, SMA, Stoch
 from talipp.ohlcv import OHLCV
 
 PERIOD = 20
 RSI_PERIOD = 14
 ATR_PERIOD = 14
+STOCH_PERIOD = 14
+STOCH_SMOOTH = 3
 OUTPUT_DIR = "tests/fixtures/data"
 
 
@@ -144,19 +146,38 @@ def main():
             if val is not None:
                 w.writerow([times[i], f"{val:.10f}"])
 
+    # Stochastic Oscillator
+    # talipp Stoch(period, smoothing_period) gives raw %K and %D = SMA(%K, smoothing_period).
+    # This maps to Rust Stoch(length=14, k_smooth=1, d_smooth=3).
+    stoch = Stoch(period=STOCH_PERIOD, smoothing_period=STOCH_SMOOTH, input_values=ohlcv_bars)
+    with open(f"{OUTPUT_DIR}/stoch-14-1-3.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["open_time", "k", "d"])
+        for i, val in enumerate(stoch):
+            if val is not None and val.d is not None:
+                w.writerow(
+                    [
+                        times[i],
+                        f"{val.k:.10f}",
+                        f"{val.d:.10f}",
+                    ]
+                )
+
     sma_count = sum(1 for v in sma if v is not None)
     ema_count = sum(1 for v in ema if v is not None)
     bb_count = sum(1 for v in bb if v is not None)
     rsi_count = sum(1 for v in rsi if v is not None)
     macd_count = sum(1 for v in macd if v is not None and v.signal is not None)
     atr_count = sum(1 for v in atr if v is not None)
+    stoch_count = sum(1 for v in stoch if v is not None and v.d is not None)
     print(
         f"Generated {sma_count} SMA, "
         f"{ema_count} EMA, "
         f"{bb_count} BB, "
         f"{rsi_count} RSI, "
         f"{macd_count} MACD, "
-        f"{atr_count} ATR reference values "
+        f"{atr_count} ATR, "
+        f"{stoch_count} Stoch reference values "
         f"from {len(rows)} OHLCV bars."
     )
 

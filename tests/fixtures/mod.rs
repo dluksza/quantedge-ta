@@ -62,6 +62,14 @@ pub struct RefBbValue {
     pub lower: f64,
 }
 
+/// Reference Stoch value with timestamp (both %K and %D present).
+#[derive(Debug, Deserialize)]
+pub struct RefStochValue {
+    pub open_time: u64,
+    pub k: f64,
+    pub d: f64,
+}
+
 /// Reference MACD value with timestamp (fully converged: all 3 fields present).
 #[derive(Debug, Deserialize)]
 pub struct RefMacdValue {
@@ -86,6 +94,11 @@ pub fn load_ref_values(path: &str) -> Vec<RefValue> {
 /// Load BB reference data (upper, middle, lower).
 pub fn load_bb_ref(path: &str) -> Vec<RefBbValue> {
     load_records(path, "invalid BB reference record")
+}
+
+/// Load Stoch reference data (k, d).
+pub fn load_stoch_ref(path: &str) -> Vec<RefStochValue> {
+    load_records(path, "invalid Stoch reference record")
 }
 
 /// Load MACD reference data (macd, signal, histogram).
@@ -238,6 +251,45 @@ pub fn assert_macd_values_match(
         }
         (c, r) => {
             panic!("MACD convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
+        }
+    }
+}
+
+/// Assert Stoch values match between closed and repainted indicators.
+pub fn assert_stoch_values_match(
+    bar_idx: usize,
+    closed: Option<quantedge_ta::StochValue>,
+    repainted: Option<quantedge_ta::StochValue>,
+    tolerance: f64,
+) {
+    match (closed, repainted) {
+        (None, None) => {}
+        (Some(c), Some(r)) => {
+            let diff = (c.k() - r.k()).abs();
+            assert!(
+                diff <= tolerance,
+                "Stoch %K diverged at bar {bar_idx}: closed={:.10}, repainted={:.10}, diff={diff:.2e}",
+                c.k(),
+                r.k()
+            );
+            match (c.d(), r.d()) {
+                (Some(cd), Some(rd)) => {
+                    let diff = (cd - rd).abs();
+                    assert!(
+                        diff <= tolerance,
+                        "Stoch %D diverged at bar {bar_idx}: closed={cd:.10}, repainted={rd:.10}, diff={diff:.2e}"
+                    );
+                }
+                (None, None) => {}
+                (cd, rd) => {
+                    panic!(
+                        "Stoch %D convergence mismatch at bar {bar_idx}: closed={cd:?}, repainted={rd:?}"
+                    );
+                }
+            }
+        }
+        (c, r) => {
+            panic!("Stoch convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
         }
     }
 }

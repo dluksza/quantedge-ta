@@ -251,6 +251,8 @@ on a converged indicator.
 | MACD      | 120/260/90 | 3.69 µs   | 202 Melem/s    |
 | ATR       | 14     | 1.76 µs       | 422 Melem/s    |
 | ATR       | 140    | 1.70 µs       | 438 Melem/s    |
+| Stoch     | 14/3/3 | 6.32 µs       | 118 Melem/s    |
+| Stoch     | 140/30/30 | 13.2 µs    | 56.2 Melem/s   |
 
 ### Tick — single `compute()` on a converged indicator
 
@@ -268,6 +270,8 @@ on a converged indicator.
 | MACD      | 120/260/90 | 10.5 ns   |
 | ATR       | 14     | 1.86 ns       |
 | ATR       | 140    | 1.82 ns       |
+| Stoch     | 14/3/3 | 39.1 ns       |
+| Stoch     | 140/30/30 | 64.4 ns   |
 
 ### Repaint — single `compute()` repaint on a converged indicator
 
@@ -285,6 +289,8 @@ on a converged indicator.
 | MACD      | 120/260/90 | 10.7 ns   |
 | ATR       | 14     | 2.00 ns       |
 | ATR       | 140    | 1.96 ns       |
+| Stoch     | 14/3/3 | 37.2 ns       |
+| Stoch     | 140/30/30 | 43.8 ns   |
 
 ### Repaint Stream — process 744 bars × 3 ticks from cold start
 
@@ -302,6 +308,8 @@ on a converged indicator.
 | MACD      | 120/260/90 | 9.75 µs   | 229 Melem/s    |
 | ATR       | 14     | 5.16 µs       | 433 Melem/s    |
 | ATR       | 140    | 5.03 µs       | 443 Melem/s    |
+| Stoch     | 14/3/3 | 13.2 µs       | 170 Melem/s    |
+| Stoch     | 140/30/30 | 18.6 µs   | 120 Melem/s    |
 
 Run locally:
 

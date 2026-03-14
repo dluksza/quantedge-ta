@@ -6,6 +6,7 @@ use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use quantedge_ta::{
     Atr, AtrConfig, Bb, BbConfig, Ema, EmaConfig, Macd, MacdConfig, Rsi, RsiConfig, Sma, SmaConfig,
+    Stoch, StochConfig,
 };
 use std::{hint::black_box, num::NonZero, time::Duration};
 
@@ -32,6 +33,24 @@ macro_rules! all_indicators {
         );
         $m!("atr14", Atr, AtrConfig::builder().length(nz(14)).build());
         $m!("atr140", Atr, AtrConfig::builder().length(nz(140)).build());
+        $m!(
+            "stoch1433",
+            Stoch,
+            StochConfig::builder()
+                .length(nz(14))
+                .k_smooth(nz(3))
+                .d_smooth(nz(3))
+                .build()
+        );
+        $m!(
+            "stoch140303",
+            Stoch,
+            StochConfig::builder()
+                .length(nz(140))
+                .k_smooth(nz(30))
+                .d_smooth(nz(30))
+                .build()
+        );
     };
 }
 

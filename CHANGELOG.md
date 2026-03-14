@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Stochastic Oscillator (%K, %D) with reference tests against talipp (729 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks.
+
 ## [0.4.0] - 2026-03-07
 
 ### Added
