@@ -30,12 +30,19 @@ pub struct AtrConfig {
 impl IndicatorConfig for AtrConfig {
     type Builder = AtrConfigBuilder;
 
+    #[inline]
     fn builder() -> Self::Builder {
         AtrConfigBuilder::new()
     }
 
+    #[inline]
     fn source(&self) -> crate::PriceSource {
         crate::PriceSource::TrueRange
+    }
+
+    #[inline]
+    fn convergence(&self) -> usize {
+        self.length
     }
 }
 
@@ -466,6 +473,15 @@ mod tests {
 
         use super::*;
         use std::collections::HashSet;
+
+        #[test]
+        fn convergence_equals_length() {
+            let config = AtrConfig::builder().length(nz(14)).build();
+            assert_eq!(config.convergence(), 14);
+
+            let config = AtrConfig::builder().length(nz(3)).build();
+            assert_eq!(config.convergence(), 3);
+        }
 
         #[test]
         fn builder_sets_length() {

@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- `convergence()` method on `IndicatorConfig` trait — returns the number of bars until `compute()` first returns `Some`. Each indicator implements its own formula.
+
+### Changed
+
+- **Breaking:** Removed `EmaConfig::required_bars_to_converge()` — use `convergence()` instead.
+- **Breaking:** Removed `MacdConfig::convergence_bars()` — use `convergence()` instead.
+- **Breaking:** Renamed `MacdConfig::full_convergence_bars()` to `full_convergence()`.
+
 ## [0.5.0] - 2026-03-14
 
 ### Added

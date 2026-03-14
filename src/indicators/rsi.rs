@@ -38,6 +38,11 @@ impl IndicatorConfig for RsiConfig {
     fn source(&self) -> PriceSource {
         self.source
     }
+
+    #[inline]
+    fn convergence(&self) -> usize {
+        self.length + 1
+    }
 }
 
 impl RsiConfig {
@@ -695,6 +700,15 @@ mod tests {
 
     mod config {
         use super::*;
+
+        #[test]
+        fn convergence_equals_length_plus_one() {
+            let config = RsiConfig::close(nz(14));
+            assert_eq!(config.convergence(), 15);
+
+            let config = RsiConfig::close(nz(3));
+            assert_eq!(config.convergence(), 4);
+        }
 
         #[test]
         fn default_source_is_close() {

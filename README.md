@@ -164,6 +164,26 @@ impl Ohlcv for MyKline {
 
 ### Convergence
 
+Every indicator config exposes `convergence()` — the number of bars that
+`compute()` must process before it starts returning `Some`. During backtesting
+this defines the warm-up (seeding) phase: bars where the indicator is
+stabilising and should not drive trading decisions.
+
+```rust
+use quantedge_ta::{SmaConfig, RsiConfig, MacdConfig};
+use std::num::NonZero;
+
+let sma = SmaConfig::close(NonZero::new(20).unwrap());
+let rsi = RsiConfig::close(NonZero::new(14).unwrap());
+let macd = MacdConfig::default_close(); // MACD(12, 26, 9)
+
+// The slowest indicator determines the warm-up length
+let warmup = sma.convergence()   // 20
+    .max(rsi.convergence())      // 15
+    .max(macd.convergence());    // 26
+// → skip the first 26 bars before acting on signals
+```
+
 SMA and BB converge as soon as the window fills (`length` bars). EMA and RSI
 use exponential smoothing with infinite memory; the SMA seed influences all
 subsequent values. RSI output begins at bar `length + 1`. For EMA, `EmaConfig`
@@ -171,21 +191,8 @@ provides methods to control convergence:
 
 - `enforce_convergence()` -- when `true`, `compute()` returns `None` until
   the seed's contribution decays below 1%.
-- `required_bars_to_converge()` -- returns the number of bars needed.
-
-```rust
-use quantedge_ta::EmaConfig;
-use std::num::NonZero;
-
-let config = EmaConfig::builder()
-    .length(NonZero::new(20).unwrap())
-    .enforce_convergence(true) // None until ~63 bars
-    .build();
-config.required_bars_to_converge(); // 63 = 3 * (20 + 1)
-```
-
-Use `required_bars_to_converge()` to determine how much history to fetch before
-going live.
+- `convergence()` -- returns the number of bars needed (e.g. `63` for
+  EMA(20) with enforced convergence = `3 × (20 + 1)`).
 
 ### Price Sources
 

@@ -100,6 +100,11 @@ impl IndicatorConfig for BbConfig {
     fn source(&self) -> PriceSource {
         self.source
     }
+
+    #[inline]
+    fn convergence(&self) -> usize {
+        self.length
+    }
 }
 
 impl BbConfig {
@@ -576,6 +581,15 @@ mod tests {
 
     mod config {
         use super::*;
+
+        #[test]
+        fn convergence_equals_length() {
+            let config = BbConfig::close(nz(20));
+            assert_eq!(config.convergence(), 20);
+
+            let config = BbConfig::close(nz(200));
+            assert_eq!(config.convergence(), 200);
+        }
 
         #[test]
         fn default_std_dev_is_two() {

@@ -45,12 +45,19 @@ pub struct StochConfig {
 impl IndicatorConfig for StochConfig {
     type Builder = StochConfigBuilder;
 
+    #[inline]
     fn builder() -> Self::Builder {
         StochConfigBuilder::new()
     }
 
+    #[inline]
     fn source(&self) -> PriceSource {
         self.source
+    }
+
+    #[inline]
+    fn convergence(&self) -> usize {
+        self.length + self.k_smooth
     }
 }
 

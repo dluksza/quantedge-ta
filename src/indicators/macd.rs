@@ -54,6 +54,11 @@ impl IndicatorConfig for MacdConfig {
     fn source(&self) -> PriceSource {
         self.source
     }
+
+    #[inline]
+    fn convergence(&self) -> usize {
+        self.slow_period
+    }
 }
 
 impl MacdConfig {
@@ -96,16 +101,10 @@ impl MacdConfig {
         self.signal_period
     }
 
-    /// Bars until MACD line values are fully converged.
-    #[must_use]
-    pub fn convergence_bars(&self) -> usize {
-        EmaCore::bars_to_converge(self.slow_period)
-    }
-
     /// Bars until all outputs (including signal) are fully converged.
     #[must_use]
-    pub fn full_convergence_bars(&self) -> usize {
-        self.convergence_bars() + self.signal_period - 1
+    pub fn full_convergence(&self) -> usize {
+        self.convergence() + self.signal_period - 1
     }
 }
 
@@ -735,6 +734,26 @@ mod tests {
     mod config {
         use super::*;
         use std::collections::HashSet;
+
+        #[test]
+        fn convergence_equals_slow_period() {
+            let config = MacdConfig::default_close();
+            assert_eq!(config.convergence(), 26);
+
+            let config = MacdConfig::close(nz(3), nz(6), nz(4));
+            assert_eq!(config.convergence(), 6);
+        }
+
+        #[test]
+        fn full_convergence_includes_signal() {
+            let config = MacdConfig::default_close();
+            // convergence (26) + signal_period (9) - 1 = 34
+            assert_eq!(config.full_convergence(), 34);
+
+            let config = MacdConfig::close(nz(3), nz(6), nz(4));
+            // 6 + 4 - 1 = 9
+            assert_eq!(config.full_convergence(), 9);
+        }
 
         #[test]
         fn default_is_12_26_9() {

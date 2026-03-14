@@ -37,6 +37,11 @@ impl IndicatorConfig for SmaConfig {
     fn source(&self) -> PriceSource {
         self.source
     }
+
+    #[inline]
+    fn convergence(&self) -> usize {
+        self.length
+    }
 }
 
 impl SmaConfig {
@@ -388,6 +393,15 @@ mod tests {
         #[should_panic(expected = "length is required")]
         fn panics_without_length() {
             let _ = SmaConfig::builder().build();
+        }
+
+        #[test]
+        fn convergence_equals_length() {
+            let config = SmaConfig::close(nz(20));
+            assert_eq!(config.convergence(), 20);
+
+            let config = SmaConfig::close(nz(200));
+            assert_eq!(config.convergence(), 200);
         }
 
         #[test]

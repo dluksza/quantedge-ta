@@ -60,6 +60,13 @@ macro_rules! impl_inherent_methods {
             pub fn source(&self) -> PriceSource {
                 <Self as IndicatorConfig>::source(self)
             }
+
+            /// See [`IndicatorConfig::convergence`].
+            #[must_use]
+            #[inline]
+            pub fn convergence(&self) -> usize {
+                <Self as IndicatorConfig>::convergence(self)
+            }
         }
 
         // --- IndicatorConfigBuilder ---

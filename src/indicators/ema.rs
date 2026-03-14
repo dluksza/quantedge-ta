@@ -34,7 +34,7 @@ use crate::{
 ///     .build();
 ///
 /// assert_eq!(config.length(), 20);
-/// assert_eq!(config.required_bars_to_converge(), 63);
+/// assert_eq!(config.convergence(), 63);
 /// ```
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub struct EmaConfig {
@@ -56,6 +56,16 @@ impl IndicatorConfig for EmaConfig {
     fn source(&self) -> PriceSource {
         self.source
     }
+
+    /// Number of bars needed before the EMA output is fully converged.
+    ///
+    /// When convergence is not enforced, this equals the window length.
+    /// When enforced, this is `3 × (length + 1)` — the number of bars
+    /// until the SMA seed's influence decays below 1%.
+    #[inline]
+    fn convergence(&self) -> usize {
+        self.bars_to_converge
+    }
 }
 
 impl EmaConfig {
@@ -73,16 +83,6 @@ impl EmaConfig {
     #[must_use]
     pub fn enforce_convergence(&self) -> bool {
         self.convergence
-    }
-
-    /// Number of bars needed before the EMA output is fully converged.
-    ///
-    /// When convergence is not enforced, this equals the window length.
-    /// When enforced, this is `3 × (length + 1)` — the number of bars
-    /// until the SMA seed's influence decays below 1%.
-    #[must_use]
-    pub fn required_bars_to_converge(&self) -> usize {
-        self.bars_to_converge
     }
 
     /// EMA on closing price.
@@ -502,13 +502,13 @@ mod tests {
                 .length(nz(10))
                 .enforce_convergence(true)
                 .build();
-            assert_eq!(c10.required_bars_to_converge(), 33);
+            assert_eq!(c10.convergence(), 33);
 
             let c50 = EmaConfig::builder()
                 .length(nz(50))
                 .enforce_convergence(true)
                 .build();
-            assert_eq!(c50.required_bars_to_converge(), 153);
+            assert_eq!(c50.convergence(), 153);
         }
 
         #[test]
