@@ -14,9 +14,8 @@ A streaming technical analysis library for Rust. Correct, tested, documented.
 
 Indicators return `Option<Self::Output>`. No value until there's enough data.
 No silent NaN, no garbage early values. The type system enforces correctness.
-For indicators with infinite memory (EMA), convergence enforcement is
-configurable: opt in to suppress values until the seed's influence has decayed
-below 1%.
+For indicators with infinite memory (EMA), `full_convergence()` reports how
+many bars are needed for the seed's influence to decay below 1%.
 
 ### Bring your own data
 
@@ -189,12 +188,8 @@ let warmup = sma.convergence()   // 20
 SMA and BB converge as soon as the window fills (`length` bars). EMA and RSI
 use exponential smoothing with infinite memory; the SMA seed influences all
 subsequent values. RSI output begins at bar `length + 1`. For EMA, `EmaConfig`
-provides methods to control convergence:
-
-- `enforce_convergence()` -- when `true`, `compute()` returns `None` until
-  the seed's contribution decays below 1%.
-- `convergence()` -- returns the number of bars needed (e.g. `63` for
-  EMA(20) with enforced convergence = `3 × (20 + 1)`).
+provides `full_convergence()` — the number of bars until the seed's
+contribution decays below 1% (e.g. `63` for EMA(20) = `3 × (20 + 1)`).
 
 ### Price Sources
 

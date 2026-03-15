@@ -309,9 +309,9 @@ impl Indicator for Macd {
     fn new(config: Self::Config) -> Self {
         Self {
             config,
-            fast: EmaCore::new(config.fast_length(), false),
-            slow: EmaCore::new(config.slow_length(), false),
-            signal: EmaCore::new(config.signal_length(), false),
+            fast: EmaCore::new(config.fast_length()),
+            slow: EmaCore::new(config.slow_length()),
+            signal: EmaCore::new(config.signal_length()),
             current: None,
             bar_state: BarState::new(config.source()),
         }

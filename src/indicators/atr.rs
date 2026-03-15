@@ -174,7 +174,7 @@ impl Indicator for Atr {
         Atr {
             config,
             bar_state: BarState::new(crate::PriceSource::TrueRange),
-            core: EmaCore::with_alpha(config.length, alpha, false),
+            core: EmaCore::with_alpha(config.length, alpha),
         }
     }
 

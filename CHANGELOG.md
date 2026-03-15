@@ -9,6 +9,7 @@
 
 ### Changed
 
+- **Breaking:** Removed `EmaConfig::enforce_convergence()` and `EmaConfigBuilder::enforce_convergence()` — convergence policy is the engine's responsibility, not the indicator's. Use `EmaConfig::full_convergence()` to query how many bars are needed for the seed's influence to decay below 1%.
 - **Breaking:** Removed `EmaConfig::required_bars_to_converge()` — use `convergence()` instead.
 - **Breaking:** Removed `MacdConfig::convergence_bars()` — use `convergence()` instead.
 - **Breaking:** Renamed `MacdConfig::full_convergence_bars()` to `full_convergence()`.

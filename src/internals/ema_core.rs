@@ -8,7 +8,6 @@ pub(crate) struct EmaCore {
     current_price: Price,
     sma_sum: f64,
     seen_bars: usize,
-    bars_to_converge: usize,
     converged: bool,
     alpha: f64,
     length_reciprocal: f64,
@@ -19,20 +18,14 @@ impl EmaCore {
         3 * (length + 1)
     }
 
-    pub(crate) fn new(length: usize, force_convergence: bool) -> Self {
+    pub(crate) fn new(length: usize) -> Self {
         #[allow(clippy::cast_precision_loss)]
         let alpha = 2.0 / (length + 1) as f64;
 
-        Self::with_alpha(length, alpha, force_convergence)
+        Self::with_alpha(length, alpha)
     }
 
-    pub(crate) fn with_alpha(length: usize, alpha: f64, force_convergence: bool) -> Self {
-        let bars_to_converge = if force_convergence {
-            Self::bars_to_converge(length)
-        } else {
-            length
-        };
-
+    pub(crate) fn with_alpha(length: usize, alpha: f64) -> Self {
         Self {
             length,
             value: 0.0,
@@ -40,7 +33,6 @@ impl EmaCore {
             previous_value: 0.0,
             seen_bars: 0,
             sma_sum: 0.0,
-            bars_to_converge,
             converged: false,
             alpha,
             #[allow(clippy::cast_precision_loss)]
@@ -81,7 +73,7 @@ impl EmaCore {
                 .mul_add(price - self.previous_value, self.previous_value);
         }
 
-        self.converged = self.seen_bars >= self.bars_to_converge;
+        self.converged = self.seen_bars >= self.length;
 
         self.value()
     }
@@ -121,7 +113,7 @@ mod tests {
     use super::*;
 
     fn raw_ema(length: usize) -> EmaCore {
-        EmaCore::new(length, false)
+        EmaCore::new(length)
     }
 
     mod seeding {
@@ -193,41 +185,6 @@ mod tests {
             ema.push(10.0);
             ema.push(20.0);
             assert!(ema.push(30.0).is_some());
-        }
-
-        #[test]
-        fn none_until_converged_when_enforced() {
-            let mut ema = EmaCore::new(3, true);
-            // required_bars = 3 * (3 + 1) = 12
-            for _ in 1..=11 {
-                assert_eq!(ema.push(50.0), None);
-            }
-            assert!(ema.push(50.0).is_some());
-        }
-
-        #[test]
-        fn replace_returns_none_before_convergence() {
-            let mut ema = EmaCore::new(3, true);
-            // Fill seed (3 bars)
-            ema.push(10.0);
-            ema.push(20.0);
-            ema.push(30.0); // seed complete, but not converged (need 12)
-            // Post-seed replace should still be None
-            assert_eq!(ema.replace(35.0), None);
-        }
-
-        #[test]
-        #[allow(clippy::cast_precision_loss)]
-        fn values_match_with_and_without_enforcement() {
-            let mut free = raw_ema(3);
-            let mut enforced = EmaCore::new(3, true);
-
-            for i in 1..=20 {
-                free.push(f64::from(i) * 10.0);
-                enforced.push(f64::from(i) * 10.0);
-            }
-
-            assert_eq!(free.push(210.0), enforced.push(210.0));
         }
     }
 

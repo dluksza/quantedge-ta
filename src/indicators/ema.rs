@@ -14,13 +14,11 @@ use crate::{
 /// # Convergence
 ///
 /// EMA has infinite memory: the initial seed value (SMA of the
-/// first `length` bars) influences all subsequent values. With
-/// `enforce_convergence` enabled, [`Ema::compute`] returns
-/// `None` until the seed's contribution decays below 1%.
-///
-/// For EMA(20), that's 63 bars (`3 × (length + 1)`).
-/// Without enforcement, values are returned as soon as the
-/// SMA seed is ready (after `length` bars).
+/// first `length` bars) influences all subsequent values.
+/// Values are returned as soon as the SMA seed is ready
+/// (after `length` bars). Use [`full_convergence()`](Self::full_convergence)
+/// to query how many bars are needed for the seed's influence
+/// to decay below 1%.
 ///
 /// # Example
 ///
@@ -30,18 +28,15 @@ use crate::{
 ///
 /// let config = EmaConfig::builder()
 ///     .length(NonZero::new(20).unwrap())
-///     .enforce_convergence(true)
 ///     .build();
 ///
 /// assert_eq!(config.length(), 20);
-/// assert_eq!(config.convergence(), 63);
+/// assert_eq!(config.full_convergence(), 63);
 /// ```
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub struct EmaConfig {
     length: usize,
     source: PriceSource,
-    convergence: bool,
-    bars_to_converge: usize,
 }
 
 impl IndicatorConfig for EmaConfig {
@@ -57,14 +52,9 @@ impl IndicatorConfig for EmaConfig {
         self.source
     }
 
-    /// Number of bars needed before the EMA output is fully converged.
-    ///
-    /// When convergence is not enforced, this equals the window length.
-    /// When enforced, this is `3 × (length + 1)` — the number of bars
-    /// until the SMA seed's influence decays below 1%.
     #[inline]
     fn convergence(&self) -> usize {
-        self.bars_to_converge
+        self.length
     }
 }
 
@@ -76,13 +66,12 @@ impl EmaConfig {
         self.length
     }
 
-    /// When `true`, [`Ema::compute`] returns `None` until
-    /// [`required_bars_to_converge`](Self::required_bars_to_converge) bars have
-    /// been processed. Default: `false`.
+    /// Number of bars until the SMA seed's influence decays
+    /// below 1%: `3 × (length + 1)`.
     #[inline]
     #[must_use]
-    pub fn enforce_convergence(&self) -> bool {
-        self.convergence
+    pub fn full_convergence(&self) -> usize {
+        EmaCore::bars_to_converge(self.length)
     }
 
     /// EMA on closing price.
@@ -118,14 +107,12 @@ impl Display for EmaConfig {
 
 /// Builder for [`EmaConfig`].
 ///
-/// Defaults: source = [`PriceSource::Close`],
-/// convergence enforcement = `false`.
+/// Defaults: source = [`PriceSource::Close`].
 /// Length must be set before calling
 /// [`build`](IndicatorConfigBuilder::build).
 pub struct EmaConfigBuilder {
     length: Option<usize>,
     source: PriceSource,
-    convergence: bool,
 }
 
 impl EmaConfigBuilder {
@@ -133,7 +120,6 @@ impl EmaConfigBuilder {
         Self {
             length: None,
             source: PriceSource::Close,
-            convergence: false,
         }
     }
 
@@ -142,14 +128,6 @@ impl EmaConfigBuilder {
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
-        self
-    }
-
-    /// Enables or disables convergence enforcement.
-    #[inline]
-    #[must_use]
-    pub fn enforce_convergence(mut self, enforce: bool) -> Self {
-        self.convergence = enforce;
         self
     }
 }
@@ -163,18 +141,9 @@ impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
 
     #[inline]
     fn build(self) -> EmaConfig {
-        let length = self.length.expect("length is required");
-        let bars_to_converge = if self.convergence {
-            EmaCore::bars_to_converge(length)
-        } else {
-            length
-        };
-
         EmaConfig {
-            length,
+            length: self.length.expect("length is required"),
             source: self.source,
-            convergence: self.convergence,
-            bars_to_converge,
         }
     }
 }
@@ -200,13 +169,9 @@ impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
 ///
 /// # Convergence
 ///
-/// Without `enforce_convergence`, values are returned as soon
-/// as the SMA seed is ready (after `length` bars). The seed's
-/// influence is still present but decays exponentially.
-///
-/// With `enforce_convergence` enabled, `None` is returned
-/// until `3 × (length + 1)` bars have been processed, at
-/// which point the seed's contribution is below 1%.
+/// Values are returned as soon as the SMA seed is ready
+/// (after `length` bars). The seed's influence is still
+/// present but decays exponentially.
 ///
 /// # Example
 ///
@@ -254,7 +219,7 @@ impl Indicator for Ema {
         Self {
             config,
             bar_state: BarState::new(config.source()),
-            core: EmaCore::new(config.length(), config.convergence),
+            core: EmaCore::new(config.length()),
         }
     }
 
@@ -480,57 +445,6 @@ mod tests {
             ema.compute(&bar(4.0, 2));
             assert!(ema.compute(&bar(6.0, 3)).is_some());
         }
-
-        #[test]
-        fn none_until_converged_when_enforced() {
-            let mut ema = Ema::new(
-                EmaConfig::builder()
-                    .length(nz(3))
-                    .enforce_convergence(true)
-                    .build(),
-            );
-            // required_bars = 3 * (3 + 1) = 12
-            for i in 1..=11 {
-                assert_eq!(ema.compute(&bar(50.0, i)), None, "expected None at bar {i}");
-            }
-            assert!(ema.compute(&bar(50.0, 12)).is_some());
-        }
-
-        #[test]
-        fn required_bars_scales_with_length() {
-            let c10 = EmaConfig::builder()
-                .length(nz(10))
-                .enforce_convergence(true)
-                .build();
-            assert_eq!(c10.convergence(), 33);
-
-            let c50 = EmaConfig::builder()
-                .length(nz(50))
-                .enforce_convergence(true)
-                .build();
-            assert_eq!(c50.convergence(), 153);
-        }
-
-        #[test]
-        #[allow(clippy::cast_precision_loss)]
-        fn values_match_with_and_without_enforcement() {
-            let mut free = Ema::new(EmaConfig::builder().length(nz(3)).build());
-            let mut enforced = Ema::new(
-                EmaConfig::builder()
-                    .length(nz(3))
-                    .enforce_convergence(true)
-                    .build(),
-            );
-
-            for i in 1..=20 {
-                free.compute(&bar(i as f64 * 10.0, i));
-                enforced.compute(&bar(i as f64 * 10.0, i));
-            }
-
-            let f = free.compute(&bar(210.0, 21));
-            let e = enforced.compute(&bar(210.0, 21));
-            assert_eq!(f, e);
-        }
     }
 
     mod clone {
@@ -564,12 +478,6 @@ mod tests {
         fn default_source_is_close() {
             let config = EmaConfig::builder().length(nz(10)).build();
             assert_eq!(config.source(), PriceSource::Close);
-        }
-
-        #[test]
-        fn convergence_disabled_by_default() {
-            let config = EmaConfig::builder().length(nz(10)).build();
-            assert!(!config.enforce_convergence());
         }
 
         #[test]
@@ -704,21 +612,6 @@ mod tests {
             ema.compute(&bar(6.0, 3));
             let computed = ema.compute(&bar(8.0, 4));
             assert_eq!(ema.value(), computed);
-        }
-
-        #[test]
-        fn none_during_convergence_enforcement() {
-            let mut ema = Ema::new(
-                EmaConfig::builder()
-                    .length(nz(3))
-                    .enforce_convergence(true)
-                    .build(),
-            );
-            for i in 1..=5 {
-                ema.compute(&bar(50.0, i));
-            }
-            // Required bars = 12, only fed 5
-            assert_eq!(ema.value(), None);
         }
     }
 }
