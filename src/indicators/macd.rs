@@ -84,24 +84,28 @@ impl MacdConfig {
     }
 
     /// Fast EMA length.
+    #[inline]
     #[must_use]
     pub fn fast_length(&self) -> usize {
         self.fast_length
     }
 
     /// Slow EMA length.
+    #[inline]
     #[must_use]
     pub fn slow_length(&self) -> usize {
         self.slow_length
     }
 
     /// Signal EMA length.
+    #[inline]
     #[must_use]
     pub fn signal_length(&self) -> usize {
         self.signal_length
     }
 
     /// Bars until all outputs (including signal) are fully converged.
+    #[inline]
     #[must_use]
     pub fn full_convergence(&self) -> usize {
         self.convergence() + self.signal_length - 1
@@ -200,6 +204,7 @@ pub struct MacdValue {
 
 impl MacdValue {
     /// MACD line: fast EMA minus slow EMA.
+    #[inline]
     #[must_use]
     pub fn macd(&self) -> f64 {
         self.macd
@@ -207,6 +212,7 @@ impl MacdValue {
 
     /// Signal line: EMA of the MACD line.
     /// `None` during the signal seeding phase.
+    #[inline]
     #[must_use]
     pub fn signal(&self) -> Option<f64> {
         self.signal
@@ -214,6 +220,7 @@ impl MacdValue {
 
     /// Histogram: MACD minus signal.
     /// `None` when signal is not yet available.
+    #[inline]
     #[must_use]
     pub fn histogram(&self) -> Option<f64> {
         self.histogram
@@ -310,6 +317,7 @@ impl Indicator for Macd {
         }
     }
 
+    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         let signal_value = match self.bar_state.handle(ohlcv) {
             BarAction::Advance(price) => {
@@ -354,6 +362,7 @@ impl Indicator for Macd {
         self.current
     }
 
+    #[inline]
     fn value(&self) -> Option<Self::Output> {
         self.current
     }

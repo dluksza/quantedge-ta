@@ -131,6 +131,7 @@ impl StochConfigBuilder {
     }
 
     /// Sets the lookback length for the highest-high / lowest-low window.
+    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -138,6 +139,7 @@ impl StochConfigBuilder {
     }
 
     /// Sets the %K smoothing period.
+    #[inline]
     #[must_use]
     pub fn k_smooth(mut self, k_smooth: NonZero<usize>) -> Self {
         self.k_smooth.replace(k_smooth.get());
@@ -145,6 +147,7 @@ impl StochConfigBuilder {
     }
 
     /// Sets the %D smoothing period.
+    #[inline]
     #[must_use]
     pub fn d_smooth(mut self, d_smooth: NonZero<usize>) -> Self {
         self.d_smooth.replace(d_smooth.get());
@@ -153,11 +156,13 @@ impl StochConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<StochConfig> for StochConfigBuilder {
+    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
+    #[inline]
     fn build(self) -> StochConfig {
         StochConfig {
             length: self.length.expect("length is required"),
@@ -351,6 +356,7 @@ impl Indicator for Stoch {
         self.current
     }
 
+    #[inline]
     fn value(&self) -> Option<Self::Output> {
         self.current
     }

@@ -83,6 +83,7 @@ impl AtrConfigBuilder {
     }
 
     /// Sets the indicator window length.
+    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length = length.get();
@@ -91,10 +92,12 @@ impl AtrConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<AtrConfig> for AtrConfigBuilder {
+    #[inline]
     fn source(self, _source: crate::PriceSource) -> Self {
         self
     }
 
+    #[inline]
     fn build(self) -> AtrConfig {
         AtrConfig {
             length: self.length,
