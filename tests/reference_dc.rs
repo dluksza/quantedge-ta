@@ -1,7 +1,8 @@
 mod fixtures;
 
 use fixtures::{
-    assert_dc_values_match, assert_near, load_dc_ref, load_reference_ohlcvs, repaint_sequence,
+    assert_channel_values_match, assert_near, dc_bands, load_channel_ref, load_reference_ohlcvs,
+    repaint_sequence,
 };
 use quantedge_ta::{Dc, DcConfig};
 
@@ -13,7 +14,7 @@ const TOLERANCE: f64 = 1e-10;
 #[test]
 fn dc_20_matches_reference() {
     let bars = load_reference_ohlcvs();
-    let reference = load_dc_ref(REF_PATH);
+    let reference = load_channel_ref(REF_PATH);
 
     let mut dc = Dc::new(DcConfig::builder().build());
 
@@ -72,6 +73,13 @@ fn dc_20_repaint_matches_closed() {
             repainted.compute(&tick);
         }
 
-        assert_dc_values_match(i, closed.value(), repainted.value(), TOLERANCE);
+        assert_channel_values_match(
+            "DC",
+            i,
+            closed.value(),
+            repainted.value(),
+            TOLERANCE,
+            dc_bands,
+        );
     }
 }

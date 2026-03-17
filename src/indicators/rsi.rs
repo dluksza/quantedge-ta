@@ -379,11 +379,7 @@ impl Display for Rsi {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_util::{Bar, nz};
-
-    fn bar(price: f64, time: u64) -> Bar {
-        Bar::new_with_open_time(price, price, price, price, time)
-    }
+    use crate::test_util::{bar, nz};
 
     /// Returns a seeded RSI(3) after bars: 10, 12, 11, 13 at times 1–4.
     fn seeded_rsi3() -> Rsi {

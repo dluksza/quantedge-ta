@@ -1,9 +1,9 @@
 mod fixtures;
 
-use fixtures::{assert_near, load_kc_ref, nz};
+use fixtures::{assert_near, kc_bands, load_channel_ref, nz};
 use quantedge_ta::{Kc, KcConfig, KcMultiplier};
 
-use crate::fixtures::{assert_kc_values_match, load_reference_ohlcvs, repaint_sequence};
+use crate::fixtures::{assert_channel_values_match, load_reference_ohlcvs, repaint_sequence};
 
 const REF_PATH: &str = "tests/fixtures/data/kc-20-10-1.5.csv";
 
@@ -22,7 +22,7 @@ fn kc_config() -> KcConfig {
 #[test]
 fn kc_20_10_1_5_matches_reference() {
     let bars = load_reference_ohlcvs();
-    let reference = load_kc_ref(REF_PATH);
+    let reference = load_channel_ref(REF_PATH);
 
     let mut kc = Kc::new(kc_config());
 
@@ -81,6 +81,13 @@ fn kc_20_10_1_5_repaint_matches_closed() {
             repainted.compute(&tick);
         }
 
-        assert_kc_values_match(i, closed.value(), repainted.value(), TOLERANCE);
+        assert_channel_values_match(
+            "KC",
+            i,
+            closed.value(),
+            repainted.value(),
+            TOLERANCE,
+            kc_bands,
+        );
     }
 }

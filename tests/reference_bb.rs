@@ -1,9 +1,9 @@
 mod fixtures;
 
-use fixtures::{assert_near, load_bb_ref, nz};
+use fixtures::{assert_near, bb_bands, load_channel_ref, nz};
 use quantedge_ta::{Bb, BbConfig};
 
-use crate::fixtures::{assert_bb_values_match, load_reference_ohlcvs, repaint_sequence};
+use crate::fixtures::{assert_channel_values_match, load_reference_ohlcvs, repaint_sequence};
 
 const REF_PATH: &str = "tests/fixtures/data/bb-20-2-close.csv";
 
@@ -16,7 +16,7 @@ const TOLERANCE: f64 = 1e-6;
 #[test]
 fn bb_20_2_close_matches_reference() {
     let bars = load_reference_ohlcvs();
-    let reference = load_bb_ref(REF_PATH);
+    let reference = load_channel_ref(REF_PATH);
 
     let config = BbConfig::close(nz(20));
     let mut bb = Bb::new(config);
@@ -76,6 +76,13 @@ fn bb_20_repaint_matches_closed() {
             repainted.compute(&tick);
         }
 
-        assert_bb_values_match(i, closed.value(), repainted.value(), TOLERANCE);
+        assert_channel_values_match(
+            "BB",
+            i,
+            closed.value(),
+            repainted.value(),
+            TOLERANCE,
+            bb_bands,
+        );
     }
 }

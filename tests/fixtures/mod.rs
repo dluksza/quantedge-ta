@@ -53,9 +53,10 @@ pub struct RefValue {
     pub expected: f64,
 }
 
-/// Reference BB value with timestamp.
+/// Reference channel value with timestamp (upper/middle/lower bands).
+/// Used by BB, DC, and KC reference tests.
 #[derive(Debug, Deserialize)]
-pub struct RefBbValue {
+pub struct RefChannelValue {
     pub open_time: u64,
     pub upper: f64,
     pub middle: f64,
@@ -91,24 +92,14 @@ pub fn load_ref_values(path: &str) -> Vec<RefValue> {
     load_records(path, "invalid reference record")
 }
 
-/// Load BB reference data (upper, middle, lower).
-pub fn load_bb_ref(path: &str) -> Vec<RefBbValue> {
-    load_records(path, "invalid BB reference record")
+/// Load channel reference data (upper, middle, lower). Used by BB, DC, KC.
+pub fn load_channel_ref(path: &str) -> Vec<RefChannelValue> {
+    load_records(path, "invalid channel reference record")
 }
 
 /// Load Stoch reference data (k, d).
 pub fn load_stoch_ref(path: &str) -> Vec<RefStochValue> {
     load_records(path, "invalid Stoch reference record")
-}
-
-/// Load KC reference data (upper, middle, lower) — same schema as BB.
-pub fn load_kc_ref(path: &str) -> Vec<RefBbValue> {
-    load_records(path, "invalid KC reference record")
-}
-
-/// Load DC reference data (upper, middle, lower) — same schema as BB.
-pub fn load_dc_ref(path: &str) -> Vec<RefBbValue> {
-    load_records(path, "invalid DC reference record")
 }
 
 /// Load MACD reference data (macd, signal, histogram).
@@ -193,88 +184,56 @@ pub fn assert_values_match(
     }
 }
 
-/// Assert BB values match between closed and repainted indicators.
-pub fn assert_bb_values_match(
+/// Assert channel values (upper/middle/lower) match between closed and repainted indicators.
+///
+/// Extracts bands via the provided closure to work with any channel type (BB, DC, KC).
+pub fn assert_channel_values_match<V: std::fmt::Debug>(
+    label: &str,
     bar_idx: usize,
-    closed: Option<quantedge_ta::BbValue>,
-    repainted: Option<quantedge_ta::BbValue>,
+    closed: Option<V>,
+    repainted: Option<V>,
     tolerance: f64,
+    bands: fn(&V) -> [(&str, f64); 3],
 ) {
     match (closed, repainted) {
         (None, None) => {}
         (Some(c), Some(r)) => {
-            for (band, cv, rv) in [
-                ("upper", c.upper(), r.upper()),
-                ("middle", c.middle(), r.middle()),
-                ("lower", c.lower(), r.lower()),
-            ] {
+            for ((band, cv), (_, rv)) in bands(&c).into_iter().zip(bands(&r)) {
                 let diff = (cv - rv).abs();
                 assert!(
                     diff <= tolerance,
-                    "BB {band} diverged at bar {bar_idx}: closed={cv:.10}, repainted={rv:.10}, diff={diff:.2e}"
+                    "{label} {band} diverged at bar {bar_idx}: closed={cv:.10}, repainted={rv:.10}, diff={diff:.2e}"
                 );
             }
         }
         (c, r) => {
-            panic!("BB convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
+            panic!("{label} convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
         }
     }
 }
 
-/// Assert DC values match between closed and repainted indicators.
-pub fn assert_dc_values_match(
-    bar_idx: usize,
-    closed: Option<quantedge_ta::DcValue>,
-    repainted: Option<quantedge_ta::DcValue>,
-    tolerance: f64,
-) {
-    match (closed, repainted) {
-        (None, None) => {}
-        (Some(c), Some(r)) => {
-            for (band, cv, rv) in [
-                ("upper", c.upper(), r.upper()),
-                ("middle", c.middle(), r.middle()),
-                ("lower", c.lower(), r.lower()),
-            ] {
-                let diff = (cv - rv).abs();
-                assert!(
-                    diff <= tolerance,
-                    "DC {band} diverged at bar {bar_idx}: closed={cv:.10}, repainted={rv:.10}, diff={diff:.2e}"
-                );
-            }
-        }
-        (c, r) => {
-            panic!("DC convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
-        }
-    }
+pub fn bb_bands(v: &quantedge_ta::BbValue) -> [(&str, f64); 3] {
+    [
+        ("upper", v.upper()),
+        ("middle", v.middle()),
+        ("lower", v.lower()),
+    ]
 }
 
-/// Assert KC values match between closed and repainted indicators.
-pub fn assert_kc_values_match(
-    bar_idx: usize,
-    closed: Option<quantedge_ta::KcValue>,
-    repainted: Option<quantedge_ta::KcValue>,
-    tolerance: f64,
-) {
-    match (closed, repainted) {
-        (None, None) => {}
-        (Some(c), Some(r)) => {
-            for (band, cv, rv) in [
-                ("upper", c.upper(), r.upper()),
-                ("middle", c.middle(), r.middle()),
-                ("lower", c.lower(), r.lower()),
-            ] {
-                let diff = (cv - rv).abs();
-                assert!(
-                    diff <= tolerance,
-                    "KC {band} diverged at bar {bar_idx}: closed={cv:.10}, repainted={rv:.10}, diff={diff:.2e}"
-                );
-            }
-        }
-        (c, r) => {
-            panic!("KC convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
-        }
-    }
+pub fn dc_bands(v: &quantedge_ta::DcValue) -> [(&str, f64); 3] {
+    [
+        ("upper", v.upper()),
+        ("middle", v.middle()),
+        ("lower", v.lower()),
+    ]
+}
+
+pub fn kc_bands(v: &quantedge_ta::KcValue) -> [(&str, f64); 3] {
+    [
+        ("upper", v.upper()),
+        ("middle", v.middle()),
+        ("lower", v.lower()),
+    ]
 }
 
 /// Assert MACD values match between closed and repainted indicators.
