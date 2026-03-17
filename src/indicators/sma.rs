@@ -426,7 +426,7 @@ mod tests {
 
     mod true_range {
         use super::*;
-        use crate::test_util::Bar;
+        use crate::test_util::ohlc;
 
         fn tr_sma(length: usize) -> Sma {
             Sma::new(
@@ -435,10 +435,6 @@ mod tests {
                     .source(PriceSource::TrueRange)
                     .build(),
             )
-        }
-
-        fn ohlc(open: f64, high: f64, low: f64, close: f64, time: u64) -> Bar {
-            Bar::new(open, high, low, close).at(time)
         }
 
         #[test]

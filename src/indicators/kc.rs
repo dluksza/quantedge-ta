@@ -394,11 +394,7 @@ impl Display for Kc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_util::{Bar, nz};
-
-    fn ohlc(open: f64, high: f64, low: f64, close: f64, time: u64) -> Bar {
-        Bar::new(open, high, low, close).at(time)
-    }
+    use crate::test_util::{nz, ohlc};
 
     /// KC(2, 2, 1.5) — small windows for tractable hand calculations.
     fn kc_2_2() -> Kc {

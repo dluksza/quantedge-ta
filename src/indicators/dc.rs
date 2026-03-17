@@ -241,11 +241,7 @@ impl Display for Dc {
 #[allow(clippy::float_cmp)]
 mod tests {
     use super::*;
-    use crate::test_util::{Bar, nz};
-
-    fn ohlcv(open: f64, high: f64, low: f64, close: f64, time: u64) -> Bar {
-        Bar::new_with_open_time(open, high, low, close, time)
-    }
+    use crate::test_util::{nz, ohlc};
 
     fn dc(length: usize) -> Dc {
         Dc::new(DcConfig::builder().length(nz(length)).build())
@@ -256,9 +252,9 @@ mod tests {
     /// Upper=14, lower=8, middle=11.
     fn seeded_dc() -> Dc {
         let mut d = dc(3);
-        d.compute(&ohlcv(10.0, 12.0, 8.0, 11.0, 1));
-        d.compute(&ohlcv(11.0, 14.0, 9.0, 13.0, 2));
-        d.compute(&ohlcv(13.0, 13.0, 10.0, 10.0, 3));
+        d.compute(&ohlc(10.0, 12.0, 8.0, 11.0, 1));
+        d.compute(&ohlc(11.0, 14.0, 9.0, 13.0, 2));
+        d.compute(&ohlc(13.0, 13.0, 10.0, 10.0, 3));
         d
     }
 
@@ -268,23 +264,23 @@ mod tests {
         #[test]
         fn returns_none_during_filling() {
             let mut d = dc(3);
-            assert!(d.compute(&ohlcv(10.0, 12.0, 8.0, 11.0, 1)).is_none());
-            assert!(d.compute(&ohlcv(11.0, 14.0, 9.0, 13.0, 2)).is_none());
+            assert!(d.compute(&ohlc(10.0, 12.0, 8.0, 11.0, 1)).is_none());
+            assert!(d.compute(&ohlc(11.0, 14.0, 9.0, 13.0, 2)).is_none());
         }
 
         #[test]
         fn first_value_at_length_bars() {
             let mut d = dc(3);
-            d.compute(&ohlcv(10.0, 12.0, 8.0, 11.0, 1));
-            d.compute(&ohlcv(11.0, 14.0, 9.0, 13.0, 2));
-            let val = d.compute(&ohlcv(13.0, 13.0, 10.0, 10.0, 3));
+            d.compute(&ohlc(10.0, 12.0, 8.0, 11.0, 1));
+            d.compute(&ohlc(11.0, 14.0, 9.0, 13.0, 2));
+            let val = d.compute(&ohlc(13.0, 13.0, 10.0, 10.0, 3));
             assert!(val.is_some());
         }
 
         #[test]
         fn length_one_converges_immediately() {
             let mut d = dc(1);
-            let val = d.compute(&ohlcv(10.0, 15.0, 5.0, 12.0, 1));
+            let val = d.compute(&ohlc(10.0, 15.0, 5.0, 12.0, 1));
             assert!(val.is_some());
         }
     }
@@ -308,7 +304,7 @@ mod tests {
             // Bar 4: h=15, l=11. Window is now bars 2–4.
             // highest_high = max(14, 13, 15) = 15
             // lowest_low = min(9, 10, 11) = 9
-            let val = d.compute(&ohlcv(12.0, 15.0, 11.0, 12.0, 4)).unwrap();
+            let val = d.compute(&ohlc(12.0, 15.0, 11.0, 12.0, 4)).unwrap();
             assert_eq!(val.upper(), 15.0);
             assert_eq!(val.lower(), 9.0);
             assert_eq!(val.middle(), 12.0);
@@ -317,11 +313,11 @@ mod tests {
         #[test]
         fn slides_across_many_bars() {
             let mut d = dc(2);
-            d.compute(&ohlcv(10.0, 20.0, 5.0, 15.0, 1));
-            d.compute(&ohlcv(10.0, 18.0, 8.0, 12.0, 2));
-            d.compute(&ohlcv(10.0, 16.0, 10.0, 14.0, 3));
+            d.compute(&ohlc(10.0, 20.0, 5.0, 15.0, 1));
+            d.compute(&ohlc(10.0, 18.0, 8.0, 12.0, 2));
+            d.compute(&ohlc(10.0, 16.0, 10.0, 14.0, 3));
             // Window bars 3–4: h=16,12 → 16, l=10,7 → 7
-            let val = d.compute(&ohlcv(10.0, 12.0, 7.0, 10.0, 4)).unwrap();
+            let val = d.compute(&ohlc(10.0, 12.0, 7.0, 10.0, 4)).unwrap();
             assert_eq!(val.upper(), 16.0);
             assert_eq!(val.lower(), 7.0);
             assert_eq!(val.middle(), 11.5);
@@ -331,7 +327,7 @@ mod tests {
         fn flat_market() {
             let mut d = dc(3);
             for t in 1..=5 {
-                let val = d.compute(&ohlcv(10.0, 10.0, 10.0, 10.0, t));
+                let val = d.compute(&ohlc(10.0, 10.0, 10.0, 10.0, t));
                 if let Some(v) = val {
                     assert_eq!(v.upper(), 10.0);
                     assert_eq!(v.lower(), 10.0);
@@ -347,22 +343,22 @@ mod tests {
         #[test]
         fn repaint_updates_value() {
             let mut d = seeded_dc();
-            let original = d.compute(&ohlcv(12.0, 16.0, 11.0, 13.0, 4)).unwrap();
+            let original = d.compute(&ohlc(12.0, 16.0, 11.0, 13.0, 4)).unwrap();
             // Repaint bar 4 with higher high
-            let repainted = d.compute(&ohlcv(12.0, 20.0, 11.0, 13.0, 4)).unwrap();
+            let repainted = d.compute(&ohlc(12.0, 20.0, 11.0, 13.0, 4)).unwrap();
             assert!(repainted.upper() > original.upper());
         }
 
         #[test]
         fn multiple_repaints_match_single() {
             let mut d = seeded_dc();
-            d.compute(&ohlcv(12.0, 16.0, 11.0, 13.0, 4));
-            d.compute(&ohlcv(12.0, 20.0, 6.0, 15.0, 4)); // repaint 1
-            d.compute(&ohlcv(12.0, 14.0, 10.0, 11.0, 4)); // repaint 2
-            let final_val = d.compute(&ohlcv(12.0, 15.0, 9.0, 12.0, 4)).unwrap();
+            d.compute(&ohlc(12.0, 16.0, 11.0, 13.0, 4));
+            d.compute(&ohlc(12.0, 20.0, 6.0, 15.0, 4)); // repaint 1
+            d.compute(&ohlc(12.0, 14.0, 10.0, 11.0, 4)); // repaint 2
+            let final_val = d.compute(&ohlc(12.0, 15.0, 9.0, 12.0, 4)).unwrap();
 
             let mut clean = seeded_dc();
-            let expected = clean.compute(&ohlcv(12.0, 15.0, 9.0, 12.0, 4)).unwrap();
+            let expected = clean.compute(&ohlc(12.0, 15.0, 9.0, 12.0, 4)).unwrap();
 
             assert_eq!(final_val.upper(), expected.upper());
             assert_eq!(final_val.lower(), expected.lower());
@@ -372,13 +368,13 @@ mod tests {
         #[test]
         fn repaint_then_advance_uses_repainted() {
             let mut d = seeded_dc();
-            d.compute(&ohlcv(12.0, 16.0, 11.0, 13.0, 4));
-            d.compute(&ohlcv(12.0, 16.0, 7.0, 13.0, 4)); // repaint bar 4
-            let after = d.compute(&ohlcv(14.0, 17.0, 12.0, 14.0, 5)).unwrap();
+            d.compute(&ohlc(12.0, 16.0, 11.0, 13.0, 4));
+            d.compute(&ohlc(12.0, 16.0, 7.0, 13.0, 4)); // repaint bar 4
+            let after = d.compute(&ohlc(14.0, 17.0, 12.0, 14.0, 5)).unwrap();
 
             let mut clean = seeded_dc();
-            clean.compute(&ohlcv(12.0, 16.0, 7.0, 13.0, 4));
-            let expected = clean.compute(&ohlcv(14.0, 17.0, 12.0, 14.0, 5)).unwrap();
+            clean.compute(&ohlc(12.0, 16.0, 7.0, 13.0, 4));
+            let expected = clean.compute(&ohlc(14.0, 17.0, 12.0, 14.0, 5)).unwrap();
 
             assert_eq!(after.upper(), expected.upper());
             assert_eq!(after.lower(), expected.lower());
@@ -388,11 +384,11 @@ mod tests {
         #[test]
         fn repaint_during_filling_has_no_effect_on_convergence() {
             let mut d = dc(3);
-            d.compute(&ohlcv(10.0, 12.0, 8.0, 11.0, 1));
-            d.compute(&ohlcv(11.0, 14.0, 9.0, 13.0, 2));
-            d.compute(&ohlcv(11.0, 16.0, 7.0, 15.0, 2)); // repaint bar 2
+            d.compute(&ohlc(10.0, 12.0, 8.0, 11.0, 1));
+            d.compute(&ohlc(11.0, 14.0, 9.0, 13.0, 2));
+            d.compute(&ohlc(11.0, 16.0, 7.0, 15.0, 2)); // repaint bar 2
             assert!(d.value().is_none()); // still filling
-            let val = d.compute(&ohlcv(13.0, 13.0, 10.0, 10.0, 3));
+            let val = d.compute(&ohlc(13.0, 13.0, 10.0, 10.0, 3));
             assert!(val.is_some()); // now converged
         }
     }
@@ -405,8 +401,8 @@ mod tests {
             let mut d = seeded_dc();
             let mut cloned = d.clone();
 
-            let orig = d.compute(&ohlcv(12.0, 20.0, 11.0, 16.0, 4)).unwrap();
-            let clone_val = cloned.compute(&ohlcv(12.0, 13.0, 7.0, 9.0, 4)).unwrap();
+            let orig = d.compute(&ohlc(12.0, 20.0, 11.0, 16.0, 4)).unwrap();
+            let clone_val = cloned.compute(&ohlc(12.0, 13.0, 7.0, 9.0, 4)).unwrap();
 
             assert!(
                 (orig.upper() - clone_val.upper()).abs() > 1e-10,
@@ -499,7 +495,7 @@ mod tests {
         #[test]
         fn matches_last_compute() {
             let mut d = seeded_dc();
-            let computed = d.compute(&ohlcv(12.0, 16.0, 11.0, 14.0, 4));
+            let computed = d.compute(&ohlc(12.0, 16.0, 11.0, 14.0, 4));
             assert_eq!(d.value(), computed);
         }
 
@@ -524,8 +520,8 @@ mod tests {
         #[should_panic(expected = "open_time must be non-decreasing")]
         fn panics_on_decreasing_open_time() {
             let mut d = dc(3);
-            d.compute(&ohlcv(10.0, 12.0, 8.0, 11.0, 2));
-            d.compute(&ohlcv(11.0, 14.0, 9.0, 13.0, 1));
+            d.compute(&ohlc(10.0, 12.0, 8.0, 11.0, 2));
+            d.compute(&ohlc(11.0, 14.0, 9.0, 13.0, 1));
         }
     }
 }

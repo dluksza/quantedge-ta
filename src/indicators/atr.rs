@@ -201,14 +201,10 @@ impl Display for Atr {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_util::{Bar, nz};
+    use crate::test_util::{nz, ohlc};
 
     fn atr(length: usize) -> Atr {
         Atr::new(AtrConfig::builder().length(nz(length)).build())
-    }
-
-    fn ohlc(open: f64, high: f64, low: f64, close: f64, time: u64) -> Bar {
-        Bar::new(open, high, low, close).at(time)
     }
 
     mod seeding {

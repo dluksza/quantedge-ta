@@ -69,6 +69,11 @@ pub fn bar(close: f64, time: u64) -> Bar {
     Bar::new(close, close, close, close).at(time)
 }
 
+/// Convenience: bar with explicit OHLC and timestamp.
+pub fn ohlc(open: f64, high: f64, low: f64, close: f64, time: u64) -> Bar {
+    Bar::new(open, high, low, close).at(time)
+}
+
 impl Ohlcv for Bar {
     fn open(&self) -> Price {
         self.open
