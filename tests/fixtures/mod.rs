@@ -124,14 +124,24 @@ pub fn assert_near(actual: f64, expected: f64, tolerance: f64, context: &str) {
 ///
 /// Returns 2 intermediate bars (with shifted close/high/low) followed
 /// by the original bar. All share the same `open_time`.
+///
+/// High is monotonically non-decreasing and low is monotonically
+/// non-increasing across ticks, matching real OHLCV semantics where
+/// each new trade can only extend the bar's range.
 pub fn repaint_sequence(bar: &RefBar) -> Vec<RefBar> {
     let t = bar.open_time;
+    let tick1_high = bar.high.min(bar.open * 1.001);
+    let tick1_low = bar.low.max(bar.open * 0.999);
+
+    let tick2_high = bar.high.min(tick1_high.max(bar.open.midpoint(bar.high)));
+    let tick2_low = bar.low.max(tick1_low.min(bar.open.midpoint(bar.low)));
+
     vec![
         // First tick: only open is known, close near open
         RefBar {
             open: bar.open,
-            high: bar.open * 1.001,
-            low: bar.open * 0.999,
+            high: tick1_high,
+            low: tick1_low,
             close: bar.open * 1.0005,
             volume: bar.volume - 2.0,
             open_time: t,
@@ -139,8 +149,8 @@ pub fn repaint_sequence(bar: &RefBar) -> Vec<RefBar> {
         // Mid-bar: partial movement toward final values
         RefBar {
             open: bar.open,
-            high: bar.open.midpoint(bar.high),
-            low: bar.open.midpoint(bar.low),
+            high: tick2_high,
+            low: tick2_low,
             close: bar.open.midpoint(bar.close),
             volume: bar.volume - 1.0,
             open_time: t,
