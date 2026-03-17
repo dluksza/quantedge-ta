@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Donchian Channel (DC) — tracks highest high and lowest low over a rolling window. Returns upper, middle, and lower bands. Default length 20.
+
 ## [0.6.0] - 2026-03-15
 
 ### Added

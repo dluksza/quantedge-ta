@@ -1,5 +1,6 @@
 mod atr;
 mod bb;
+mod dc;
 mod ema;
 mod kc;
 mod macd;
@@ -9,6 +10,7 @@ mod stoch;
 
 pub use atr::*;
 pub use bb::*;
+pub use dc::*;
 pub use ema::*;
 pub use kc::*;
 pub use macd::*;
