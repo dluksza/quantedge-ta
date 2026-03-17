@@ -263,6 +263,8 @@ on a converged indicator.
 | Stoch     | 140/30/30 | 13.2 µs    | 56.2 Melem/s   |
 | KC        | 20/10  | 1.53 µs       | 486 Melem/s    |
 | KC        | 200/100 | 1.56 µs      | 477 Melem/s    |
+| DC        | 20     | 4.60 µs       | 162 Melem/s    |
+| DC        | 200    | 9.93 µs       | 74.9 Melem/s   |
 
 ### Tick — single `compute()` on a converged indicator
 
@@ -284,6 +286,8 @@ on a converged indicator.
 | Stoch     | 140/30/30 | 54.0 ns   |
 | KC        | 20/10  | 4.32 ns       |
 | KC        | 200/100 | 3.84 ns      |
+| DC        | 20     | 17.8 ns       |
+| DC        | 200    | 24.6 ns       |
 
 ### Repaint — single `compute()` repaint on a converged indicator
 
@@ -305,6 +309,8 @@ on a converged indicator.
 | Stoch     | 140/30/30 | 63.4 ns   |
 | KC        | 20/10  | 4.05 ns       |
 | KC        | 200/100 | 3.81 ns      |
+| DC        | 20     | 16.9 ns       |
+| DC        | 200    | 24.7 ns       |
 
 ### Repaint Stream — process 744 bars × 3 ticks from cold start
 
@@ -326,6 +332,8 @@ on a converged indicator.
 | Stoch     | 140/30/30 | 18.6 µs   | 120 Melem/s    |
 | KC        | 20/10  | 5.23 µs       | 427 Melem/s    |
 | KC        | 200/100 | 4.62 µs      | 483 Melem/s    |
+| DC        | 20     | 7.59 µs       | 294 Melem/s    |
+| DC        | 200    | 12.9 µs       | 172 Melem/s    |
 
 Run locally:
 

@@ -4,7 +4,7 @@
 
 ### Added
 
-- Donchian Channel (DC) — tracks highest high and lowest low over a rolling window. Returns upper, middle, and lower bands. Default length 20.
+- Donchian Channel (DC) — tracks highest high and lowest low over a rolling window. Returns upper, middle, and lower bands. Default length 20. Reference tests against talipp (725 BTC/USDT bars, 1e-10 tolerance) and Criterion benchmarks.
 
 ## [0.6.0] - 2026-03-15
 

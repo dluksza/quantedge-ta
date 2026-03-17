@@ -20,7 +20,7 @@ import csv
 import os
 import sys
 
-from talipp.indicators import ATR, BB, EMA, MACD, RSI, SMA, Stoch, KeltnerChannels
+from talipp.indicators import ATR, BB, EMA, MACD, RSI, SMA, Stoch, KeltnerChannels, DonchianChannels
 from talipp.ohlcv import OHLCV
 
 PERIOD = 20
@@ -31,6 +31,7 @@ STOCH_SMOOTH = 3
 KC_MA_PERIOD = 20
 KC_ATR_PERIOD = 10
 KC_MULT = 1.5
+DC_PERIOD = 20
 OUTPUT_DIR = "tests/fixtures/data"
 
 
@@ -191,6 +192,24 @@ def main():
                     ]
                 )
 
+    # Donchian Channels
+    # talipp DonchianChannels(period) takes OHLCV. Output: ub (upper), cb (central), lb (lower).
+    # This maps to Rust Dc(length=20).
+    dc = DonchianChannels(period=DC_PERIOD, input_values=ohlcv_bars)
+    with open(f"{OUTPUT_DIR}/dc-20.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["open_time", "upper", "middle", "lower"])
+        for i, val in enumerate(dc):
+            if val is not None:
+                w.writerow(
+                    [
+                        times[i],
+                        f"{val.ub:.10f}",
+                        f"{val.cb:.10f}",
+                        f"{val.lb:.10f}",
+                    ]
+                )
+
     sma_count = sum(1 for v in sma if v is not None)
     ema_count = sum(1 for v in ema if v is not None)
     bb_count = sum(1 for v in bb if v is not None)
@@ -199,6 +218,7 @@ def main():
     atr_count = sum(1 for v in atr if v is not None)
     stoch_count = sum(1 for v in stoch if v is not None and v.d is not None)
     kc_count = sum(1 for v in kc if v is not None)
+    dc_count = sum(1 for v in dc if v is not None)
     print(
         f"Generated {sma_count} SMA, "
         f"{ema_count} EMA, "
@@ -207,7 +227,8 @@ def main():
         f"{macd_count} MACD, "
         f"{atr_count} ATR, "
         f"{stoch_count} Stoch, "
-        f"{kc_count} KC reference values "
+        f"{kc_count} KC, "
+        f"{dc_count} DC reference values "
         f"from {len(rows)} OHLCV bars."
     )
 

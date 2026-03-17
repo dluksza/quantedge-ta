@@ -106,6 +106,11 @@ pub fn load_kc_ref(path: &str) -> Vec<RefBbValue> {
     load_records(path, "invalid KC reference record")
 }
 
+/// Load DC reference data (upper, middle, lower) — same schema as BB.
+pub fn load_dc_ref(path: &str) -> Vec<RefBbValue> {
+    load_records(path, "invalid DC reference record")
+}
+
 /// Load MACD reference data (macd, signal, histogram).
 pub fn load_macd_ref(path: &str) -> Vec<RefMacdValue> {
     load_records(path, "invalid MACD reference record")
@@ -212,6 +217,34 @@ pub fn assert_bb_values_match(
         }
         (c, r) => {
             panic!("BB convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
+        }
+    }
+}
+
+/// Assert DC values match between closed and repainted indicators.
+pub fn assert_dc_values_match(
+    bar_idx: usize,
+    closed: Option<quantedge_ta::DcValue>,
+    repainted: Option<quantedge_ta::DcValue>,
+    tolerance: f64,
+) {
+    match (closed, repainted) {
+        (None, None) => {}
+        (Some(c), Some(r)) => {
+            for (band, cv, rv) in [
+                ("upper", c.upper(), r.upper()),
+                ("middle", c.middle(), r.middle()),
+                ("lower", c.lower(), r.lower()),
+            ] {
+                let diff = (cv - rv).abs();
+                assert!(
+                    diff <= tolerance,
+                    "DC {band} diverged at bar {bar_idx}: closed={cv:.10}, repainted={rv:.10}, diff={diff:.2e}"
+                );
+            }
+        }
+        (c, r) => {
+            panic!("DC convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
         }
     }
 }
