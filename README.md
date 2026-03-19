@@ -51,7 +51,8 @@ Each indicator defines its own output type via an associated type on the
 `MacdValue { macd, signal, histogram }`. Stochastic returns
 `StochValue { k, d }`. Keltner Channel returns
 `KcValue { upper, middle, lower }`. Donchian Channel returns
-`DcValue { upper, middle, lower }`. No downcasting, no enums, full type safety.
+`DcValue { upper, middle, lower }`. ADX returns
+`AdxValue { adx, plus_di, minus_di }`. No downcasting, no enums, full type safety.
 
 ## Usage
 
@@ -138,6 +139,7 @@ trait Indicator: Sized + Clone + Display + Debug {
 // Atr:   Output = f64
 // Kc:    Output = KcValue { upper: f64, middle: f64, lower: f64 }
 // Dc:    Output = DcValue { upper: f64, middle: f64, lower: f64 }
+// Adx:   Output = AdxValue { adx: f64, plus_di: f64, minus_di: f64 }
 ```
 
 ### Ohlcv Trait
@@ -223,10 +225,11 @@ to extract from the Ohlcv input:
 | Stoch     | `StochValue`| Stochastic Oscillator (%K, %D)              |
 | KC        | `KcValue`  | Keltner Channel (upper, mid, lower)          |
 | DC        | `DcValue`  | Donchian Channel (upper, mid, lower)         |
+| ADX       | `AdxValue` | Average Directional Index (+DI, −DI, ADX)    |
 
 ### Planned
 
-CHOP, CCI, ADX, VWAP, OBV and more.
+CHOP, CCI, VWAP, OBV and more.
 
 ## Benchmarks
 

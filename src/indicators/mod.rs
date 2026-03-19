@@ -1,3 +1,4 @@
+mod adx;
 mod atr;
 mod bb;
 mod dc;
@@ -8,6 +9,7 @@ mod rsi;
 mod sma;
 mod stoch;
 
+pub use adx::*;
 pub use atr::*;
 pub use bb::*;
 pub use dc::*;

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Average Directional Index (ADX) — measures trend strength on a 0–100 scale with +DI and −DI directional indicators. Uses Wilder's smoothing (`α = 1/length`). Returns `AdxValue { adx, plus_di, minus_di }`.
+
 ## [0.7.0] - 2026-03-17
 
 ### Added
