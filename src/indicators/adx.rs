@@ -249,7 +249,7 @@ impl Indicator for Adx {
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         self.current = match self.bar_state.handle(ohlcv) {
             crate::internals::BarAction::Advance(true_range) => {
-                self.smoothed_tr.push(true_range);
+                let smooth_tr = self.smoothed_tr.push(true_range);
 
                 if self.prev_high.is_some() {
                     let (plus_dm, minus_dm) = Adx::dm(ohlcv, self.current_high, self.current_low);
@@ -263,9 +263,11 @@ impl Indicator for Adx {
 
                     match (smooth_plus_dm, smooth_minus_dm) {
                         (Some(smooth_plus_dm), Some(smooth_minus_dm)) => {
-                            let smooth_tr = self.smoothed_tr.value().unwrap_or(0.0);
-                            let (plus_di, minus_di, dx) =
-                                Adx::compute_adx(smooth_tr, smooth_plus_dm, smooth_minus_dm);
+                            let (plus_di, minus_di, dx) = Adx::compute_adx(
+                                smooth_tr.unwrap_or(0.0),
+                                smooth_plus_dm,
+                                smooth_minus_dm,
+                            );
 
                             self.smoother.push(dx).map(|adx| AdxValue {
                                 adx,
@@ -282,36 +284,37 @@ impl Indicator for Adx {
                 }
             }
             crate::internals::BarAction::Repaint(true_range) => {
-                self.smoothed_tr.replace(true_range);
+                let smooth_tr = self.smoothed_tr.replace(true_range);
 
-                if !self.dm_started {
-                    self.current_high = ohlcv.high();
-                    self.current_low = ohlcv.low();
-                    return self.current;
-                }
-                match (self.prev_high, self.prev_low) {
-                    (Some(prev_high), Some(prev_low)) => {
-                        let (plus_dm, minus_dm) = Adx::dm(ohlcv, prev_high, prev_low);
+                if self.dm_started {
+                    match (self.prev_high, self.prev_low) {
+                        (Some(prev_high), Some(prev_low)) => {
+                            let (plus_dm, minus_dm) = Adx::dm(ohlcv, prev_high, prev_low);
 
-                        let smooth_plus_dm = self.smoothed_plus_dm.replace(plus_dm);
-                        let smooth_minus_dm = self.smoothed_minus_dm.replace(minus_dm);
+                            let smooth_plus_dm = self.smoothed_plus_dm.replace(plus_dm);
+                            let smooth_minus_dm = self.smoothed_minus_dm.replace(minus_dm);
 
-                        match (smooth_plus_dm, smooth_minus_dm) {
-                            (Some(smooth_plus_dm), Some(smooth_minus_dm)) => {
-                                let smooth_tr = self.smoothed_tr.value().unwrap_or(0.0);
-                                let (plus_di, minus_di, dx) =
-                                    Adx::compute_adx(smooth_tr, smooth_plus_dm, smooth_minus_dm);
+                            match (smooth_plus_dm, smooth_minus_dm) {
+                                (Some(smooth_plus_dm), Some(smooth_minus_dm)) => {
+                                    let (plus_di, minus_di, dx) = Adx::compute_adx(
+                                        smooth_tr.unwrap_or(0.0),
+                                        smooth_plus_dm,
+                                        smooth_minus_dm,
+                                    );
 
-                                self.smoother.replace(dx).map(|adx| AdxValue {
-                                    adx,
-                                    plus_di,
-                                    minus_di,
-                                })
+                                    self.smoother.replace(dx).map(|adx| AdxValue {
+                                        adx,
+                                        plus_di,
+                                        minus_di,
+                                    })
+                                }
+                                _ => None,
                             }
-                            _ => None,
                         }
+                        _ => None,
                     }
-                    _ => None,
+                } else {
+                    None
                 }
             }
         };
@@ -355,8 +358,9 @@ impl Adx {
             return (0.0, 0.0, 0.0); // plus_di, minus_di, dx
         }
 
-        let plus_di = smooth_plus_dm / smooth_tr * 100.0;
-        let minus_di = smooth_minus_dm / smooth_tr * 100.0;
+        let inv_tr_100 = 100.0 / smooth_tr;
+        let plus_di = smooth_plus_dm * inv_tr_100;
+        let minus_di = smooth_minus_dm * inv_tr_100;
         let denom = plus_di + minus_di;
 
         let dx = if denom.abs() < f64::EPSILON {
