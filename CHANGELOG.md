@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-03-21
+
 ### Added
 
 - Williams %R (WillR) — a momentum oscillator measuring overbought/oversold levels on a −100 to 0 scale. Compares the current price to the highest high over the lookback window. Returns `f64`. Convenience constructor `WillRConfig::close()` and `length()` accessor. Reference tests against talipp (731 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks.
