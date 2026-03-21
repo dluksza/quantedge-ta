@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Commodity Channel Index (CCI) — measures deviation of price from its statistical mean, scaled by mean absolute deviation. Uses the traditional 0.015 constant so ~70–80% of values fall between −100 and +100. Default source is HLC3 (typical price). Convenience constructors `CciConfig::close()` and `CciConfig::hlc3()`. Returns `f64`.
+
 ## [0.9.0] - 2026-03-21
 
 ### Added

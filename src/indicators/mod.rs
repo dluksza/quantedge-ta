@@ -1,6 +1,7 @@
 mod adx;
 mod atr;
 mod bb;
+mod cci;
 mod dc;
 mod ema;
 mod kc;
@@ -13,6 +14,7 @@ mod willr;
 pub use adx::*;
 pub use atr::*;
 pub use bb::*;
+pub use cci::*;
 pub use dc::*;
 pub use ema::*;
 pub use kc::*;

@@ -76,6 +76,14 @@ impl RingBuffer {
             (self.tail + self.buffer.len() - index) % self.buffer.len(),
         )
     }
+
+    #[inline]
+    pub(crate) fn fold<B, F>(&self, init: B, cb: F) -> B
+    where
+        F: FnMut(B, &Price) -> B,
+    {
+        self.buffer.iter().fold(init, cb)
+    }
 }
 
 #[cfg(test)]
