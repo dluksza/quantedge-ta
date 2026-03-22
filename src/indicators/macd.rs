@@ -45,17 +45,14 @@ pub struct MacdConfig {
 impl IndicatorConfig for MacdConfig {
     type Builder = MacdConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         MacdConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.slow_length
     }
@@ -84,28 +81,24 @@ impl MacdConfig {
     }
 
     /// Fast EMA length.
-    #[inline]
     #[must_use]
     pub fn fast_length(&self) -> usize {
         self.fast_length
     }
 
     /// Slow EMA length.
-    #[inline]
     #[must_use]
     pub fn slow_length(&self) -> usize {
         self.slow_length
     }
 
     /// Signal EMA length.
-    #[inline]
     #[must_use]
     pub fn signal_length(&self) -> usize {
         self.signal_length
     }
 
     /// Bars until all outputs (including signal) are fully converged.
-    #[inline]
     #[must_use]
     pub fn full_convergence(&self) -> usize {
         self.convergence() + self.signal_length - 1
@@ -145,7 +138,6 @@ impl MacdConfigBuilder {
     }
 
     /// Sets the fast EMA length.
-    #[inline]
     #[must_use]
     pub fn fast_length(mut self, length: NonZero<usize>) -> Self {
         self.fast_length.replace(length.get());
@@ -153,7 +145,6 @@ impl MacdConfigBuilder {
     }
 
     /// Sets the slow EMA length.
-    #[inline]
     #[must_use]
     pub fn slow_length(mut self, length: NonZero<usize>) -> Self {
         self.slow_length.replace(length.get());
@@ -161,7 +152,6 @@ impl MacdConfigBuilder {
     }
 
     /// Sets the signal EMA length.
-    #[inline]
     #[must_use]
     pub fn signal_length(mut self, length: NonZero<usize>) -> Self {
         self.signal_length.replace(length.get());
@@ -170,13 +160,11 @@ impl MacdConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<MacdConfig> for MacdConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> MacdConfig {
         let fast = self.fast_length.expect("fast_length is required");
         let slow = self.slow_length.expect("slow_length is required");
@@ -317,7 +305,6 @@ impl Indicator for Macd {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         let signal_value = match self.bar_state.handle(ohlcv) {
             BarAction::Advance(price) => {

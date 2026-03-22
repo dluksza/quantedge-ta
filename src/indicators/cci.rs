@@ -27,7 +27,6 @@ pub struct CciConfig {
 
 impl CciConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
@@ -52,17 +51,14 @@ impl CciConfig {
 impl IndicatorConfig for CciConfig {
     type Builder = CciConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         CciConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length
     }
@@ -93,7 +89,6 @@ impl CciConfigBuilder {
     }
 
     /// Sets the indicator window length.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -102,13 +97,11 @@ impl CciConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<CciConfig> for CciConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> CciConfig {
         CciConfig {
             length: self.length.expect("length is required"),
@@ -186,7 +179,6 @@ impl Indicator for Cci {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         let price = self.window.add(ohlcv);
 

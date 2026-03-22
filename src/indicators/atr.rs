@@ -30,17 +30,14 @@ pub struct AtrConfig {
 impl IndicatorConfig for AtrConfig {
     type Builder = AtrConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         AtrConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> crate::PriceSource {
         crate::PriceSource::TrueRange
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length
     }
@@ -48,7 +45,6 @@ impl IndicatorConfig for AtrConfig {
 
 impl AtrConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
@@ -83,7 +79,6 @@ impl AtrConfigBuilder {
     }
 
     /// Sets the indicator window length.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length = length.get();
@@ -92,12 +87,10 @@ impl AtrConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<AtrConfig> for AtrConfigBuilder {
-    #[inline]
     fn source(self, _source: crate::PriceSource) -> Self {
         self
     }
 
-    #[inline]
     fn build(self) -> AtrConfig {
         AtrConfig {
             length: self.length,
@@ -178,7 +171,6 @@ impl Indicator for Atr {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         match self.bar_state.handle(ohlcv) {
             BarAction::Advance(price) => self.core.push(price),

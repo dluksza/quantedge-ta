@@ -45,17 +45,14 @@ pub struct StochConfig {
 impl IndicatorConfig for StochConfig {
     type Builder = StochConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         StochConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length + self.k_smooth
     }
@@ -63,21 +60,18 @@ impl IndicatorConfig for StochConfig {
 
 impl StochConfig {
     /// Lookback length for the highest-high / lowest-low window.
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
     }
 
     /// Smoothing period for %K (SMA of raw %K values).
-    #[inline]
     #[must_use]
     pub fn k_smooth(&self) -> usize {
         self.k_smooth
     }
 
     /// Smoothing period for %D (SMA of smoothed %K values).
-    #[inline]
     #[must_use]
     pub fn d_smooth(&self) -> usize {
         self.d_smooth
@@ -131,7 +125,6 @@ impl StochConfigBuilder {
     }
 
     /// Sets the lookback length for the highest-high / lowest-low window.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -139,7 +132,6 @@ impl StochConfigBuilder {
     }
 
     /// Sets the %K smoothing period.
-    #[inline]
     #[must_use]
     pub fn k_smooth(mut self, k_smooth: NonZero<usize>) -> Self {
         self.k_smooth.replace(k_smooth.get());
@@ -147,7 +139,6 @@ impl StochConfigBuilder {
     }
 
     /// Sets the %D smoothing period.
-    #[inline]
     #[must_use]
     pub fn d_smooth(mut self, d_smooth: NonZero<usize>) -> Self {
         self.d_smooth.replace(d_smooth.get());
@@ -156,13 +147,11 @@ impl StochConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<StochConfig> for StochConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> StochConfig {
         StochConfig {
             length: self.length.expect("length is required"),
@@ -303,7 +292,6 @@ impl Indicator for Stoch {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         self.current = match self.bar_state.handle(ohlcv) {
             BarAction::Advance(price) => {

@@ -40,7 +40,6 @@ impl EmaCore {
         }
     }
 
-    #[inline]
     pub(crate) fn push(&mut self, price: Price) -> Option<Price> {
         if self.converged {
             if self.seen_bars == self.length {
@@ -78,7 +77,6 @@ impl EmaCore {
         self.value()
     }
 
-    #[inline]
     pub(crate) fn replace(&mut self, price: Price) -> Option<Price> {
         if self.seen_bars <= self.length {
             self.sma_sum = self.sma_sum - self.current_price + price;
@@ -98,7 +96,6 @@ impl EmaCore {
         self.value()
     }
 
-    #[inline]
     pub(crate) fn value(&self) -> Option<Price> {
         if self.converged {
             Some(self.value)

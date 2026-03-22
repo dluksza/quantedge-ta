@@ -28,17 +28,14 @@ pub struct DcConfig {
 impl IndicatorConfig for DcConfig {
     type Builder = DcConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         DcConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> crate::PriceSource {
         crate::PriceSource::Close
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length
     }
@@ -46,7 +43,6 @@ impl IndicatorConfig for DcConfig {
 
 impl DcConfig {
     #[must_use]
-    #[inline]
     pub fn length(&self) -> usize {
         self.length
     }
@@ -70,7 +66,6 @@ impl DcConfigBuilder {
         DcConfigBuilder { length: 20 }
     }
 
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length = length.get();
@@ -194,7 +189,6 @@ impl Indicator for Dc {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         debug_assert!(
             self.last_open_time.is_none_or(|t| t <= ohlcv.open_time()),

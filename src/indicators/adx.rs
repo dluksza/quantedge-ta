@@ -33,17 +33,14 @@ pub struct AdxConfig {
 impl IndicatorConfig for AdxConfig {
     type Builder = AdxConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         AdxConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> crate::PriceSource {
         crate::PriceSource::Close
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length * 2
     }
@@ -51,7 +48,6 @@ impl IndicatorConfig for AdxConfig {
 
 impl AdxConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
@@ -79,7 +75,6 @@ impl AdxConfigBuilder {
         AdxConfigBuilder { length: None }
     }
 
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -88,12 +83,10 @@ impl AdxConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<AdxConfig> for AdxConfigBuilder {
-    #[inline]
     fn source(self, _source: crate::PriceSource) -> Self {
         self
     }
 
-    #[inline]
     fn build(self) -> AdxConfig {
         AdxConfig {
             length: self.length.expect("length is required"),
@@ -244,7 +237,6 @@ impl Indicator for Adx {
         }
     }
 
-    #[inline]
     #[allow(clippy::similar_names)]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         self.current = match self.bar_state.handle(ohlcv) {
@@ -332,12 +324,10 @@ impl Indicator for Adx {
 }
 
 impl Adx {
-    #[inline]
     fn d_move(a: Price, b: Price) -> Price {
         if a > b && a > 0.0 { a } else { 0.0 }
     }
 
-    #[inline]
     fn dm(ohlcv: &impl Ohlcv, prev_high: Price, prev_low: Price) -> (Price, Price) {
         let move_up = ohlcv.high() - prev_high;
         let move_down = prev_low - ohlcv.low();
@@ -348,7 +338,6 @@ impl Adx {
         (plus_dm, minus_dm)
     }
 
-    #[inline]
     fn compute_adx(
         smooth_tr: Price,
         smooth_plus_dm: Price,

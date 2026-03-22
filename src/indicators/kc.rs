@@ -25,7 +25,6 @@ impl KcMultiplier {
     /// # Panics
     ///
     /// Panics if `value` is NaN or not positive.
-    #[inline]
     #[must_use]
     pub fn new(value: f64) -> Self {
         assert!(!value.is_nan(), "multiplier must not be NaN");
@@ -34,7 +33,6 @@ impl KcMultiplier {
     }
 
     /// Returns the inner `f64` value.
-    #[inline]
     #[must_use]
     pub fn value(&self) -> f64 {
         self.0
@@ -101,17 +99,14 @@ pub struct KcConfig {
 impl IndicatorConfig for KcConfig {
     type Builder = KcConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         KcConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length.max(self.atr_length)
     }
@@ -119,21 +114,18 @@ impl IndicatorConfig for KcConfig {
 
 impl KcConfig {
     /// EMA window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
     }
 
     /// ATR window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn atr_length(&self) -> usize {
         self.atr_length
     }
 
     /// Band width multiplier.
-    #[inline]
     #[must_use]
     pub fn multiplier(&self) -> KcMultiplier {
         self.multiplier
@@ -141,7 +133,6 @@ impl KcConfig {
 
     /// Bars until all outputs are fully converged (EMA seed influence
     /// below 1%).
-    #[inline]
     #[must_use]
     pub fn full_convergence(&self) -> usize {
         EmaCore::bars_to_converge(self.length).max(self.atr_length)
@@ -183,13 +174,11 @@ impl KcConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<KcConfig> for KcConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> KcConfig {
         KcConfig {
             length: self.length.expect("length is required"),
@@ -202,7 +191,6 @@ impl IndicatorConfigBuilder<KcConfig> for KcConfigBuilder {
 
 impl KcConfigBuilder {
     /// Sets the EMA window length.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -210,7 +198,6 @@ impl KcConfigBuilder {
     }
 
     /// Sets the ATR window length.
-    #[inline]
     #[must_use]
     pub fn atr_length(mut self, atr_length: NonZero<usize>) -> Self {
         self.atr_length.replace(atr_length.get());
@@ -218,7 +205,6 @@ impl KcConfigBuilder {
     }
 
     /// Sets the band width multiplier.
-    #[inline]
     #[must_use]
     pub fn multiplier(mut self, multiplier: KcMultiplier) -> Self {
         self.multiplier = multiplier;
@@ -354,7 +340,6 @@ impl Indicator for Kc {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         self.current = match (self.ema.compute(ohlcv), self.atr.compute(ohlcv)) {
             (Some(ema), Some(atr)) => {

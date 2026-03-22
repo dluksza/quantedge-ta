@@ -29,17 +29,14 @@ pub struct RsiConfig {
 impl IndicatorConfig for RsiConfig {
     type Builder = RsiConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         RsiConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length + 1
     }
@@ -47,7 +44,6 @@ impl IndicatorConfig for RsiConfig {
 
 impl RsiConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
@@ -86,7 +82,6 @@ impl RsiConfigBuilder {
     }
 
     /// Sets the indicator window length.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: std::num::NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -95,13 +90,11 @@ impl RsiConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<RsiConfig> for RsiConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> RsiConfig {
         let length = self.length.expect("length is required");
 
@@ -216,7 +209,6 @@ impl Indicator for Rsi {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Self::Output> {
         debug_assert!(
             self.last_open_time.is_none_or(|t| t <= ohlcv.open_time()),
@@ -350,7 +342,6 @@ impl Indicator for Rsi {
 }
 
 impl Rsi {
-    #[inline]
     fn gain_and_loss(prev_price: Price, price: Price) -> (Price, Price) {
         let change = price - prev_price;
         let gain = change.max(0.0);
@@ -359,7 +350,6 @@ impl Rsi {
         (gain, loss)
     }
 
-    #[inline]
     fn rsi_from_averages(avg_gain: f64, avg_loss: f64) -> f64 {
         let sum = avg_gain + avg_loss;
         if sum == 0.0 {

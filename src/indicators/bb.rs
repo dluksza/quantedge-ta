@@ -91,17 +91,14 @@ pub struct BbConfig {
 impl IndicatorConfig for BbConfig {
     type Builder = BbConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         BbConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length
     }
@@ -109,14 +106,12 @@ impl IndicatorConfig for BbConfig {
 
 impl BbConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
     }
 
     /// Standard deviation multiplier for the upper and lower bands.
-    #[inline]
     #[must_use]
     pub fn std_dev(&self) -> StdDev {
         self.std_dev
@@ -170,7 +165,6 @@ impl BbConfigBuilder {
     }
 
     /// Sets the indicator window length.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -178,7 +172,6 @@ impl BbConfigBuilder {
     }
 
     /// Sets the standard deviation multiplier for the upper and lower bands.
-    #[inline]
     #[must_use]
     pub fn std_dev(mut self, std_dev: StdDev) -> Self {
         self.std_dev = std_dev;
@@ -187,13 +180,11 @@ impl BbConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<BbConfig> for BbConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> BbConfig {
         BbConfig {
             length: self.length.expect("length is required"),
@@ -332,7 +323,6 @@ impl Indicator for Bb {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Self::Output> {
         self.window.add(ohlcv);
 

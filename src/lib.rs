@@ -33,7 +33,6 @@ macro_rules! impl_inherent_methods {
             }
 
             /// See [`Indicator::compute`].
-            #[inline]
             pub fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<<Self as Indicator>::Output> {
                 <Self as Indicator>::compute(self, ohlcv)
             }
@@ -56,14 +55,12 @@ macro_rules! impl_inherent_methods {
 
             /// See [`IndicatorConfig::source`].
             #[must_use]
-            #[inline]
             pub fn source(&self) -> PriceSource {
                 <Self as IndicatorConfig>::source(self)
             }
 
             /// See [`IndicatorConfig::convergence`].
             #[must_use]
-            #[inline]
             pub fn convergence(&self) -> usize {
                 <Self as IndicatorConfig>::convergence(self)
             }
@@ -73,14 +70,12 @@ macro_rules! impl_inherent_methods {
         impl $builder {
             /// See [`IndicatorConfigBuilder::source`].
             #[must_use]
-            #[inline]
             pub fn source(self, source: PriceSource) -> Self {
                 <Self as IndicatorConfigBuilder<$config>>::source(self, source)
             }
 
             /// See [`IndicatorConfigBuilder::build`].
             #[must_use]
-            #[inline]
             pub fn build(self) -> $config {
                 <Self as IndicatorConfigBuilder<$config>>::build(self)
             }

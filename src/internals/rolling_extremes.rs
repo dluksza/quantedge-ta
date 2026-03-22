@@ -29,24 +29,20 @@ impl RollingExtremes {
     }
 
     #[must_use]
-    #[inline]
     pub(crate) fn is_ready(&self) -> bool {
         self.highs.is_ready()
     }
 
     #[must_use]
-    #[inline]
     pub(crate) fn highest_high(&self) -> Price {
         self.high_val.max(self.forming_high)
     }
 
     #[must_use]
-    #[inline]
     pub(crate) fn lowest_low(&self) -> Price {
         self.low_val.min(self.forming_low)
     }
 
-    #[inline]
     pub(crate) fn push(&mut self, ohlcv: &impl Ohlcv) -> (Price, Price) {
         if self.high_val < 0.0 {
             self.high_val = ohlcv.high();
@@ -88,7 +84,6 @@ impl RollingExtremes {
         (self.highest_high(), self.lowest_low())
     }
 
-    #[inline]
     pub(crate) fn replace(&mut self, ohlcv: &impl Ohlcv) -> (Price, Price) {
         self.highs.replace(ohlcv.high());
         self.lows.replace(ohlcv.low());

@@ -14,7 +14,6 @@ impl RollingSum {
         }
     }
 
-    #[inline]
     pub(crate) fn push(&mut self, value: f64) -> Option<f64> {
         if let Some(old) = self.buffer.push(value) {
             self.sum = self.sum - old + value;
@@ -27,7 +26,6 @@ impl RollingSum {
         }
     }
 
-    #[inline]
     pub(crate) fn replace(&mut self, value: f64) -> f64 {
         let old = self.buffer.replace(value);
         self.sum = self.sum - old + value;

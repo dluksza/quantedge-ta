@@ -31,17 +31,14 @@ pub struct WillRConfig {
 impl IndicatorConfig for WillRConfig {
     type Builder = WillRConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         WillRConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length
     }
@@ -49,7 +46,6 @@ impl IndicatorConfig for WillRConfig {
 
 impl WillRConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
@@ -88,7 +84,6 @@ impl WillRConfigBuilder {
 
     /// Sets the indicator window length.
     #[must_use]
-    #[inline]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
         self
@@ -96,13 +91,11 @@ impl WillRConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<WillRConfig> for WillRConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> WillRConfig {
         WillRConfig {
             length: self.length.expect("length is required"),
@@ -178,7 +171,6 @@ impl Indicator for WillR {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         let (price, (highest_high, lowest_low)) = match self.bar_state.handle(ohlcv) {
             BarAction::Advance(price) => (price, self.extremes.push(ohlcv)),

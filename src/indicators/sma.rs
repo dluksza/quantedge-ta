@@ -28,17 +28,14 @@ pub struct SmaConfig {
 impl IndicatorConfig for SmaConfig {
     type Builder = SmaConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         SmaConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length
     }
@@ -46,7 +43,6 @@ impl IndicatorConfig for SmaConfig {
 
 impl SmaConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
@@ -101,7 +97,6 @@ impl SmaConfigBuilder {
     }
 
     /// Sets the indicator window length.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -110,13 +105,11 @@ impl SmaConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<SmaConfig> for SmaConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> SmaConfig {
         SmaConfig {
             length: self.length.expect("length is required"),
@@ -180,7 +173,6 @@ impl Indicator for Sma {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Self::Output> {
         self.window.add(ohlcv);
 

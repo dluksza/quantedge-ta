@@ -42,17 +42,14 @@ pub struct EmaConfig {
 impl IndicatorConfig for EmaConfig {
     type Builder = EmaConfigBuilder;
 
-    #[inline]
     fn builder() -> Self::Builder {
         EmaConfigBuilder::new()
     }
 
-    #[inline]
     fn source(&self) -> PriceSource {
         self.source
     }
 
-    #[inline]
     fn convergence(&self) -> usize {
         self.length
     }
@@ -60,7 +57,6 @@ impl IndicatorConfig for EmaConfig {
 
 impl EmaConfig {
     /// Window length (number of bars).
-    #[inline]
     #[must_use]
     pub fn length(&self) -> usize {
         self.length
@@ -68,7 +64,6 @@ impl EmaConfig {
 
     /// Number of bars until the SMA seed's influence decays
     /// below 1%: `3 × (length + 1)`.
-    #[inline]
     #[must_use]
     pub fn full_convergence(&self) -> usize {
         EmaCore::bars_to_converge(self.length)
@@ -124,7 +119,6 @@ impl EmaConfigBuilder {
     }
 
     /// Sets the indicator window length.
-    #[inline]
     #[must_use]
     pub fn length(mut self, length: NonZero<usize>) -> Self {
         self.length.replace(length.get());
@@ -133,13 +127,11 @@ impl EmaConfigBuilder {
 }
 
 impl IndicatorConfigBuilder<EmaConfig> for EmaConfigBuilder {
-    #[inline]
     fn source(mut self, source: PriceSource) -> Self {
         self.source = source;
         self
     }
 
-    #[inline]
     fn build(self) -> EmaConfig {
         EmaConfig {
             length: self.length.expect("length is required"),
@@ -223,7 +215,6 @@ impl Indicator for Ema {
         }
     }
 
-    #[inline]
     fn compute(&mut self, ohlcv: &impl Ohlcv) -> Option<Price> {
         match self.bar_state.handle(ohlcv) {
             BarAction::Advance(price) => {

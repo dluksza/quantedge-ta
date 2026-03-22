@@ -36,7 +36,6 @@ impl PriceWindow<true> {
 }
 
 impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
-    #[inline]
     pub fn add(&mut self, ohlcv: &impl Ohlcv) -> Price {
         let price = match self.bar_state.handle(ohlcv) {
             BarAction::Advance(price) => {
@@ -62,18 +61,15 @@ impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
         price
     }
 
-    #[inline]
     pub fn sum(&self) -> Option<Price> {
         self.is_ready().then_some(self.sum)
     }
 
-    #[inline]
     pub fn sum_of_squares(&self) -> Option<Price> {
         assert!(SUM_OF_SQUARES, "sum_of_squares requires PriceWindow<true>");
         self.is_ready().then_some(self.sum_of_squares)
     }
 
-    #[inline]
     pub fn fold<B, F>(&self, init: B, cb: F) -> B
     where
         F: FnMut(B, &Price) -> B,
@@ -81,7 +77,6 @@ impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
         self.window.fold(init, cb)
     }
 
-    #[inline]
     fn maintain_sums(&mut self, old_price: Price) {
         self.sum -= old_price;
         if SUM_OF_SQUARES {
@@ -89,7 +84,6 @@ impl<const SUM_OF_SQUARES: bool> PriceWindow<SUM_OF_SQUARES> {
         }
     }
 
-    #[inline]
     fn is_ready(&self) -> bool {
         self.window.is_ready()
     }

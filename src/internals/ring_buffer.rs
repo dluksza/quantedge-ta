@@ -19,12 +19,10 @@ impl RingBuffer {
         }
     }
 
-    #[inline]
     pub(crate) fn is_ready(&self) -> bool {
         self.len == self.buffer.len()
     }
 
-    #[inline]
     pub(crate) fn push(&mut self, value: Price) -> Option<Price> {
         if self.is_ready() {
             let old = self.buffer[self.head];
@@ -47,7 +45,6 @@ impl RingBuffer {
         }
     }
 
-    #[inline]
     pub(crate) fn replace(&mut self, value: Price) -> Price {
         let old = self.buffer[self.tail];
 
@@ -56,7 +53,6 @@ impl RingBuffer {
         old
     }
 
-    #[inline]
     pub(crate) fn find_value_and_index<F>(&self, should_replace: F) -> (Price, usize)
     where
         F: Fn(Price, Price) -> bool,
@@ -77,7 +73,6 @@ impl RingBuffer {
         )
     }
 
-    #[inline]
     pub(crate) fn fold<B, F>(&self, init: B, cb: F) -> B
     where
         F: FnMut(B, &Price) -> B,
