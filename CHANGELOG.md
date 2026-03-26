@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Choppiness Index (CHOP) — measures whether the market is trending or ranging on a 0–100 scale. Uses the ratio of the sum of True Range over a window to the highest-high minus lowest-low range, scaled by log10(length). Higher values indicate a choppy, sideways market; lower values indicate a strong trend. Returns `f64`. Convenience constructor `ChopConfig::close()` and `length()` accessor.
+
 ## [0.10.0] - 2026-03-22
 
 ### Added

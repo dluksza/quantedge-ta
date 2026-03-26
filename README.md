@@ -52,7 +52,7 @@ Each indicator defines its own output type via an associated type on the
 `StochValue { k, d }`. Keltner Channel returns
 `KcValue { upper, middle, lower }`. Donchian Channel returns
 `DcValue { upper, middle, lower }`. ADX returns
-`AdxValue { adx, plus_di, minus_di }`. Williams %R and CCI return `f64`.
+`AdxValue { adx, plus_di, minus_di }`. Williams %R, CCI, and CHOP return `f64`.
 No downcasting, no enums, full type safety.
 
 ## Usage
@@ -143,6 +143,7 @@ trait Indicator: Sized + Clone + Display + Debug {
 // Adx:   Output = AdxValue { adx: f64, plus_di: f64, minus_di: f64 }
 // WillR: Output = f64
 // Cci:   Output = f64
+// Chop:  Output = f64
 ```
 
 ### Ohlcv Trait
@@ -231,10 +232,11 @@ to extract from the Ohlcv input:
 | ADX       | `AdxValue` | Average Directional Index (+DI, −DI, ADX)    |
 | WillR     | `f64`      | Williams %R                                  |
 | CCI       | `f64`      | Commodity Channel Index                      |
+| CHOP      | `f64`      | Choppiness Index                             |
 
 ### Planned
 
-CHOP, Ichimoku, StochRSI, OBV, VWAP, Supertrend, Parabolic SAR.
+Ichimoku, StochRSI, OBV, VWAP, Supertrend, Parabolic SAR.
 
 ## Benchmarks
 
