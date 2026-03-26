@@ -281,6 +281,8 @@ on a converged indicator.
 | WillR     | 140    | 11.1 µs       | 66.9 Melem/s   |
 | CCI       | 20     | 2.61 µs       | 285 Melem/s    |
 | CCI       | 200    | 27.8 µs       | 26.7 Melem/s   |
+| CHOP      | 14     | 6.43 µs       | 116 Melem/s    |
+| CHOP      | 140    | 13.1 µs       | 56.6 Melem/s   |
 
 ### Tick — single `compute()` on a converged indicator
 
@@ -310,6 +312,8 @@ on a converged indicator.
 | WillR     | 140    | 34.7 ns       |
 | CCI       | 20     | 10.7 ns       |
 | CCI       | 200    | 63.1 ns       |
+| CHOP      | 14     | 33.7 ns       |
+| CHOP      | 140    | 36.6 ns       |
 
 ### Repaint — single `compute()` repaint on a converged indicator
 
@@ -339,6 +343,8 @@ on a converged indicator.
 | WillR     | 140    | 31.5 ns       |
 | CCI       | 20     | 14.0 ns       |
 | CCI       | 200    | 62.7 ns       |
+| CHOP      | 14     | 28.9 ns       |
+| CHOP      | 140    | 34.0 ns       |
 
 ### Repaint Stream — process 744 bars × 3 ticks from cold start
 
@@ -368,6 +374,8 @@ on a converged indicator.
 | WillR     | 140    | 14.1 µs       | 158 Melem/s    |
 | CCI       | 20     | 7.86 µs       | 284 Melem/s    |
 | CCI       | 200    | 84.5 µs       | 26.4 Melem/s   |
+| CHOP      | 14     | 12.5 µs       | 179 Melem/s    |
+| CHOP      | 140    | 18.1 µs       | 123 Melem/s    |
 
 Run locally:
 

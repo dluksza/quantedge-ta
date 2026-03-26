@@ -20,7 +20,7 @@ import csv
 import os
 import sys
 
-from talipp.indicators import ADX, ATR, BB, CCI, EMA, MACD, RSI, SMA, Stoch, KeltnerChannels, DonchianChannels, Williams
+from talipp.indicators import ADX, ATR, BB, CCI, CHOP, EMA, MACD, RSI, SMA, Stoch, KeltnerChannels, DonchianChannels, Williams
 from talipp.ohlcv import OHLCV
 
 PERIOD = 20
@@ -35,6 +35,7 @@ DC_PERIOD = 20
 ADX_PERIOD = 14
 WILLR_PERIOD = 14
 CCI_PERIOD = 20
+CHOP_PERIOD = 14
 OUTPUT_DIR = "tests/fixtures/data"
 
 
@@ -253,6 +254,17 @@ def main():
             if val is not None:
                 w.writerow([times[i], f"{val:.10f}"])
 
+    # CHOP
+    # talipp CHOP(period) takes OHLCV. Output: single float (0–100 scale).
+    # This maps to Rust Chop(length=14).
+    chop = CHOP(period=CHOP_PERIOD, input_values=ohlcv_bars)
+    with open(f"{OUTPUT_DIR}/chop-14.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["open_time", "expected"])
+        for i, val in enumerate(chop):
+            if val is not None:
+                w.writerow([times[i], f"{val:.10f}"])
+
     sma_count = sum(1 for v in sma if v is not None)
     ema_count = sum(1 for v in ema if v is not None)
     bb_count = sum(1 for v in bb if v is not None)
@@ -265,6 +277,7 @@ def main():
     adx_count = sum(1 for v in adx if v is not None and v.adx is not None)
     willr_count = sum(1 for v in willr if v is not None)
     cci_count = sum(1 for v in cci if v is not None)
+    chop_count = sum(1 for v in chop if v is not None)
     print(
         f"Generated {sma_count} SMA, "
         f"{ema_count} EMA, "
@@ -277,7 +290,8 @@ def main():
         f"{dc_count} DC, "
         f"{adx_count} ADX, "
         f"{willr_count} WillR, "
-        f"{cci_count} CCI reference values "
+        f"{cci_count} CCI, "
+        f"{chop_count} CHOP reference values "
         f"from {len(rows)} OHLCV bars."
     )
 
