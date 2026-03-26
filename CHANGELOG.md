@@ -2,9 +2,15 @@
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-03-26
+
 ### Added
 
 - Choppiness Index (CHOP) — measures whether the market is trending or ranging on a 0–100 scale. Uses the ratio of the sum of True Range over a window to the highest-high minus lowest-low range, scaled by log10(length). Higher values indicate a choppy, sideways market; lower values indicate a strong trend. Returns `f64`. Convenience constructor `ChopConfig::close()` and `length()` accessor. Reference tests against talipp (731 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks.
+
+### Changed
+
+- Removed `#[inline]` annotations from generic, private, and cold-path methods across all indicators and internals. Kept only on non-generic pub `value()` impls and output struct accessors where it enables cross-crate inlining. No effect on hot-path performance.
 
 ## [0.10.0] - 2026-03-22
 
@@ -108,6 +114,7 @@ Initial release.
 - Reference tests against 744 BTC/USDT bars
 - Criterion benchmarks (stream + tick)
 
+[0.11.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.11.0
 [0.10.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.10.0
 [0.9.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.9.0
 [0.8.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.8.0
