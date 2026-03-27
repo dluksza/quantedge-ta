@@ -1,18 +1,30 @@
 use crate::Price;
 
 #[derive(Clone, Debug)]
-pub(crate) struct RingBuffer {
-    buffer: Vec<Price>,
+pub(crate) struct RingBuffer<T = Price>
+where
+    T: Clone + Copy,
+{
+    buffer: Vec<T>,
     head: usize,
     tail: usize,
     len: usize,
 }
 
-impl RingBuffer {
-    #[must_use]
+impl RingBuffer<Price> {
     pub(crate) fn new(length: usize) -> Self {
+        RingBuffer::new_with_fill(length, 0.0)
+    }
+}
+
+impl<T> RingBuffer<T>
+where
+    T: Clone + Copy,
+{
+    #[must_use]
+    pub(crate) fn new_with_fill(length: usize, fill: T) -> Self {
         Self {
-            buffer: vec![0.0; length],
+            buffer: vec![fill; length],
             head: 0,
             tail: 0,
             len: 0,
@@ -23,7 +35,7 @@ impl RingBuffer {
         self.len == self.buffer.len()
     }
 
-    pub(crate) fn push(&mut self, value: Price) -> Option<Price> {
+    pub(crate) fn push(&mut self, value: T) -> Option<T> {
         if self.is_ready() {
             let old = self.buffer[self.head];
 
@@ -45,7 +57,7 @@ impl RingBuffer {
         }
     }
 
-    pub(crate) fn replace(&mut self, value: Price) -> Price {
+    pub(crate) fn replace(&mut self, value: T) -> T {
         let old = self.buffer[self.tail];
 
         self.buffer[self.tail] = value;
@@ -53,9 +65,9 @@ impl RingBuffer {
         old
     }
 
-    pub(crate) fn find_value_and_index<F>(&self, should_replace: F) -> (Price, usize)
+    pub(crate) fn find_value_and_index<F>(&self, should_replace: F) -> (T, usize)
     where
-        F: Fn(Price, Price) -> bool,
+        F: Fn(T, T) -> bool,
     {
         let mut index = 0;
         let mut found = self.buffer[0];
@@ -75,7 +87,7 @@ impl RingBuffer {
 
     pub(crate) fn fold<B, F>(&self, init: B, cb: F) -> B
     where
-        F: FnMut(B, &Price) -> B,
+        F: FnMut(B, &T) -> B,
     {
         self.buffer.iter().fold(init, cb)
     }
