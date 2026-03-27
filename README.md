@@ -52,7 +52,9 @@ Each indicator defines its own output type via an associated type on the
 `StochValue { k, d }`. Keltner Channel returns
 `KcValue { upper, middle, lower }`. Donchian Channel returns
 `DcValue { upper, middle, lower }`. ADX returns
-`AdxValue { adx, plus_di, minus_di }`. Williams %R, CCI, and CHOP return `f64`.
+`AdxValue { adx, plus_di, minus_di }`. Ichimoku Cloud returns
+`IchimokuValue { tenkan, kijun, senkou_a, senkou_b, chikou_close }`.
+Williams %R, CCI, and CHOP return `f64`.
 No downcasting, no enums, full type safety.
 
 ## Usage
@@ -140,10 +142,11 @@ trait Indicator: Sized + Clone + Display + Debug {
 // Atr:   Output = f64
 // Kc:    Output = KcValue { upper: f64, middle: f64, lower: f64 }
 // Dc:    Output = DcValue { upper: f64, middle: f64, lower: f64 }
-// Adx:   Output = AdxValue { adx: f64, plus_di: f64, minus_di: f64 }
-// WillR: Output = f64
-// Cci:   Output = f64
-// Chop:  Output = f64
+// Adx:      Output = AdxValue { adx: f64, plus_di: f64, minus_di: f64 }
+// Ichimoku: Output = IchimokuValue { tenkan: f64, kijun: f64, senkou_a: f64, senkou_b: f64, chikou_close: f64 }
+// WillR:    Output = f64
+// Cci:      Output = f64
+// Chop:     Output = f64
 ```
 
 ### Ohlcv Trait
@@ -233,10 +236,11 @@ to extract from the Ohlcv input:
 | WillR     | `f64`      | Williams %R                                  |
 | CCI       | `f64`      | Commodity Channel Index                      |
 | CHOP      | `f64`      | Choppiness Index                             |
+| Ichimoku  | `IchimokuValue`| Ichimoku Cloud (tenkan, kijun, senkou A/B, chikou) |
 
 ### Planned
 
-Ichimoku, StochRSI, OBV, VWAP, Supertrend, Parabolic SAR.
+StochRSI, OBV, VWAP, Supertrend, Parabolic SAR.
 
 ## Benchmarks
 

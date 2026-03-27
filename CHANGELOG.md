@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Ichimoku Cloud (Ichimoku Kinko Hyo) — comprehensive trend indicator producing five lines: Tenkan-sen (conversion), Kijun-sen (base), Senkou Span A/B (cloud boundaries), and Chikou close (lagging span input). Configurable lookback windows and displacement. Standard settings via `IchimokuBuilder::default()` (9/26/52/26). Returns `IchimokuValue { tenkan, kijun, senkou_a, senkou_b, chikou_close }`. Unit tests covering filling, computation, sliding, repaint, live data, clone, config, display, and value accessor.
+
 ## [0.11.0] - 2026-03-26
 
 ### Added
