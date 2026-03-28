@@ -229,6 +229,13 @@ impl Display for StochValue {
 /// `open_time` recomputes from the previous state without
 /// advancing.
 ///
+/// # TradingView comparison
+///
+/// TradingView's default "Stoch" indicator is the **Slow Stochastic**,
+/// which applies an extra SMA-3 smoothing to %K before computing %D.
+/// This crate implements the **Fast Stochastic**. To compare directly
+/// against TradingView, set its *Smooth* parameter to 1.
+///
 /// # Example
 ///
 /// ```
