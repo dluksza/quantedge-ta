@@ -114,6 +114,18 @@ impl MacdConfig {
     }
 }
 
+impl Default for MacdConfig {
+    /// Default: fast=12, slow=26, signal=9, source=Close (Appel's original, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            fast_length: 12,
+            slow_length: 26,
+            signal_length: 9,
+            source: PriceSource::Close,
+        }
+    }
+}
+
 impl Display for MacdConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(

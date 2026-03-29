@@ -54,6 +54,13 @@ impl DcConfig {
     }
 }
 
+impl Default for DcConfig {
+    /// Default: length=20 (Donchian's original, `TradingView` default).
+    fn default() -> Self {
+        Self { length: 20 }
+    }
+}
+
 impl Display for DcConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "DcConfig(l: {})", self.length)

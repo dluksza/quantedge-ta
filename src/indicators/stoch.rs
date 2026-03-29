@@ -101,6 +101,19 @@ impl StochConfig {
     }
 }
 
+impl Default for StochConfig {
+    /// Default: length=14, `k_smooth`=1, `d_smooth`=3, source=Close
+    /// (Fast Stochastic, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            length: 14,
+            k_smooth: 1,
+            d_smooth: 3,
+            source: PriceSource::Close,
+        }
+    }
+}
+
 impl Display for StochConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(

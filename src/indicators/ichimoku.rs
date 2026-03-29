@@ -96,6 +96,19 @@ impl IchimokuConfig {
     }
 }
 
+impl Default for IchimokuConfig {
+    /// Default: tenkan=9, kijun=26, `senkou_b`=52, displacement=26
+    /// (Hosoda's original, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            tenkan_length: 9,
+            kijun_length: 26,
+            senkou_b_length: 52,
+            displacement: 26,
+        }
+    }
+}
+
 impl Display for IchimokuConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(

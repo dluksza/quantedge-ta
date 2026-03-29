@@ -63,6 +63,16 @@ impl RsiConfig {
     }
 }
 
+impl Default for RsiConfig {
+    /// Default: length=14, source=Close (Wilder's original, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            length: 14,
+            source: PriceSource::Close,
+        }
+    }
+}
+
 impl Display for RsiConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "RsiConfig({}, {})", self.length, self.source)

@@ -139,6 +139,17 @@ impl BbConfig {
     }
 }
 
+impl Default for BbConfig {
+    /// Default: length=20, source=Close, `std_dev`=2.0 (Bollinger's original, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            length: 20,
+            source: PriceSource::Close,
+            std_dev: StdDev(2.0),
+        }
+    }
+}
+
 impl Display for BbConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(

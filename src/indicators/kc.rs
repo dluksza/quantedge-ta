@@ -148,6 +148,18 @@ impl KcConfig {
     }
 }
 
+impl Default for KcConfig {
+    /// Default: length=20, `atr_length`=10, multiplier=1.5, source=Close (`TradingView` default).
+    fn default() -> Self {
+        Self {
+            length: 20,
+            atr_length: 10,
+            multiplier: KcMultiplier(1.5),
+            source: PriceSource::Close,
+        }
+    }
+}
+
 impl Display for KcConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(

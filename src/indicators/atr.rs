@@ -63,6 +63,13 @@ impl AtrConfig {
     }
 }
 
+impl Default for AtrConfig {
+    /// Default: length=14 (Wilder's original, `TradingView` default).
+    fn default() -> Self {
+        Self { length: 14 }
+    }
+}
+
 impl Display for AtrConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "AtrConfig({})", self.length)

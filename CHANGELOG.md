@@ -5,6 +5,7 @@
 ### Added
 
 - `to_builder()` on `IndicatorConfig` trait — returns a builder pre-filled with the config's current values, allowing single-field overrides without reconstructing from scratch. Implemented for all 14 indicators.
+- `Default` impl for all 14 indicator configs with industry-standard parameters (matching TradingView defaults and original author specifications). `Default` is now a supertrait bound on `IndicatorConfig`.
 
 ## [0.12.0] - 2026-03-28
 

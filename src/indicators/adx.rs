@@ -60,6 +60,13 @@ impl AdxConfig {
     }
 }
 
+impl Default for AdxConfig {
+    /// Default: length=14 (Wilder's original, `TradingView` default).
+    fn default() -> Self {
+        Self { length: 14 }
+    }
+}
+
 impl Display for AdxConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "AdxConfig(l: {})", self.length)

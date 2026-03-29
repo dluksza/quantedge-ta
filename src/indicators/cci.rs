@@ -71,6 +71,16 @@ impl IndicatorConfig for CciConfig {
     }
 }
 
+impl Default for CciConfig {
+    /// Default: length=20, source=HLC3 (Lambert's original Typical Price, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            length: 20,
+            source: PriceSource::HLC3,
+        }
+    }
+}
+
 impl Display for CciConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "CciConfig({}, {})", self.length, self.source)

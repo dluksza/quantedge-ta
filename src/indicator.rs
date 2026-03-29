@@ -10,7 +10,7 @@ use std::{
 /// Every indicator has a corresponding config type that holds its parameters
 /// (length, price source, etc). Configs are value types: cheap to clone,
 /// compare, and hash.
-pub trait IndicatorConfig: Sized + PartialEq + Eq + Hash + Display + Debug {
+pub trait IndicatorConfig: Default + Sized + PartialEq + Eq + Hash + Display + Debug {
     /// Builder type for constructing this config.
     type Builder: IndicatorConfigBuilder<Self>;
 

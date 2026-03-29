@@ -80,6 +80,16 @@ impl SmaConfig {
     }
 }
 
+impl Default for SmaConfig {
+    /// Default: length=20, source=Close (common medium-term period, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            length: 20,
+            source: PriceSource::Close,
+        }
+    }
+}
+
 impl Display for SmaConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "SmaConfig({}, {})", self.length, self.source)

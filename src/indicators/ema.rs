@@ -101,6 +101,16 @@ impl EmaConfig {
     }
 }
 
+impl Default for EmaConfig {
+    /// Default: length=12, source=Close (common short-term EMA period).
+    fn default() -> Self {
+        Self {
+            length: 12,
+            source: PriceSource::Close,
+        }
+    }
+}
+
 impl Display for EmaConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "EmaConfig({}, {})", self.length, self.source)

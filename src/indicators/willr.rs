@@ -65,6 +65,16 @@ impl WillRConfig {
     }
 }
 
+impl Default for WillRConfig {
+    /// Default: length=14, source=Close (Williams' original, `TradingView` default).
+    fn default() -> Self {
+        Self {
+            length: 14,
+            source: PriceSource::Close,
+        }
+    }
+}
+
 impl Display for WillRConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "WillRConfig({}, {})", self.length, self.source)
