@@ -49,7 +49,8 @@ Each indicator defines its own output type via an associated type on the
 `Indicator` trait. SMA, EMA, RSI, and ATR return `f64`. Bollinger Bands returns
 `BbValue { upper, middle, lower }`. MACD returns
 `MacdValue { macd, signal, histogram }`. Stochastic returns
-`StochValue { k, d }`. Keltner Channel returns
+`StochValue { k, d }`. Stochastic RSI returns
+`StochRsiValue { k, d }`. Keltner Channel returns
 `KcValue { upper, middle, lower }`. Donchian Channel returns
 `DcValue { upper, middle, lower }`. ADX returns
 `AdxValue { adx, plus_di, minus_di }`. Ichimoku Cloud returns
@@ -158,7 +159,8 @@ trait Indicator: Sized + Clone + Display + Debug {
 // Ichimoku: Output = IchimokuValue { tenkan: f64, kijun: f64, senkou_a: f64, senkou_b: f64, chikou_close: f64 }
 // WillR:    Output = f64
 // Cci:      Output = f64
-// Chop:     Output = f64
+// Chop:      Output = f64
+// StochRsi:  Output = StochRsiValue { k: f64, d: Option<f64> }
 ```
 
 ### Ohlcv Trait
@@ -249,10 +251,11 @@ to extract from the Ohlcv input:
 | CCI       | `f64`      | Commodity Channel Index                      |
 | CHOP      | `f64`      | Choppiness Index                             |
 | Ichimoku  | `IchimokuValue`| Ichimoku Cloud (tenkan, kijun, senkou A/B, chikou) |
+| StochRSI  | `StochRsiValue`| Stochastic RSI (%K, %D)                  |
 
 ### Planned
 
-StochRSI, OBV, VWAP, Supertrend, Parabolic SAR.
+OBV, VWAP, Supertrend, Parabolic SAR.
 
 ## Benchmarks
 

@@ -102,6 +102,7 @@ impl_inherent_methods!(Bb, BbConfig, BbConfigBuilder);
 impl_inherent_methods!(Ichimoku, IchimokuConfig, IchimokuBuilder);
 impl_inherent_methods!(Macd, MacdConfig, MacdConfigBuilder);
 impl_inherent_methods!(Stoch, StochConfig, StochConfigBuilder);
+impl_inherent_methods!(StochRsi, StochRsiConfig, StochRsiConfigBuilder);
 impl_inherent_methods!(WillR, WillRConfig, WillRConfigBuilder);
 
 #[cfg(test)]

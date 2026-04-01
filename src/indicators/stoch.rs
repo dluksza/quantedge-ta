@@ -375,7 +375,7 @@ impl Indicator for Stoch {
 }
 
 impl Stoch {
-    fn k_value(price: f64, highest_high: f64, lowest_low: f64) -> f64 {
+    pub(crate) fn k_value(price: f64, highest_high: f64, lowest_low: f64) -> f64 {
         let diff = highest_high - lowest_low;
 
         if diff.abs() < f64::EPSILON {
