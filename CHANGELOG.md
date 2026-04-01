@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-04-01
+
 ### Added
 
 - Stochastic RSI (StochRSI) — applies the Stochastic Oscillator formula to RSI values, producing a 0–100 scale that measures whether RSI is near its recent high or low. Configurable RSI length, stochastic lookback, %K smoothing, and %D smoothing. Standard settings via `StochRsiConfig::default()` (14/14/3/3). Returns `StochRsiValue { k, d }`. Reference tests against talipp (713 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks. Unit tests covering convergence, computation, repaints, bounds, clone, config, display, and value accessor.
@@ -10,6 +12,8 @@
 
 ### Changed
 
+- **Breaking:** `StochConfig::default()` now produces the **Slow Stochastic** (14/3/3) instead of the Fast Stochastic (14/1/3), matching TradingView's default "Stoch" indicator. Set `k_smooth` to 1 for the previous Fast Stochastic behavior.
+- `ChopConfigBuilder::source()` no longer stores the argument — CHOP always derives from ATR internally, so the source field was dead state. Calling `source()` on the builder is now a no-op.
 - `RollingExtremes` optimized: removed `forming_high`/`forming_low` fields by folding the forming bar into the tracked extreme directly, leveraging OHLCV monotonicity (high only increases, low only decreases during bar formation). `highest_high()`/`lowest_low()` are now pure field reads. Stream throughput improved 2–12% and repaint stream throughput improved 1–12% for all indicators using `RollingExtremes` (Stoch, DC, WillR, CHOP, Ichimoku). Internal-only change, no public API affected.
 
 ### Fixed
@@ -138,6 +142,7 @@ Initial release.
 - Reference tests against 744 BTC/USDT bars
 - Criterion benchmarks (stream + tick)
 
+[0.13.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.13.0
 [0.12.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.12.0
 [0.11.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.11.0
 [0.10.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.10.0
