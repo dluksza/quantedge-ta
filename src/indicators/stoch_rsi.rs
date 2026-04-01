@@ -1,7 +1,8 @@
 use std::{fmt::Display, num::NonZero};
 
 use crate::{
-    Indicator, IndicatorConfig, IndicatorConfigBuilder, PriceSource, Rsi, RsiConfig, Timestamp,
+    Indicator, IndicatorConfig, IndicatorConfigBuilder, PriceSource, Rsi, RsiConfig, Stoch,
+    Timestamp,
     internals::{RollingMaxMin, RollingSum},
 };
 
@@ -338,7 +339,7 @@ impl Indicator for StochRsi {
                 let k_sum = self
                     .max_min
                     .push(rsi)
-                    .and_then(|(max, min)| self.k_sum.push(Self::k_value(rsi, max, min)));
+                    .and_then(|(max, min)| self.k_sum.push(Stoch::k_value(rsi, max, min)));
 
                 match k_sum {
                     Some(k_sum) => {
@@ -353,7 +354,7 @@ impl Indicator for StochRsi {
                 let k_sum = self
                     .max_min
                     .replace(rsi)
-                    .and_then(|(max, min)| self.k_sum.replace(Self::k_value(rsi, max, min)));
+                    .and_then(|(max, min)| self.k_sum.replace(Stoch::k_value(rsi, max, min)));
 
                 self.current.map(|current| {
                     let k = k_sum.expect("k_sum must be ready when current is Some")
@@ -376,18 +377,6 @@ impl Indicator for StochRsi {
     #[inline]
     fn value(&self) -> Option<Self::Output> {
         self.current
-    }
-}
-
-impl StochRsi {
-    fn k_value(rsi: f64, max: f64, min: f64) -> f64 {
-        let diff = max - min;
-
-        if (diff).abs() < f64::EPSILON {
-            50.0
-        } else {
-            ((rsi - min) / diff) * 100.0
-        }
     }
 }
 
