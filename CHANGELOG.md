@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-04-02
+
 ### Added
 
 - On-Balance Volume (OBV) — cumulative volume indicator that adds volume on up-price bars and subtracts on down-price bars. Configurable price source (default Close). Returns `f64`. Convergence after 1 bar. Reference tests against talipp (744 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks. Unit tests covering convergence, computation, repaints, live data, clone, config, display, and value accessor.
@@ -146,6 +148,7 @@ Initial release.
 - Reference tests against 744 BTC/USDT bars
 - Criterion benchmarks (stream + tick)
 
+[0.14.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.14.0
 [0.13.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.13.0
 [0.12.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.12.0
 [0.11.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.11.0
