@@ -55,7 +55,7 @@ Each indicator defines its own output type via an associated type on the
 `DcValue { upper, middle, lower }`. ADX returns
 `AdxValue { adx, plus_di, minus_di }`. Ichimoku Cloud returns
 `IchimokuValue { tenkan, kijun, senkou_a, senkou_b, chikou_close }`.
-Williams %R, CCI, and CHOP return `f64`.
+Williams %R, CCI, CHOP, and OBV return `f64`.
 No downcasting, no enums, full type safety.
 
 ## Usage
@@ -161,6 +161,7 @@ trait Indicator: Sized + Clone + Display + Debug {
 // Cci:      Output = f64
 // Chop:      Output = f64
 // StochRsi:  Output = StochRsiValue { k: f64, d: Option<f64> }
+// Obv:       Output = f64
 ```
 
 ### Ohlcv Trait
@@ -252,10 +253,11 @@ to extract from the Ohlcv input:
 | CHOP      | `f64`      | Choppiness Index                             |
 | Ichimoku  | `IchimokuValue`| Ichimoku Cloud (tenkan, kijun, senkou A/B, chikou) |
 | StochRSI  | `StochRsiValue`| Stochastic RSI (%K, %D)                  |
+| OBV       | `f64`      | On-Balance Volume                        |
 
 ### Planned
 
-OBV, VWAP, Supertrend, Parabolic SAR.
+VWAP, Supertrend, Parabolic SAR.
 
 ## Benchmarks
 

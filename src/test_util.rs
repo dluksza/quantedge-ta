@@ -28,6 +28,7 @@ pub struct Bar {
     pub high: f64,
     pub low: f64,
     pub close: f64,
+    pub volume: f64,
     pub open_time: u64,
 }
 
@@ -38,6 +39,7 @@ impl Bar {
             high,
             low,
             close,
+            volume: 0.0,
             open_time: 0,
         }
     }
@@ -54,12 +56,18 @@ impl Bar {
             high,
             low,
             close,
+            volume: 0.0,
             open_time,
         }
     }
 
     pub fn at(mut self, open_time: u64) -> Self {
         self.open_time = open_time;
+        self
+    }
+
+    pub fn vol(mut self, volume: f64) -> Self {
+        self.volume = volume;
         self
     }
 }
@@ -86,6 +94,9 @@ impl Ohlcv for Bar {
     }
     fn close(&self) -> Price {
         self.close
+    }
+    fn volume(&self) -> f64 {
+        self.volume
     }
     fn open_time(&self) -> Timestamp {
         self.open_time
