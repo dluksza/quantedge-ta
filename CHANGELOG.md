@@ -2,12 +2,15 @@
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-04-03
+
 ### Added
 
 - Volume Weighted Average Price (VWAP) — cumulative price-volume average that resets on a configurable anchor period (1h, 2h, 4h, 8h, 12h, Day, or manual User reset). Up to three standard-deviation bands. Default source HLC3, anchor Day. Returns `VwapValue { vwap, band_1, band_2, band_3 }`. Reference tests against pandas_ta (744 BTC/USDT bars, 1e-4 tolerance) and Criterion benchmarks. Unit tests covering convergence, computation, bands, anchor reset, repaints, live data, clone, config, display, and value accessor.
 
 ### Changed
 
+- Extracted `StdDev` into its own module so it can be reused by VWAP band configuration. No API change — `StdDev` was already public via the `bb` module re-export. Added `Display` impl.
 - `Timestamp` docs now recommend microseconds since Unix epoch (required for VWAP session boundary detection).
 - `Ohlcv::volume()` docs clarify that overriding the default is **required** when using OBV or VWAP; the default `0.0` produces meaningless results.
 
@@ -157,6 +160,7 @@ Initial release.
 - Reference tests against 744 BTC/USDT bars
 - Criterion benchmarks (stream + tick)
 
+[0.15.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.15.0
 [0.14.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.14.0
 [0.13.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.13.0
 [0.12.0]: https://github.com/dluksza/quantedge-ta/releases/tag/v0.12.0
