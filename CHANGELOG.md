@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `Timestamp` docs now recommend microseconds since Unix epoch (required for VWAP session boundary detection).
+- `Ohlcv::volume()` docs clarify that overriding the default is **required** when using OBV or VWAP; the default `0.0` produces meaningless results.
+
 ## [0.14.0] - 2026-04-02
 
 ### Added

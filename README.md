@@ -185,9 +185,13 @@ impl Ohlcv for MyKline {
     fn low(&self) -> Price { self.low }
     fn close(&self) -> Price { self.close }
     fn open_time(&self) -> Timestamp { self.open_time }
-    // fn volume(&self) -> f64 { 0.0 }  -- default, override if needed
+    // fn volume(&self) -> f64 { 0.0 }  -- default, must override for OBV/VWAP
 }
 ```
+
+`Timestamp` is recommended to be microseconds since Unix epoch, monotonically
+increasing. This is **required** for the VWAP indicator, which uses timestamps
+to detect session boundaries.
 
 ### Convergence
 

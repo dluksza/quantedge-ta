@@ -8,6 +8,10 @@ pub type Price = f64;
 ///
 /// Used for bar boundary detection. Must be non-decreasing
 /// between consecutive calls to [`Indicator::compute`].
+///
+/// Recommended: microseconds since Unix epoch, monotonically increasing.
+/// This is **required** for the VWAP indicator, which uses timestamps
+/// to detect session boundaries.
 pub type Timestamp = u64;
 
 /// OHLCV bar data used as input to all indicators.
@@ -64,7 +68,9 @@ pub trait Ohlcv {
 
     /// Trade volume during the bar. Defaults to `0.0`.
     ///
-    /// Override this for volume-dependent indicators (OBV, MFI, VWAP).
+    /// **Required** for volume-dependent indicators (OBV, VWAP).
+    /// You must override this method when using these indicators;
+    /// the default `0.0` will produce meaningless results.
     /// Indicators that don't use volume ignore this value.
     fn volume(&self) -> f64 {
         0.0
