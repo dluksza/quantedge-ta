@@ -1,63 +1,9 @@
-use std::{
-    fmt::Display,
-    hash::{Hash, Hasher},
-    num::NonZero,
-};
+use std::{fmt::Display, hash::Hash, num::NonZero};
 
 use crate::{
-    Atr, AtrConfig, Ema, EmaConfig, Indicator, IndicatorConfig, IndicatorConfigBuilder, Price,
-    PriceSource, internals::EmaCore,
+    Atr, AtrConfig, Ema, EmaConfig, Indicator, IndicatorConfig, IndicatorConfigBuilder, Multiplier,
+    Price, PriceSource, internals::EmaCore,
 };
-
-/// Band width multiplier for the Keltner Channel.
-///
-/// Wraps a positive, non-NaN `f64`. The default value is `1.5`.
-///
-/// # Panics
-///
-/// [`KcMultiplier::new`] panics if the value is NaN or non-positive.
-#[derive(Clone, Copy, Debug)]
-pub struct KcMultiplier(f64);
-
-impl KcMultiplier {
-    /// Creates a new multiplier from the given value.
-    ///
-    /// # Panics
-    ///
-    /// Panics if `value` is NaN or not positive.
-    #[must_use]
-    pub fn new(value: f64) -> Self {
-        assert!(!value.is_nan(), "multiplier must not be NaN");
-        assert!(value > 0.0, "multiplier must be positive");
-        Self(value)
-    }
-
-    /// Returns the inner `f64` value.
-    #[must_use]
-    pub fn value(&self) -> f64 {
-        self.0
-    }
-}
-
-impl PartialEq for KcMultiplier {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.to_bits() == other.0.to_bits()
-    }
-}
-
-impl Eq for KcMultiplier {}
-
-impl Hash for KcMultiplier {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.0.to_bits().hash(state);
-    }
-}
-
-impl Default for KcMultiplier {
-    fn default() -> Self {
-        Self(1.5)
-    }
-}
 
 /// Configuration for the Keltner Channel ([`Kc`]) indicator.
 ///
@@ -76,13 +22,13 @@ impl Default for KcMultiplier {
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{KcConfig, KcMultiplier};
+/// use quantedge_ta::{KcConfig, Multiplier};
 /// use std::num::NonZero;
 ///
 /// let config = KcConfig::builder()
 ///     .length(NonZero::new(20).unwrap())
 ///     .atr_length(NonZero::new(10).unwrap())
-///     .multiplier(KcMultiplier::new(2.0))
+///     .multiplier(Multiplier::new(2.0))
 ///     .build();
 ///
 /// assert_eq!(config.length(), 20);
@@ -92,7 +38,7 @@ impl Default for KcMultiplier {
 pub struct KcConfig {
     length: usize,
     atr_length: usize,
-    multiplier: KcMultiplier,
+    multiplier: Multiplier,
     source: PriceSource,
 }
 
@@ -136,7 +82,7 @@ impl KcConfig {
 
     /// Band width multiplier.
     #[must_use]
-    pub fn multiplier(&self) -> KcMultiplier {
+    pub fn multiplier(&self) -> Multiplier {
         self.multiplier
     }
 
@@ -154,7 +100,7 @@ impl Default for KcConfig {
         Self {
             length: 20,
             atr_length: 10,
-            multiplier: KcMultiplier(1.5),
+            multiplier: Multiplier::new(1.5),
             source: PriceSource::Close,
         }
     }
@@ -165,7 +111,10 @@ impl Display for KcConfig {
         write!(
             f,
             "KcConfig(l: {}, atr_l: {}, m: {}, s: {})",
-            self.length, self.atr_length, self.multiplier.0, self.source
+            self.length,
+            self.atr_length,
+            self.multiplier.value(),
+            self.source
         )
     }
 }
@@ -179,7 +128,7 @@ impl Display for KcConfig {
 pub struct KcConfigBuilder {
     length: Option<usize>,
     atr_length: Option<usize>,
-    multiplier: KcMultiplier,
+    multiplier: Multiplier,
     source: PriceSource,
 }
 
@@ -188,7 +137,7 @@ impl KcConfigBuilder {
         Self {
             length: None,
             atr_length: None,
-            multiplier: KcMultiplier::default(),
+            multiplier: Multiplier::new(1.5),
             source: PriceSource::Close,
         }
     }
@@ -227,7 +176,7 @@ impl KcConfigBuilder {
 
     /// Sets the band width multiplier.
     #[must_use]
-    pub fn multiplier(mut self, multiplier: KcMultiplier) -> Self {
+    pub fn multiplier(mut self, multiplier: Multiplier) -> Self {
         self.multiplier = multiplier;
         self
     }
@@ -305,7 +254,7 @@ impl Display for KcValue {
 /// # Example
 ///
 /// ```
-/// use quantedge_ta::{Kc, KcConfig, KcMultiplier};
+/// use quantedge_ta::{Kc, KcConfig, Multiplier};
 /// use std::num::NonZero;
 /// # use quantedge_ta::{Ohlcv, Price, Timestamp};
 /// #
@@ -321,7 +270,7 @@ impl Display for KcValue {
 /// let config = KcConfig::builder()
 ///     .length(NonZero::new(2).unwrap())
 ///     .atr_length(NonZero::new(2).unwrap())
-///     .multiplier(KcMultiplier::new(1.5))
+///     .multiplier(Multiplier::new(1.5))
 ///     .build();
 /// let mut kc = Kc::new(config);
 ///
@@ -364,7 +313,7 @@ impl Indicator for Kc {
     fn compute(&mut self, ohlcv: &impl crate::Ohlcv) -> Option<Self::Output> {
         self.current = match (self.ema.compute(ohlcv), self.atr.compute(ohlcv)) {
             (Some(ema), Some(atr)) => {
-                let diff = atr * self.config.multiplier.0;
+                let diff = atr * self.config.multiplier.value();
 
                 Some(KcValue {
                     upper: ema + diff,
@@ -391,7 +340,7 @@ impl Display for Kc {
             "Kc(l: {}, atr_l: {}, m: {}, s: {})",
             self.config.length,
             self.config.atr_length,
-            self.config.multiplier.0,
+            self.config.multiplier.value(),
             self.config.source
         )
     }
@@ -408,7 +357,7 @@ mod tests {
             KcConfig::builder()
                 .length(nz(2))
                 .atr_length(nz(2))
-                .multiplier(KcMultiplier::default())
+                .multiplier(Multiplier::new(1.5))
                 .build(),
         )
     }
@@ -540,14 +489,14 @@ mod tests {
                 KcConfig::builder()
                     .length(nz(2))
                     .atr_length(nz(2))
-                    .multiplier(KcMultiplier::new(1.0))
+                    .multiplier(Multiplier::new(1.0))
                     .build(),
             );
             let mut wide = Kc::new(
                 KcConfig::builder()
                     .length(nz(2))
                     .atr_length(nz(2))
-                    .multiplier(KcMultiplier::new(3.0))
+                    .multiplier(Multiplier::new(3.0))
                     .build(),
             );
 
@@ -562,51 +511,6 @@ mod tests {
             assert!(wv.upper() - wv.lower() > nv.upper() - nv.lower());
             // Middle should be the same (same EMA)
             assert!((nv.middle() - wv.middle()).abs() < 1e-10);
-        }
-
-        #[test]
-        fn default_is_1_5() {
-            let m = KcMultiplier::default();
-            assert!((m.value() - 1.5).abs() < f64::EPSILON);
-        }
-
-        #[test]
-        fn value_accessor() {
-            let m = KcMultiplier::new(2.5);
-            assert!((m.value() - 2.5).abs() < f64::EPSILON);
-        }
-
-        #[test]
-        #[should_panic(expected = "multiplier must not be NaN")]
-        fn rejects_nan() {
-            let _ = KcMultiplier::new(f64::NAN);
-        }
-
-        #[test]
-        #[should_panic(expected = "multiplier must be positive")]
-        fn rejects_zero() {
-            let _ = KcMultiplier::new(0.0);
-        }
-
-        #[test]
-        #[should_panic(expected = "multiplier must be positive")]
-        fn rejects_negative() {
-            let _ = KcMultiplier::new(-1.0);
-        }
-
-        #[test]
-        fn eq_and_hash() {
-            use std::collections::HashSet;
-            let a = KcMultiplier::new(1.5);
-            let b = KcMultiplier::new(1.5);
-            let c = KcMultiplier::new(2.0);
-            assert_eq!(a, b);
-            assert_ne!(a, c);
-
-            let mut set = HashSet::new();
-            set.insert(a);
-            assert!(set.contains(&b));
-            assert!(!set.contains(&c));
         }
     }
 
@@ -686,7 +590,7 @@ mod tests {
             let config = KcConfig::builder()
                 .length(nz(20))
                 .atr_length(nz(10))
-                .multiplier(KcMultiplier::new(2.0))
+                .multiplier(Multiplier::new(2.0))
                 .build();
             assert_eq!(config.length(), 20);
             assert_eq!(config.atr_length(), 10);
@@ -787,7 +691,7 @@ mod tests {
             let config = KcConfig::builder()
                 .length(nz(20))
                 .atr_length(nz(10))
-                .multiplier(KcMultiplier::new(2.0))
+                .multiplier(Multiplier::new(2.0))
                 .source(PriceSource::HL2)
                 .build();
             assert_eq!(config.to_builder().build(), config);
@@ -802,7 +706,7 @@ mod tests {
             let config = KcConfig::builder()
                 .length(nz(20))
                 .atr_length(nz(10))
-                .multiplier(KcMultiplier::new(1.5))
+                .multiplier(Multiplier::new(1.5))
                 .build();
             assert_eq!(
                 config.to_string(),
@@ -816,7 +720,7 @@ mod tests {
                 KcConfig::builder()
                     .length(nz(20))
                     .atr_length(nz(10))
-                    .multiplier(KcMultiplier::new(1.5))
+                    .multiplier(Multiplier::new(1.5))
                     .build(),
             );
             assert_eq!(kc.to_string(), "Kc(l: 20, atr_l: 10, m: 1.5, s: Close)");

@@ -1,7 +1,7 @@
 mod fixtures;
 
 use fixtures::{assert_near, kc_bands, load_channel_ref, nz};
-use quantedge_ta::{Kc, KcConfig, KcMultiplier};
+use quantedge_ta::{Kc, KcConfig, Multiplier};
 
 use crate::fixtures::{assert_channel_values_match, load_reference_ohlcvs, repaint_sequence};
 
@@ -15,7 +15,7 @@ fn kc_config() -> KcConfig {
     KcConfig::builder()
         .length(nz(20))
         .atr_length(nz(10))
-        .multiplier(KcMultiplier::new(1.5))
+        .multiplier(Multiplier::new(1.5))
         .build()
 }
 
