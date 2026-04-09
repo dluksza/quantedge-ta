@@ -11,6 +11,7 @@
 
 mod indicators;
 mod internals;
+mod types;
 
 mod indicator;
 mod ohlcv;
@@ -21,6 +22,7 @@ pub use crate::ohlcv::{Ohlcv, Price, Timestamp};
 pub use crate::price_source::PriceSource;
 
 pub use crate::indicators::*;
+pub use crate::types::*;
 
 macro_rules! impl_inherent_methods {
     ($indicator:ty, $config:ty, $builder:ty) => {
