@@ -98,12 +98,12 @@ for kline in stream {
 Custom standard deviation multiplier:
 
 ```rust
-use quantedge_ta::{BbConfig, StdDev};
+use quantedge_ta::{BbConfig, Multiplier};
 use std::num::NonZero;
 
 let config = BbConfig::builder()
     .length(NonZero::new(20).unwrap())
-    .std_dev(StdDev::new(1.5))
+    .std_dev(Multiplier::new(1.5))
     .build();
 ```
 

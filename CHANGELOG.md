@@ -6,6 +6,10 @@
 
 - Supertrend — trend-following indicator that combines Wilder-smoothed ATR bands with directional logic. Produces a single trend line that flips between support (bullish) and resistance (bearish) when price crosses the active band. Configurable ATR length and band multiplier. Default length 20, multiplier 3.0. Returns `SupertrendValue { value, is_bullish }`. Reference tests against talipp (734 BTC/USDT bars, 1e-6 tolerance) and Criterion benchmarks. Unit tests covering convergence, computation (direction transitions, band clamping), repaints, live data, clone, config, display, and value accessor.
 
+### Changed
+
+- **Breaking:** Removed `StdDev` in favor of the shared `Multiplier` type. `BbConfigBuilder::std_dev` and `VwapConfigBuilder::band_1/2/3` now take `Multiplier`. `StdDev` was a duplicate of `Multiplier` with the same invariants (positive, non-NaN `f64`); both BB and VWAP semantically multiply a standard deviation, so `Multiplier` is the accurate name. Call sites change from `StdDev::new(x)` to `Multiplier::new(x)`.
+
 ## [0.15.1] - 2026-04-03
 
 ### Added

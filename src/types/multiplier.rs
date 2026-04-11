@@ -1,6 +1,16 @@
-use std::hash::{Hash, Hasher};
+use std::{
+    fmt::Display,
+    hash::{Hash, Hasher},
+};
 
 /// Wraps a positive, non-NaN `f64`.
+///
+/// Used by indicators that scale a volatility measure (standard deviation,
+/// ATR, etc.) by a constant factor — e.g. Bollinger Bands' `k`, Keltner
+/// Channels' ATR multiplier, VWAP band distances, Supertrend's ATR multiplier.
+///
+/// Implements `Eq` and `Hash` via bit-level comparison, which is safe because
+/// NaN is rejected at construction.
 ///
 /// # Panics
 ///
@@ -23,7 +33,8 @@ impl Multiplier {
 
     /// Returns the inner `f64` value.
     #[must_use]
-    pub fn value(&self) -> f64 {
+    #[inline]
+    pub fn value(self) -> f64 {
         self.0
     }
 }
@@ -39,6 +50,12 @@ impl Eq for Multiplier {}
 impl Hash for Multiplier {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.0.to_bits().hash(state);
+    }
+}
+
+impl Display for Multiplier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Multiplier({})", self.0)
     }
 }
 
@@ -83,5 +100,11 @@ mod tests {
         set.insert(a);
         assert!(set.contains(&b));
         assert!(!set.contains(&c));
+    }
+
+    #[test]
+    fn display() {
+        let m = Multiplier::new(2.0);
+        assert_eq!(m.to_string(), "Multiplier(2)");
     }
 }

@@ -1,7 +1,7 @@
 use std::{fmt::Display, num::NonZero};
 
 use crate::{
-    Indicator, IndicatorConfig, IndicatorConfigBuilder, Ohlcv, Price, PriceSource, StdDev,
+    Indicator, IndicatorConfig, IndicatorConfigBuilder, Multiplier, Ohlcv, Price, PriceSource,
     internals::{PriceWindow, PriceWindowWithSumOfSquares},
 };
 
@@ -29,7 +29,7 @@ use crate::{
 pub struct BbConfig {
     length: usize,
     source: PriceSource,
-    std_dev: StdDev,
+    std_dev: Multiplier,
 }
 
 impl IndicatorConfig for BbConfig {
@@ -65,7 +65,7 @@ impl BbConfig {
 
     /// Standard deviation multiplier for the upper and lower bands.
     #[must_use]
-    pub fn std_dev(&self) -> StdDev {
+    pub fn std_dev(&self) -> Multiplier {
         self.std_dev
     }
 
@@ -89,7 +89,7 @@ impl Default for BbConfig {
         Self {
             length: 20,
             source: PriceSource::Close,
-            std_dev: StdDev::new(2.0),
+            std_dev: Multiplier::new(2.0),
         }
     }
 }
@@ -115,7 +115,7 @@ impl Display for BbConfig {
 pub struct BbConfigBuilder {
     length: Option<usize>,
     source: PriceSource,
-    std_dev: StdDev,
+    std_dev: Multiplier,
 }
 
 impl BbConfigBuilder {
@@ -123,7 +123,7 @@ impl BbConfigBuilder {
         Self {
             length: None,
             source: PriceSource::Close,
-            std_dev: StdDev::new(2.0),
+            std_dev: Multiplier::new(2.0),
         }
     }
 
@@ -136,7 +136,7 @@ impl BbConfigBuilder {
 
     /// Sets the standard deviation multiplier for the upper and lower bands.
     #[must_use]
-    pub fn std_dev(mut self, std_dev: StdDev) -> Self {
+    pub fn std_dev(mut self, std_dev: Multiplier) -> Self {
         self.std_dev = std_dev;
         self
     }
@@ -338,7 +338,7 @@ mod tests {
         Bb::new(
             BbConfig::builder()
                 .length(nz(length))
-                .std_dev(StdDev::new(std_dev))
+                .std_dev(Multiplier::new(std_dev))
                 .build(),
         )
     }
@@ -563,28 +563,28 @@ mod tests {
         }
 
         #[test]
-        #[should_panic(expected = "std_dev must be positive")]
+        #[should_panic(expected = "multiplier must be positive")]
         fn std_dev_rejects_zero() {
-            let _ = StdDev::new(0.0);
+            let _ = Multiplier::new(0.0);
         }
 
         #[test]
-        #[should_panic(expected = "std_dev must be positive")]
+        #[should_panic(expected = "multiplier must be positive")]
         fn std_dev_rejects_negative() {
-            let _ = StdDev::new(-1.0);
+            let _ = Multiplier::new(-1.0);
         }
 
         #[test]
-        #[should_panic(expected = "std_dev must not be NaN")]
+        #[should_panic(expected = "multiplier must not be NaN")]
         fn std_dev_rejects_nan() {
-            let _ = StdDev::new(f64::NAN);
+            let _ = Multiplier::new(f64::NAN);
         }
 
         #[test]
         fn to_builder_roundtrip() {
             let config = BbConfig::builder()
                 .length(nz(15))
-                .std_dev(StdDev::new(2.5))
+                .std_dev(Multiplier::new(2.5))
                 .source(PriceSource::HLC3)
                 .build();
             assert_eq!(config.to_builder().build(), config);

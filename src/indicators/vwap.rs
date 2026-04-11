@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use crate::{
-    Indicator, IndicatorConfig, IndicatorConfigBuilder, Price, PriceSource, StdDev, Timestamp,
+    Indicator, IndicatorConfig, IndicatorConfigBuilder, Multiplier, Price, PriceSource, Timestamp,
 };
 
 /// Anchor period for VWAP session resets.
@@ -83,9 +83,9 @@ impl Display for VwapAnchor {
 /// ```
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub struct VwapConfig {
-    band_1: Option<StdDev>,
-    band_2: Option<StdDev>,
-    band_3: Option<StdDev>,
+    band_1: Option<Multiplier>,
+    band_2: Option<Multiplier>,
+    band_3: Option<Multiplier>,
     source: PriceSource,
     anchor: VwapAnchor,
 }
@@ -93,19 +93,19 @@ pub struct VwapConfig {
 impl VwapConfig {
     /// First standard-deviation band multiplier, if configured.
     #[must_use]
-    pub fn band_1(&self) -> Option<StdDev> {
+    pub fn band_1(&self) -> Option<Multiplier> {
         self.band_1
     }
 
     /// Second standard-deviation band multiplier, if configured.
     #[must_use]
-    pub fn band_2(&self) -> Option<StdDev> {
+    pub fn band_2(&self) -> Option<Multiplier> {
         self.band_2
     }
 
     /// Third standard-deviation band multiplier, if configured.
     #[must_use]
-    pub fn band_3(&self) -> Option<StdDev> {
+    pub fn band_3(&self) -> Option<Multiplier> {
         self.band_3
     }
 
@@ -115,7 +115,7 @@ impl VwapConfig {
         self.anchor
     }
 
-    fn band_to_str(band: Option<StdDev>) -> String {
+    fn band_to_str(band: Option<Multiplier>) -> String {
         band.map_or("-".to_string(), |v| v.to_string())
     }
 }
@@ -177,9 +177,9 @@ impl Display for VwapConfig {
 /// Defaults: source = [`PriceSource::HLC3`],
 /// anchor = [`VwapAnchor::Day`], no bands.
 pub struct VwapConfigBuilder {
-    band_1: Option<StdDev>,
-    band_2: Option<StdDev>,
-    band_3: Option<StdDev>,
+    band_1: Option<Multiplier>,
+    band_2: Option<Multiplier>,
+    band_3: Option<Multiplier>,
     source: PriceSource,
     anchor: VwapAnchor,
 }
@@ -197,21 +197,21 @@ impl VwapConfigBuilder {
 
     /// Sets the first standard-deviation band multiplier.
     #[must_use]
-    pub fn band_1(mut self, value: Option<StdDev>) -> Self {
+    pub fn band_1(mut self, value: Option<Multiplier>) -> Self {
         self.band_1 = value;
         self
     }
 
     /// Sets the second standard-deviation band multiplier.
     #[must_use]
-    pub fn band_2(mut self, value: Option<StdDev>) -> Self {
+    pub fn band_2(mut self, value: Option<Multiplier>) -> Self {
         self.band_2 = value;
         self
     }
 
     /// Sets the third standard-deviation band multiplier.
     #[must_use]
-    pub fn band_3(mut self, value: Option<StdDev>) -> Self {
+    pub fn band_3(mut self, value: Option<Multiplier>) -> Self {
         self.band_3 = value;
         self
     }
@@ -496,7 +496,7 @@ impl Vwap {
 }
 
 impl Vwap {
-    fn compute_band(band: Option<StdDev>, vwap: Price, std_dev: f64) -> Option<VwapBand> {
+    fn compute_band(band: Option<Multiplier>, vwap: Price, std_dev: f64) -> Option<VwapBand> {
         band.map(|b| {
             let offset = b.value() * std_dev;
 
@@ -539,8 +539,8 @@ mod tests {
         Vwap::new(
             VwapConfig::builder()
                 .anchor(VwapAnchor::User)
-                .band_1(Some(StdDev::new(1.0)))
-                .band_2(Some(StdDev::new(2.0)))
+                .band_1(Some(Multiplier::new(1.0)))
+                .band_2(Some(Multiplier::new(2.0)))
                 .build(),
         )
     }
@@ -816,7 +816,7 @@ mod tests {
         #[test]
         fn to_builder_roundtrip() {
             let config = VwapConfig::builder()
-                .band_1(Some(StdDev::new(1.0)))
+                .band_1(Some(Multiplier::new(1.0)))
                 .anchor(VwapAnchor::Hour4)
                 .build();
             assert_eq!(config.to_builder().build(), config);
