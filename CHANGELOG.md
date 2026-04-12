@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Parabolic SAR (Stop and Reverse) — trend-following overlay that places adaptive trailing stops using Wilder's acceleration factor. SAR trails below price in uptrends and above in downtrends, reversing when price penetrates the stop level. Configurable acceleration step and maximum (`af_step`, `af_max`). Default step 0.02, max 0.2. Returns `ParabolicSarValue { sar, is_long }`. Convergence after 2 bars. Unit tests covering convergence, initialization, computation (AF increments, AF cap, reversals), repaints, live data, clone, config, display, and value accessor.
+
 ## [0.16.1] - 2026-04-11
 
 ### Changed

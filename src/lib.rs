@@ -104,6 +104,7 @@ impl_inherent_methods!(Bb, BbConfig, BbConfigBuilder);
 impl_inherent_methods!(Ichimoku, IchimokuConfig, IchimokuBuilder);
 impl_inherent_methods!(Macd, MacdConfig, MacdConfigBuilder);
 impl_inherent_methods!(Obv, ObvConfig, ObvConfigBuilder);
+impl_inherent_methods!(ParabolicSar, ParabolicSarConfig, ParabolicSarConfigBuilder);
 impl_inherent_methods!(Stoch, StochConfig, StochConfigBuilder);
 impl_inherent_methods!(StochRsi, StochRsiConfig, StochRsiConfigBuilder);
 impl_inherent_methods!(Supertrend, SupertrendConfig, SupertrendConfigBuilder);
