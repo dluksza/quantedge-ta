@@ -57,6 +57,7 @@ Each indicator defines its own output type via an associated type on the
 `IchimokuValue { tenkan, kijun, senkou_a, senkou_b, chikou_close }`.
 VWAP returns `VwapValue { vwap, band_1, band_2, band_3 }`.
 Supertrend returns `SupertrendValue { value, is_bullish }`.
+Parabolic SAR returns `ParabolicSarValue { sar, is_long }`.
 Williams %R, CCI, CHOP, and OBV return `f64`.
 No downcasting, no enums, full type safety.
 
@@ -165,7 +166,8 @@ trait Indicator: Sized + Clone + Display + Debug {
 // StochRsi:  Output = StochRsiValue { k: f64, d: Option<f64> }
 // Obv:       Output = f64
 // Vwap:       Output = VwapValue { vwap: f64, band_1: Option<VwapBand>, band_2: Option<VwapBand>, band_3: Option<VwapBand> }
-// Supertrend: Output = SupertrendValue { value: f64, is_bullish: bool }
+// Supertrend:    Output = SupertrendValue { value: f64, is_bullish: bool }
+// ParabolicSar:  Output = ParabolicSarValue { sar: f64, is_long: bool }
 ```
 
 ### Ohlcv Trait
@@ -264,10 +266,7 @@ to extract from the Ohlcv input:
 | OBV        | `f64`      | On-Balance Volume                           |
 | VWAP       | `VwapValue`| Volume Weighted Average Price               |
 | Supertrend | `SupertrendValue` | Supertrend (trend line + direction)  |
-
-### Planned
-
-Parabolic SAR.
+| Parabolic SAR | `ParabolicSarValue` | Parabolic Stop and Reverse (SAR + direction) |
 
 ## Benchmarks
 
@@ -322,6 +321,8 @@ on a converged indicator.
 | Supertrend | 200     | 2.06 µs       | 360 Melem/s    |
 | OBV       | —        | 757 ns        | 982 Melem/s    |
 | VWAP      | Day      | 889 ns        | 837 Melem/s    |
+| Parabolic SAR | 0.02/0.2 | 6.29 µs   | 118 Melem/s    |
+| Parabolic SAR | 0.01/0.4 | 6.35 µs   | 117 Melem/s    |
 
 ### Tick — single `compute()` on a converged indicator
 
@@ -361,6 +362,8 @@ on a converged indicator.
 | Supertrend | 200     | 2.83 ns       |
 | OBV       | —        | 1.52 ns       |
 | VWAP      | Day      | 4.10 ns       |
+| Parabolic SAR | 0.02/0.2 | 9.22 ns  |
+| Parabolic SAR | 0.01/0.4 | 9.07 ns  |
 
 ### Repaint — single `compute()` repaint on a converged indicator
 
@@ -400,6 +403,8 @@ on a converged indicator.
 | Supertrend | 200     | 2.68 ns       |
 | OBV       | —        | 1.32 ns       |
 | VWAP      | Day      | 3.76 ns       |
+| Parabolic SAR | 0.02/0.2 | 5.71 ns  |
+| Parabolic SAR | 0.01/0.4 | 5.69 ns  |
 
 ### Repaint Stream — process 744 bars × 3 ticks from cold start
 
@@ -439,6 +444,8 @@ on a converged indicator.
 | Supertrend | 200     | 5.67 µs       | 394 Melem/s    |
 | OBV       | —        | 3.60 µs       | 620 Melem/s    |
 | VWAP      | Day      | 3.10 µs       | 719 Melem/s    |
+| Parabolic SAR | 0.02/0.2 | 10.4 µs  | 214 Melem/s    |
+| Parabolic SAR | 0.01/0.4 | 10.4 µs  | 215 Melem/s    |
 
 Run locally:
 

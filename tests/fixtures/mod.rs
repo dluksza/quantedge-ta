@@ -107,6 +107,14 @@ pub struct RefSupertrendValue {
     pub is_bullish: u8,
 }
 
+/// Reference Parabolic SAR value with timestamp (SAR level and direction).
+#[derive(Debug, Deserialize)]
+pub struct RefPsarValue {
+    pub open_time: u64,
+    pub sar: f64,
+    pub is_long: u8,
+}
+
 const OHLCV_PATH: &str = "tests/fixtures/data/btcusdt-1h.csv";
 
 /// Load reference OHLCV bars from Binance.
@@ -147,6 +155,11 @@ pub fn load_macd_ref(path: &str) -> Vec<RefMacdValue> {
 /// Load Supertrend reference data (value, `is_bullish`).
 pub fn load_supertrend_ref(path: &str) -> Vec<RefSupertrendValue> {
     load_records(path, "invalid Supertrend reference record")
+}
+
+/// Load Parabolic SAR reference data (sar, `is_long`).
+pub fn load_psar_ref(path: &str) -> Vec<RefPsarValue> {
+    load_records(path, "invalid PSAR reference record")
 }
 
 /// Assert two f64 values are within tolerance.
@@ -458,6 +471,37 @@ pub fn assert_supertrend_values_match(
             panic!(
                 "Supertrend convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}"
             );
+        }
+    }
+}
+
+/// Assert Parabolic SAR values match between closed and repainted indicators.
+pub fn assert_psar_values_match(
+    bar_idx: usize,
+    closed: Option<quantedge_ta::ParabolicSarValue>,
+    repainted: Option<quantedge_ta::ParabolicSarValue>,
+    tolerance: f64,
+) {
+    match (closed, repainted) {
+        (None, None) => {}
+        (Some(c), Some(r)) => {
+            let diff = (c.sar() - r.sar()).abs();
+            assert!(
+                diff <= tolerance,
+                "PSAR value diverged at bar {bar_idx}: closed={:.10}, repainted={:.10}, diff={diff:.2e}",
+                c.sar(),
+                r.sar()
+            );
+            assert_eq!(
+                c.is_long(),
+                r.is_long(),
+                "PSAR direction diverged at bar {bar_idx}: closed={}, repainted={}",
+                c.is_long(),
+                r.is_long()
+            );
+        }
+        (c, r) => {
+            panic!("PSAR convergence mismatch at bar {bar_idx}: closed={c:?}, repainted={r:?}");
         }
     }
 }

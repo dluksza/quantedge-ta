@@ -163,7 +163,7 @@ def main():
                 )
 
     # ATR
-    ohlcv_bars = [OHLCV(r["open"], r["high"], r["low"], r["close"]) for r in rows]
+    ohlcv_bars = [OHLCV(r["open"], r["high"], r["low"], r["close"], r["volume"]) for r in rows]
     atr = ATR(period=ATR_PERIOD, input_values=ohlcv_bars)
     with open(f"{OUTPUT_DIR}/atr-14.csv", "w", newline="") as f:
         w = csv.writer(f)
@@ -383,6 +383,24 @@ def main():
                 w.writerow([times[i], f"{val:.10f}"])
     vwap_count = int(vwap_series.notna().sum())
 
+    # Parabolic SAR (using TA-Lib — matches Wilder's spec: -DM init, 2-bar clamping)
+    import numpy as np
+    import talib
+    PSAR_AF_STEP = 0.02
+    PSAR_AF_MAX = 0.2
+    high_arr = np.array([r["high"] for r in rows])
+    low_arr = np.array([r["low"] for r in rows])
+    psar_arr = talib.SAR(high_arr, low_arr, acceleration=PSAR_AF_STEP, maximum=PSAR_AF_MAX)
+    with open(f"{OUTPUT_DIR}/psar-0.02-0.2.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["open_time", "sar", "is_long"])
+        psar_count = 0
+        for i, val in enumerate(psar_arr):
+            if not np.isnan(val):
+                is_long = 1 if val < low_arr[i] else 0
+                w.writerow([times[i], f"{val:.10f}", is_long])
+                psar_count += 1
+
     sma_count = sum(1 for v in sma if v is not None)
     ema_count = sum(1 for v in ema if v is not None)
     bb_count = sum(1 for v in bb if v is not None)
@@ -426,7 +444,8 @@ def main():
         f"{supertrend_count} Supertrend, "
         f"{ichimoku_count} Ichimoku, "
         f"{obv_count} OBV, "
-        f"{vwap_count} VWAP reference values "
+        f"{vwap_count} VWAP, "
+        f"{psar_count} PSAR reference values "
         f"from {len(rows)} OHLCV bars."
     )
 

@@ -6,9 +6,10 @@ use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use quantedge_ta::{
     Adx, AdxConfig, Atr, AtrConfig, Bb, BbConfig, Cci, CciConfig, Chop, ChopConfig, Dc, DcConfig,
-    Ema, EmaConfig, Ichimoku, IchimokuConfig, Kc, KcConfig, Macd, MacdConfig, Obv, ObvConfig, Rsi,
-    RsiConfig, Sma, SmaConfig, Stoch, StochConfig, StochRsi, StochRsiConfig, Supertrend,
-    SupertrendConfig, Vwap, VwapConfig, WillR, WillRConfig,
+    Ema, EmaConfig, Ichimoku, IchimokuConfig, Kc, KcConfig, Macd, MacdConfig, Multiplier, Obv,
+    ObvConfig, ParabolicSar, ParabolicSarConfig, Rsi, RsiConfig, Sma, SmaConfig, Stoch,
+    StochConfig, StochRsi, StochRsiConfig, Supertrend, SupertrendConfig, Vwap, VwapConfig, WillR,
+    WillRConfig,
 };
 use std::{hint::black_box, num::NonZero, time::Duration};
 
@@ -138,6 +139,19 @@ macro_rules! all_indicators {
             "supertrend200",
             Supertrend,
             SupertrendConfig::builder().length(nz(200)).build()
+        );
+        $m!(
+            "parabolicsar0.02_0.2",
+            ParabolicSar,
+            ParabolicSarConfig::default()
+        );
+        $m!(
+            "parabolicsar0.01_0.4",
+            ParabolicSar,
+            ParabolicSarConfig::builder()
+                .af_step(Multiplier::new(0.01))
+                .af_max(Multiplier::new(0.4))
+                .build()
         );
     };
 }
