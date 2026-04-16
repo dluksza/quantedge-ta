@@ -23,6 +23,20 @@ fn bars() -> &'static [RefBar] {
     BARS.get_or_init(load_reference_ohlcvs)
 }
 
+/// Splits `bars` into (warmup prefix, remainder) at `max_convergence()`. Each
+/// bench group feeds the prefix into a seed indicator so timed work starts
+/// in steady state.
+fn split_at_warmup(bars: &[RefBar]) -> (&[RefBar], &[RefBar]) {
+    let len = max_convergence();
+    assert!(
+        len < bars.len(),
+        "fixture has {} bars, needs > {} for steady-state measurement",
+        bars.len(),
+        len,
+    );
+    bars.split_at(len)
+}
+
 /// Calls `$m!(name, Type, config)` for every indicator configuration.
 macro_rules! all_indicators {
     ($m:ident) => {
@@ -194,15 +208,7 @@ fn max_convergence() -> usize {
 }
 
 fn stream_benchmarks(c: &mut Criterion) {
-    let bars = bars();
-    let warmup_len = max_convergence();
-    assert!(
-        warmup_len < bars.len(),
-        "fixture has {} bars, needs > {} for steady-state measurement",
-        bars.len(),
-        warmup_len,
-    );
-    let (warmup, measured) = bars.split_at(warmup_len);
+    let (warmup, measured) = split_at_warmup(bars());
     let mut group = c.benchmark_group("stream");
     group.throughput(Throughput::Elements(measured.len() as u64));
     group.warm_up_time(Duration::from_secs(5));
@@ -234,16 +240,8 @@ fn stream_benchmarks(c: &mut Criterion) {
 }
 
 fn tick_benchmarks(c: &mut Criterion) {
-    let bars = bars();
-    let warmup_len = max_convergence();
-    assert!(
-        warmup_len < bars.len(),
-        "fixture has {} bars, needs > {} for steady-state measurement",
-        bars.len(),
-        warmup_len,
-    );
-    let warmup = &bars[..warmup_len];
-    let next = &bars[warmup_len];
+    let (warmup, remainder) = split_at_warmup(bars());
+    let next = &remainder[0];
 
     let mut group = c.benchmark_group("tick");
     group.sample_size(200);
@@ -275,15 +273,7 @@ fn tick_benchmarks(c: &mut Criterion) {
 }
 
 fn repaint_benchmarks(c: &mut Criterion) {
-    let bars = bars();
-    let warmup_len = max_convergence();
-    assert!(
-        warmup_len < bars.len(),
-        "fixture has {} bars, needs > {} for steady-state measurement",
-        bars.len(),
-        warmup_len,
-    );
-    let warmup = &bars[..warmup_len];
+    let (warmup, _) = split_at_warmup(bars());
     // Repaint the last warmed bar (same open_time, perturbed close).
     let repaint_bar = {
         let mut b = warmup.last().unwrap().clone();
@@ -321,15 +311,7 @@ fn repaint_benchmarks(c: &mut Criterion) {
 }
 
 fn repaint_stream_benchmarks(c: &mut Criterion) {
-    let bars = bars();
-    let warmup_len = max_convergence();
-    assert!(
-        warmup_len < bars.len(),
-        "fixture has {} bars, needs > {} for steady-state measurement",
-        bars.len(),
-        warmup_len,
-    );
-    let (warmup_bars, measured_bars) = bars.split_at(warmup_len);
+    let (warmup_bars, measured_bars) = split_at_warmup(bars());
     // Split on bar boundaries so each repaint triple stays whole.
     let warmup_sequences: Vec<_> = warmup_bars.iter().flat_map(repaint_sequence).collect();
     let measured_sequences: Vec<_> = measured_bars.iter().flat_map(repaint_sequence).collect();
