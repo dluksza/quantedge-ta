@@ -18,7 +18,7 @@ fn nz(n: usize) -> NonZero<usize> {
 }
 
 /// CSV-backed reference bars, parsed on first access.
-fn bars() -> &'static [RefBar] {
+fn reference_bars() -> &'static [RefBar] {
     static BARS: OnceLock<Vec<RefBar>> = OnceLock::new();
     BARS.get_or_init(load_reference_ohlcvs)
 }
@@ -208,7 +208,7 @@ fn max_convergence() -> usize {
 }
 
 fn stream_benchmarks(c: &mut Criterion) {
-    let (warmup, measured) = split_at_warmup(bars());
+    let (warmup, measured) = split_at_warmup(reference_bars());
     let mut group = c.benchmark_group("stream");
     group.throughput(Throughput::Elements(measured.len() as u64));
     group.warm_up_time(Duration::from_secs(5));
@@ -240,7 +240,7 @@ fn stream_benchmarks(c: &mut Criterion) {
 }
 
 fn tick_benchmarks(c: &mut Criterion) {
-    let (warmup, remainder) = split_at_warmup(bars());
+    let (warmup, remainder) = split_at_warmup(reference_bars());
     let next = &remainder[0];
 
     let mut group = c.benchmark_group("tick");
@@ -273,7 +273,7 @@ fn tick_benchmarks(c: &mut Criterion) {
 }
 
 fn repaint_benchmarks(c: &mut Criterion) {
-    let (warmup, _) = split_at_warmup(bars());
+    let (warmup, _) = split_at_warmup(reference_bars());
     // Repaint the last warmed bar (same open_time, perturbed close).
     let repaint_bar = {
         let mut b = warmup.last().unwrap().clone();
@@ -311,7 +311,7 @@ fn repaint_benchmarks(c: &mut Criterion) {
 }
 
 fn repaint_stream_benchmarks(c: &mut Criterion) {
-    let (warmup_bars, measured_bars) = split_at_warmup(bars());
+    let (warmup_bars, measured_bars) = split_at_warmup(reference_bars());
     // Split on bar boundaries so each repaint triple stays whole.
     let warmup_sequences: Vec<_> = warmup_bars.iter().flat_map(repaint_sequence).collect();
     let measured_sequences: Vec<_> = measured_bars.iter().flat_map(repaint_sequence).collect();
