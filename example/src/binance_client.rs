@@ -17,6 +17,8 @@ use binance::{
 
 use quantedge_ta::{Price, Timestamp};
 
+/// NOTE: panics on malformed price data, intentional for demo purposes.
+/// Production callers must validate input before this point
 fn to_price(value: &str) -> Price {
     match value.parse() {
         Ok(value) => value,
