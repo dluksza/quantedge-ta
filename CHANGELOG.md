@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Benchmark harness: `stream` and `repaint_stream` groups now pre-feed a warmup prefix in the `iter_batched` setup closure and time only post-convergence ticks. Warmup length is derived at runtime from `IndicatorConfig::convergence()` across every config in `all_indicators!`, so it stays correct as configs are added or tuned. Previously the timed loop included the pre-convergence branch of `compute()`, biasing per-element throughput.
+
 ## [0.17.0] - 2026-04-12
 
 ### Added

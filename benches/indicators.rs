@@ -6,10 +6,10 @@ use crate::fixtures::{load_reference_ohlcvs, repaint_sequence};
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use quantedge_ta::{
     Adx, AdxConfig, Atr, AtrConfig, Bb, BbConfig, Cci, CciConfig, Chop, ChopConfig, Dc, DcConfig,
-    Ema, EmaConfig, Ichimoku, IchimokuConfig, Kc, KcConfig, Macd, MacdConfig, Multiplier, Obv,
-    ObvConfig, ParabolicSar, ParabolicSarConfig, Rsi, RsiConfig, Sma, SmaConfig, Stoch,
-    StochConfig, StochRsi, StochRsiConfig, Supertrend, SupertrendConfig, Vwap, VwapConfig, WillR,
-    WillRConfig,
+    Ema, EmaConfig, Ichimoku, IchimokuConfig, IndicatorConfig, Kc, KcConfig, Macd, MacdConfig,
+    Multiplier, Obv, ObvConfig, ParabolicSar, ParabolicSarConfig, Rsi, RsiConfig, Sma, SmaConfig,
+    Stoch, StochConfig, StochRsi, StochRsiConfig, Supertrend, SupertrendConfig, Vwap, VwapConfig,
+    WillR, WillRConfig,
 };
 use std::{hint::black_box, num::NonZero, time::Duration};
 
@@ -156,10 +156,35 @@ macro_rules! all_indicators {
     };
 }
 
+/// Maximum `convergence()` across every config in `all_indicators!`. Used to
+/// size the warmup prefix so stream benches time only post-convergence ticks.
+fn max_convergence() -> usize {
+    let mut max_conv = 0usize;
+    macro_rules! collect_conv {
+        ($name:expr, $ind_type:ty, $config:expr) => {{
+            let _ = $name;
+            let c = IndicatorConfig::convergence(&$config);
+            if c > max_conv {
+                max_conv = c;
+            }
+        }};
+    }
+    all_indicators!(collect_conv);
+    max_conv
+}
+
 fn stream_benchmarks(c: &mut Criterion) {
     let bars = load_reference_ohlcvs();
+    let warmup_len = max_convergence();
+    assert!(
+        warmup_len < bars.len(),
+        "fixture has {} bars, needs > {} for steady-state measurement",
+        bars.len(),
+        warmup_len,
+    );
+    let (warmup, measured) = bars.split_at(warmup_len);
     let mut group = c.benchmark_group("stream");
-    group.throughput(Throughput::Elements(bars.len() as u64));
+    group.throughput(Throughput::Elements(measured.len() as u64));
     group.warm_up_time(Duration::from_secs(5));
     group.measurement_time(Duration::from_secs(10));
 
@@ -167,9 +192,15 @@ fn stream_benchmarks(c: &mut Criterion) {
         ($name:expr, $ind_type:ty, $config:expr) => {
             group.bench_function($name, |b| {
                 b.iter_batched(
-                    || <$ind_type>::new($config),
+                    || {
+                        let mut ind = <$ind_type>::new($config);
+                        for bar in warmup {
+                            ind.compute(bar);
+                        }
+                        ind
+                    },
                     |mut ind| {
-                        for bar in &bars {
+                        for bar in measured {
                             black_box(ind.compute(bar));
                         }
                     },
@@ -263,21 +294,36 @@ fn repaint_benchmarks(c: &mut Criterion) {
 
 fn repaint_stream_benchmarks(c: &mut Criterion) {
     let bars = load_reference_ohlcvs();
+    let warmup_len = max_convergence();
+    assert!(
+        warmup_len < bars.len(),
+        "fixture has {} bars, needs > {} for steady-state measurement",
+        bars.len(),
+        warmup_len,
+    );
+    let (warmup_bars, measured_bars) = bars.split_at(warmup_len);
+    // Split on bar boundaries so each repaint triple stays whole.
+    let warmup_sequences: Vec<_> = warmup_bars.iter().flat_map(repaint_sequence).collect();
+    let measured_sequences: Vec<_> = measured_bars.iter().flat_map(repaint_sequence).collect();
+
     let mut group = c.benchmark_group("repaint_stream");
-    group.throughput(Throughput::Elements(bars.len() as u64 * 3));
+    group.throughput(Throughput::Elements(measured_sequences.len() as u64));
     group.warm_up_time(Duration::from_secs(5));
     group.measurement_time(Duration::from_secs(10));
-
-    // Pre-build repaint sequences: 3 ticks per bar (2 repaints + final).
-    let sequences: Vec<_> = bars.iter().flat_map(repaint_sequence).collect();
 
     macro_rules! repaint_stream_bench {
         ($name:expr, $ind_type:ty, $config:expr) => {
             group.bench_function($name, |b| {
                 b.iter_batched(
-                    || <$ind_type>::new($config),
+                    || {
+                        let mut ind = <$ind_type>::new($config);
+                        for bar in &warmup_sequences {
+                            ind.compute(bar);
+                        }
+                        ind
+                    },
                     |mut ind| {
-                        for bar in &sequences {
+                        for bar in &measured_sequences {
                             black_box(ind.compute(bar));
                         }
                     },
